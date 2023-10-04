@@ -1,0 +1,34 @@
+﻿@SurveyApi_HostAddress = https://localhost:7215
+
+POST {{SurveyApi_HostAddress}}/question
+Content-Type: application/json
+
+{
+  "orderNumber": 0,
+  "text": "soru 1",
+  "active": true,
+  "surveyId": 0,
+  "required": true,
+  "answerType": "string",
+  "a": "cevap a",
+  "b": "cevap b",
+  "c": "cevap c"
+}
+
+###
+POST {{SurveyApi_HostAddress}}/question
+Content-Type: application/json
+
+{
+  "orderNumber": 0,
+  "text": "soru 2",
+  "active": true,
+  "surveyId": 0,
+  "required": true,
+  "answerType": "string",
+  "a": "cevap a",
+  "b": "cevap b",
+  "c": "cevap c"
+}
+
+###
