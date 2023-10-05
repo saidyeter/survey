@@ -18,12 +18,12 @@ public class QuestionController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddQuestion(AddQuestion val)
+    public async Task<IActionResult> AddQuestion(AddQuestionReq val)
     {
         // validation
 
-        var data = val.ToQuestion();
-         await dbContext.Questions.AddAsync(data);
+        var data = val.ToDbModel();
+        await dbContext.Questions.AddAsync(data);
         await dbContext.SaveChangesAsync();
         return Ok(data);
     }
