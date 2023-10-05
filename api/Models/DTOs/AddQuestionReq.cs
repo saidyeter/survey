@@ -2,7 +2,7 @@
 
 namespace SurveyApi.Models.DTOs;
 
-public class AddQuestion
+public class AddQuestionReq
 {
     #region Properties
     public int OrderNumber { get; set; }
@@ -73,7 +73,7 @@ public class AddQuestion
     #endregion
 
     #region Methods
-    public Question ToQuestion()
+    public Question ToDbModel()
     {
         return new Question
         {
