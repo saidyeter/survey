@@ -6,13 +6,11 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-    const router = useRouter()
     const searchParams = useSearchParams()
     const callbackUrl = searchParams.get('callbackUrl') || '/admin'
-    const [error, setError] = useState('')
+    const error = searchParams.get('error') ? 'Kullanıcı adı veya parola hatalı!' : ''
     const {
         register,
         handleSubmit,
@@ -23,25 +21,13 @@ export default function LoginPage() {
     });
 
     const onSubmit = async (data: TSignInSchema) => {
-
-
-        const response = await signIn('credentials', {
-
-            redirect: false,
+        await signIn('credentials', {
             username: data.email,
-            password: data.password
+            password: data.password,
+            callbackUrl
         })
-
-        if (response?.error) {
-            console.log(response.error);
-            setError("Kullanıcı adı veya parola hatalı!")
-            reset();
-        }
-        else {
-            router.push(callbackUrl)
-        }
-
     };
+
 
     return (
         <div className="w-1/2 m-auto pt-4">

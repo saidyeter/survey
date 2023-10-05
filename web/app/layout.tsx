@@ -43,15 +43,15 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable
           )}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
-              <SessionProvider session={session}>
+          <SessionProvider session={session}>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <div className="relative flex min-h-screen flex-col">
+                <SiteHeader />
                 <div className="flex-1">{children}</div>
-              </SessionProvider>
-            </div>
-            <TailwindIndicator />
-          </ThemeProvider>
+              </div>
+              <TailwindIndicator />
+            </ThemeProvider>
+          </SessionProvider>
         </body>
       </html>
     </>

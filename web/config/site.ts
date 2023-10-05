@@ -1,13 +1,29 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Next.js",
+  name: "Anket",
   description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
+    "Anket uygulamasi",
   mainNav: [
     {
-      title: "Home",
+      title: "Anasayfa",
       href: "/",
+    },
+    {
+      title: "Anket",
+      href: "/survey",
+    },
+    {
+      title: "Admin",
+      href: "/admin",
+    },
+    {
+      title: "Sorular",
+      href: "/admin/questions",
+    },
+    {
+      title: "Yeni Soru",
+      href: "/admin/new-question",
     },
   ],
   links: {

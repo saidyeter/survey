@@ -1,3 +1,4 @@
+import { getUser } from "@/lib/source-api";
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -19,9 +20,11 @@ const handler = NextAuth({
             },
             async authorize(credentials, req) {
                 console.log(1, credentials);
-
-                if (credentials?.username == "said@yeter.com" && credentials.password == "wer") {
-                    return { id: "1", name: "said", email: "said@yeter.com" }
+                if (credentials?.password && credentials.username) {
+                    const res = await getUser(credentials?.username, credentials?.password)
+                    if (res) {
+                        return { id: res.id, name: res.displayName, email: res.email }
+                    }
                 }
 
                 return null
