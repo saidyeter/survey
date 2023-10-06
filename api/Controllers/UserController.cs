@@ -4,7 +4,6 @@ using SurveyApi.DataAccess;
 using SurveyApi.Models.DTOs;
 using System.Security.Cryptography;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SurveyApi.Controllers;
 
