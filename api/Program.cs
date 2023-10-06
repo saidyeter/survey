@@ -23,6 +23,29 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use((context, next) =>
+{
+    var headers = context.Request.Headers;
+    var authHeader = headers.Authorization;
+    var key = authHeader.FirstOrDefault();
+    if (authHeader.Count == 0 || string.IsNullOrEmpty(key))
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    }
+    var config = context.RequestServices.GetService<IConfiguration>();
+
+    var requiredkey = config.GetValue<string>("Security:ApiKey");
+
+    if (!key.Equals(requiredkey))
+    {
+        context.Response.StatusCode = 401;
+        return Task.CompletedTask;
+    }
+
+    return next(context);
+});
+
 app.UseAuthorization();
 
 app.MapControllers();
