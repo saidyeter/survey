@@ -4,14 +4,15 @@ import Link from "next/link"
 import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { Icons } from "@/components/icons"
-
+import { getServerSession } from "next-auth";
 interface MainNavProps {
   items?: NavItem[]
 }
 
-export function MainNav({ items }: MainNavProps) {
-  
+export async function MainNav({ items }: MainNavProps) {
+  const session = await getServerSession()
+
+
   return (
     <div className="flex gap-6 md:gap-10">
       <Link href="/" className="flex items-center space-x-2">
@@ -20,8 +21,17 @@ export function MainNav({ items }: MainNavProps) {
       {items?.length ? (
         <nav className="flex gap-6">
           {items?.map(
-            (item, index) =>
-              item.href && (
+            (item, index) => {
+
+              if (!item.href) {
+                return null
+              }
+
+              if (!item.public && !session?.user?.name) {
+                return null
+              }
+
+              return (
                 <Link
                   key={index}
                   href={item.href}
@@ -33,6 +43,7 @@ export function MainNav({ items }: MainNavProps) {
                   {item.title}
                 </Link>
               )
+            }
           )}
         </nav>
       ) : null}
