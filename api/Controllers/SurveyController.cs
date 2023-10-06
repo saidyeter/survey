@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SurveyApi.DataAccess;
+using SurveyApi.Models.DTOs;
 
 namespace SurveyApi.Controllers;
 
@@ -6,10 +9,25 @@ namespace SurveyApi.Controllers;
 [Route("[controller]")]
 public class SurveyController : ControllerBase
 {
-    private readonly ILogger<SurveyController> _logger;
-    public SurveyController(ILogger<SurveyController> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<SurveyController> logger;
+    private readonly SurveyDbContext dbContext;
 
+    public SurveyController(ILogger<SurveyController> logger, SurveyDbContext dbContext)
+    {
+        this.logger = logger;
+        this.dbContext = dbContext;
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetActiveSurvey()
+    {
+        var now = DateTime.Now;
+        var val = await dbContext.Surveys
+            .Where(u => u.StartDate < now && (u.EndDate > now || u.EndDate == null))
+            .FirstOrDefaultAsync();
+        if (val is null)
+        {
+            return NotFound();
+        }
+        return Ok(val);
+    }
 }

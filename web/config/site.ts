@@ -1,3 +1,5 @@
+import { NavItem } from "@/types/nav"
+
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
@@ -5,14 +7,6 @@ export const siteConfig = {
   description:
     "Anket uygulamasi",
   mainNav: [
-    {
-      title: "Anasayfa",
-      href: "/",
-    },
-    {
-      title: "Anket",
-      href: "/survey",
-    },
     {
       title: "Admin",
       href: "/admin",
@@ -25,10 +19,9 @@ export const siteConfig = {
       title: "Yeni Soru",
       href: "/admin/new-question",
     },
-  ],
+  ] as NavItem[],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/shadcn/ui",
-    docs: "https://ui.shadcn.com",
+    mail: "mailto:said@yeter.com",
+    phone:"tel:905551112233"
   },
 }

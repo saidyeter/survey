@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 
 import { LogoutButton } from "./logout"
+import { LogInButton } from "./login"
 
 
 export function SiteHeader() {
@@ -14,24 +15,9 @@ export function SiteHeader() {
         <MainNav items={siteConfig.mainNav} />
         <div className="flex flex-1 items-center justify-end space-x-4">
           <nav className="flex items-center space-x-1">
-            {/* <Link href={`/`}>Home</Link>
-            <Link
-              href={siteConfig.links.twitter}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div
-                className={buttonVariants({
-                  size: "icon",
-                  variant: "ghost",
-                })}
-              >
-                <Icons.twitter className="h-5 w-5 fill-current" />
-                <span className="sr-only">Twitter</span>
-              </div>
-            </Link> */}
             <ThemeToggle />
             <LogoutButton />
+            <LogInButton />
           </nav>
         </div>
       </div>
