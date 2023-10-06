@@ -19,7 +19,6 @@ const handler = NextAuth({
                 password: { label: "Parola", type: "password" },
             },
             async authorize(credentials, req) {
-                console.log(1, credentials);
                 if (credentials?.password && credentials.username) {
                     const res = await getUser(credentials?.username, credentials?.password)
                     if (res) {
