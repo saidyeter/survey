@@ -1,0 +1,50 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using SurveyApi.DataAccess;
+using SurveyApi.DataAccess.Entities;
+using SurveyApi.Models.DTOs;
+
+namespace SurveyApi.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class AnswerController : ControllerBase
+{
+    private readonly ILogger<AnswerController> logger;
+    private readonly SurveyDbContext dbContext;
+
+    public AnswerController(ILogger<AnswerController> logger, SurveyDbContext dbContext)
+    {
+        this.logger = logger;
+        this.dbContext = dbContext;
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> SubmitAnswers([FromQuery] string ticket, SubmitAnswersReq val)
+    {
+
+        if (string.IsNullOrWhiteSpace(ticket))
+        {
+            return Unauthorized();
+        }
+        var participation = dbContext.Participations.Where(x => x.ParticipationTicket == ticket).FirstOrDefault();
+        if (participation is null)
+        {
+            return Unauthorized();
+        }
+
+        var survey = dbContext.Surveys.Where(x => x.Id == participation.SurveyId).FirstOrDefault();
+        if (survey is null || survey.EndDate < DateTime.Now)
+        {
+            dbContext.Participations.Remove(participation);
+            await dbContext.SaveChangesAsync();
+            return Unauthorized();
+        }
+        participation.EndDate = DateTime.Now;
+        dbContext.Update(participation);
+        await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToDbModel(participation.Id, participation.PartipiciantId)));
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+}
