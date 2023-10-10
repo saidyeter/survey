@@ -1,36 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SurveyApi.DataAccess;
+using SurveyApi.DataAccess.Entities;
 using SurveyApi.Models.DTOs;
 
 namespace SurveyApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class QuestionController : ControllerBase
+public class AnswerController : ControllerBase
 {
-    private readonly ILogger<QuestionController> logger;
+    private readonly ILogger<AnswerController> logger;
     private readonly SurveyDbContext dbContext;
 
-    public QuestionController(ILogger<QuestionController> logger, SurveyDbContext dbContext)
+    public AnswerController(ILogger<AnswerController> logger, SurveyDbContext dbContext)
     {
         this.logger = logger;
         this.dbContext = dbContext;
     }
 
+
     [HttpPost]
-    public async Task<IActionResult> AddQuestion(AddQuestionReq val)
+    public async Task<IActionResult> SubmitAnswers([FromQuery] string ticket, SubmitAnswersReq val)
     {
-        // validation
 
-        var data = val.ToDbModel();
-        await dbContext.Questions.AddAsync(data);
-        await dbContext.SaveChangesAsync();
-        return Ok(data);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetQuestions([FromQuery] string ticket)
-    {
         if (string.IsNullOrWhiteSpace(ticket))
         {
             return Unauthorized();
@@ -48,15 +40,11 @@ public class QuestionController : ControllerBase
             await dbContext.SaveChangesAsync();
             return Unauthorized();
         }
-
-        participation.StartDate = DateTime.Now;
+        participation.EndDate = DateTime.Now;
+        dbContext.Update(participation);
+        await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToDbModel(participation.Id, participation.PartipiciantId)));
         await dbContext.SaveChangesAsync();
 
-        var questions = dbContext.Questions.Where(x => x.SurveyId == survey.Id);
-
-        return Ok(new
-        {
-            questions
-        });
+        return Ok();
     }
 }
