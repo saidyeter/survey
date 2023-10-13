@@ -1,7 +1,6 @@
-import { getQuestions, submitAnswers } from "@/lib/source-api"
+import {  submitAnswers } from "@/lib/source-api"
 import { TQuestionAnswersResponseSchema } from "@/lib/types"
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 
 export async function POST(request: Request) {
     const cookieStore = cookies()
@@ -30,6 +29,5 @@ export async function POST(request: Request) {
         return Response.json({}, { status: 400 })
     }
 
-    
     return Response.redirect('http://localhost:3000/survey/completed')
 }

@@ -91,7 +91,7 @@ async function validateParticipant(email: string, codepart: string) {
                 "codepart": codepart
             })
         })
-        if (response.ok) {
+        if (response.status == 200) {
             const data = await response.json()
             const result = partipiciantValidationResponseSchema.safeParse(data)
             if (!result.success) {
@@ -101,6 +101,11 @@ async function validateParticipant(email: string, codepart: string) {
                 return undefined
             }
             return result.data
+        }
+        else if (response.status == 208) {
+            return {
+                participationTicket: ""
+            }
         }
         console.log("validateParticipant", response.status, await response.text(), url)
 

@@ -12,7 +12,10 @@ export async function POST(request: Request) {
     if (!res) {
         return Response.json({}, { status: 400 })
     }
+    else if (res.participationTicket.length == 0) {
+        return Response.json({}, { status: 208 })
+    }
 
-    const cookie = `ticket=${res.participationTicket}; max-age:${60*60}; path=/; samesite=lax; httponly`
+    const cookie = `ticket=${res.participationTicket}; max-age:${60 * 60}; path=/; samesite=lax; httponly`
     return Response.json({}, { status: 200, headers: { 'Set-Cookie': cookie }, })
 }
