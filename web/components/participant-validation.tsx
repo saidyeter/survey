@@ -31,6 +31,9 @@ export default function ParticipantValidation() {
         if (result.status == 200) {
             router.push('/survey/questions')
         }
+        else if (result.status == 208) {
+            router.push('/survey/completed')
+        }
         else {
             setError('Hatalı bilgi!')
         }

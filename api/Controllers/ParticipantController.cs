@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SurveyApi.DataAccess;
 using SurveyApi.DataAccess.Entities;
 using SurveyApi.Models.DTOs;
 using System.Net;
+using System.Net.Sockets;
 
 namespace SurveyApi.Controllers;
 
@@ -13,13 +15,11 @@ public class ParticipantController : ControllerBase
 {
     private readonly ILogger<ParticipantController> logger;
     private readonly SurveyDbContext dbContext;
-    private readonly IConfiguration configuration;
 
-    public ParticipantController(ILogger<ParticipantController> logger, SurveyDbContext dbContext, IConfiguration configuration)
+    public ParticipantController(ILogger<ParticipantController> logger, SurveyDbContext dbContext)
     {
         this.logger = logger;
         this.dbContext = dbContext;
-        this.configuration = configuration;
     }
 
 
@@ -29,12 +29,14 @@ public class ParticipantController : ControllerBase
         var dbVal = await dbContext.Participants.Where(u => u.Email == val.Email).FirstOrDefaultAsync();
         if (dbVal is null)
         {
+            logger.LogInformation("No Participants found ({email})", val.Email);
             return NotFound();
         }
 
         if (dbVal.LegalIdentifier[0] != val.CodePart[0] ||
             dbVal.LegalIdentifier[2] != val.CodePart[1])
         {
+            logger.LogInformation("Code does not match ({email}). Actual: {codepart}, expected:{code}", val.Email, val.CodePart, dbVal.LegalIdentifier);
             return BadRequest();
         }
         var now = DateTime.Now;
@@ -44,10 +46,27 @@ public class ParticipantController : ControllerBase
 
         if (activeSurvey is null)
         {
+            logger.LogInformation("No active survey found ({email})", val.Email);
             return BadRequest();
         }
 
-        //return new ObjectResult("Your message") { StatusCode = 403 };
+        var existingParticipation = dbContext.Participations.Where(x => x.PartipiciantId == dbVal.Id && x.SurveyId == activeSurvey.Id).FirstOrDefault();
+        if (existingParticipation is not null)
+        {
+            if (existingParticipation.EndDate is null)
+            {
+                logger.LogInformation("ExistingParticipation is found ({email}). Returning already created ParticipationTicket", val.Email);
+                return Ok(new
+                {
+                    existingParticipation.ParticipationTicket,
+                });
+            }
+            else
+            {
+                logger.LogInformation("ExistingParticipation is found ({email}) and it is finished. Returning 208", val.Email);
+                return new ObjectResult("already finished") { StatusCode = 208 };
+            }
+        }
 
         var participation = new Participation
         {
@@ -59,6 +78,8 @@ public class ParticipantController : ControllerBase
 
         await dbContext.AddAsync(participation);
         await dbContext.SaveChangesAsync();
+
+        logger.LogInformation("New Participation is created ({email})", val.Email);
 
         return Ok(new
         {

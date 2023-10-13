@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SurveyApi.DataAccess;
 using SurveyApi.Models.DTOs;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -29,6 +30,7 @@ public class UserController : ControllerBase
         var user = await dbContext.Users.Where(u => u.Email == val.Email).FirstOrDefaultAsync();
         if (user is null)
         {
+            logger.LogInformation("No users found ({Email})", val.Email);
             return BadRequest(new
             {
                 Error = "Kullanici adi veya parola hatali"
@@ -38,6 +40,7 @@ public class UserController : ControllerBase
         var hashedpassword = Hash(val.Password, user.Salt);
         if (!hashedpassword.Equals(user.Password))
         {
+            logger.LogInformation("Password does not match({Email})", val.Email);
             return BadRequest(new
             {
                 Error = "Kullanici adi veya parola hatali"
@@ -50,7 +53,6 @@ public class UserController : ControllerBase
             user.DisplayName,
             user.Email,
         });
-
     }
 
     [HttpPost("new")]
@@ -58,7 +60,7 @@ public class UserController : ControllerBase
     {
         var data = val.ToDbModel();
         var uniqueSalt = Guid.NewGuid().ToString().Replace("-", "").ToLower();
-        ;
+
         var hashedpassword = Hash(data.Password, uniqueSalt);
 
         data.Password = hashedpassword;
@@ -66,7 +68,7 @@ public class UserController : ControllerBase
 
         await dbContext.Users.AddAsync(data);
         await dbContext.SaveChangesAsync();
-        logger.LogInformation("New user is created");
+        logger.LogInformation("New user is created({Email})", val.Email);
         return Ok(data);
     }
 

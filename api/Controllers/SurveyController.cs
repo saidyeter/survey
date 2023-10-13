@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using SurveyApi.DataAccess;
 using SurveyApi.Models.DTOs;
@@ -17,6 +18,8 @@ public class SurveyController : ControllerBase
         this.logger = logger;
         this.dbContext = dbContext;
     }
+
+    [OutputCache(Duration = 60 * 60)] // 1 saatligine cache yapar
     [HttpGet]
     public async Task<IActionResult> GetActiveSurvey()
     {
