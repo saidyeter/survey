@@ -38,12 +38,14 @@ public class QuestionController : ControllerBase
         var participation = dbContext.Participations.Where(x => x.ParticipationTicket == ticket).FirstOrDefault();
         if (participation is null)
         {
+            logger.LogInformation("No Participations found ({ticket})", ticket);
             return Unauthorized();
         }
 
         var survey = dbContext.Surveys.Where(x => x.Id == participation.SurveyId).FirstOrDefault();
         if (survey is null || survey.EndDate < DateTime.Now)
         {
+            logger.LogInformation("No Surveys found ({ticket})", ticket);
             dbContext.Participations.Remove(participation);
             await dbContext.SaveChangesAsync();
             return Unauthorized();
