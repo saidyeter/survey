@@ -7,22 +7,20 @@ public class SingleAnswer
     #region Properties 
     public int QuestionId { get; set; }
 
-    public string Answer { get; set; }
+    public int AnswerId { get; set; }
 
     public string AnswerDesc { get; set; }
 
     #endregion
 
     #region Methods 
-    public ParticipantAnswer ToDbModel(int participationId, int partipiciantId)
+    public ParticipantAnswer ToParticipantAnswer(int participationId)
     {
         return new ParticipantAnswer
         {
-            Answer = Answer,
+            AnswerId = AnswerId,
             ParticipationId = participationId,
-            QuestionId = QuestionId,
-            AnswerDesc = AnswerDesc,
-            PartipiciantId = partipiciantId
+            QuestionId = QuestionId
         };
     }
     #endregion

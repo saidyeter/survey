@@ -1,4 +1,6 @@
 ﻿@SurveyApi_HostAddress = https://localhost:7215
+@SurveyWeb_HostAddress = http://localhost:3000
+@AuthKey = WtRhT4DAxgpkpqvMyZv5jKmb5PfU9a
 
 POST {{SurveyApi_HostAddress}}/question
 Content-Type: application/json
@@ -16,19 +18,32 @@ Content-Type: application/json
 }
 
 ###
-POST {{SurveyApi_HostAddress}}/question
+GET {{SurveyApi_HostAddress}}/question?ticket=47a5005970164c6296ada570239cd52c
+Authorization: {{AuthKey}}
+
+###
+
+POST {{SurveyWeb_HostAddress}}/api/partipiciant
 Content-Type: application/json
 
 {
-  "orderNumber": 0,
-  "text": "soru 2",
-  "active": true,
-  "surveyId": 0,
-  "required": true,
-  "answerType": "string",
-  "a": "cevap a",
-  "b": "cevap b",
-  "c": "cevap c"
+  "email": "ema@t.com",
+  "code": "s2"
 }
+
+###
+
+GET {{SurveyApi_HostAddress}}/survey
+Authorization: {{AuthKey}}
+
+###
+
+GET {{SurveyApi_HostAddress}}/survey/temp
+Authorization: {{AuthKey}}
+
+###
+
+GET {{SurveyApi_HostAddress}}/survey/details?surveyId=1
+Authorization: {{AuthKey}}
 
 ###
