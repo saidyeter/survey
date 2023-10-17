@@ -15,5 +15,6 @@ public class SurveyDbContext : DbContext
     public DbSet<ParticipantAnswer> ParticipantAnswers { get; set; }
     public DbSet<Participation> Participations { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Answer> Answers { get; set; }
 
 }

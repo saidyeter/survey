@@ -44,7 +44,7 @@ public class AnswerController : ControllerBase
         }
         participation.EndDate = DateTime.Now;
         dbContext.Update(participation);
-        await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToDbModel(participation.Id, participation.PartipiciantId)));
+        await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToParticipantAnswer(participation.Id)));
         await dbContext.SaveChangesAsync();
 
         return Ok();

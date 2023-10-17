@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     for (const pair of formData.entries()) {
         answerArray.answers.push({
             questionId: parseInt(pair[0]),
-            answer: pair[1].toString(),
+            answerId: parseInt(pair[1].toString()),
             answerDesc: null
         })
     }

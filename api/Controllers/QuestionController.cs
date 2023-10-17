@@ -42,8 +42,11 @@ public class QuestionController : ControllerBase
             return Unauthorized();
         }
 
-        var survey = dbContext.Surveys.Where(x => x.Id == participation.SurveyId).FirstOrDefault();
-        if (survey is null || survey.EndDate < DateTime.Now)
+        var requestedSurvey = dbContext.Surveys
+            .Where(x => x.Id == participation.SurveyId)
+            .FirstOrDefault();
+
+        if (requestedSurvey is null || requestedSurvey.EndDate < DateTime.Now)
         {
             logger.LogInformation("No Surveys found ({ticket})", ticket);
             dbContext.Participations.Remove(participation);
@@ -54,11 +57,19 @@ public class QuestionController : ControllerBase
         participation.StartDate = DateTime.Now;
         await dbContext.SaveChangesAsync();
 
-        var questions = dbContext.Questions.Where(x => x.SurveyId == survey.Id);
+        //var survey= from q in dbContext.Questions
+        //            join a in 
+        var survey = dbContext.Questions
+            .Where(x => x.SurveyId == requestedSurvey.Id)
+            .Select(l=> new
+            {
+                question=l,
+                answers= dbContext.Answers.Where(a=> a.QuestionId== l.Id).ToList()
+            });
 
         return Ok(new
         {
-            questions
+            survey
         });
     }
-}
+} 
