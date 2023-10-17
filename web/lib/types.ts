@@ -18,16 +18,28 @@ export const getUserSchema = z
 export type TGetUserSchema = z.infer<typeof getUserSchema>;
 
 
-
-
-export const getActiveSurveyResponseSchema = z
+const survey = z
   .object({
     id: z.number(),
     name: z.string(),
     startDate: z.string().transform(s => new Date(s)),
+    endDate: z.string().transform(s => new Date(s)).nullable(),
     description: z.string(),
+    status: z.string()
   })
+
+export const surveySchema = survey
+export type TSurveySchema = z.infer<typeof surveySchema>;
+
+
+export const getActiveSurveyResponseSchema = survey
 export type TGetActiveSurveyResponseSchema = z.infer<typeof getActiveSurveyResponseSchema>;
+
+
+export const getSurveysResponseSchema = z.object({
+  surveys: survey.array()
+})
+export type TGetSurveysResponseSchema = z.infer<typeof getSurveysResponseSchema>;
 
 
 export const partipiciantValidationSchema = z
@@ -53,40 +65,24 @@ export const questionSchema = z
     orderNumber: z.number(),
     text: z.string(),
     descriptiveAnswer: z.string().nullable(),
-    active: z.boolean(),
     surveyId: z.number(),
     required: z.boolean(),
-    answerType: z.string(),
-    a: z.string(),
-    b: z.string(),
-    c: z.string().nullable(),
-    d: z.string().nullable(),
-    e: z.string().nullable(),
-    f: z.string().nullable(),
-    g: z.string().nullable(),
-    h: z.string().nullable(),
-    i: z.string().nullable(),
-    j: z.string().nullable(),
-    k: z.string().nullable(),
-    l: z.string().nullable(),
-    m: z.string().nullable(),
-    n: z.string().nullable(),
-    o: z.string().nullable(),
-    p: z.string().nullable(),
-    q: z.string().nullable(),
-    r: z.string().nullable(),
-    s: z.string().nullable(),
-    t: z.string().nullable(),
-    u: z.string().nullable(),
-    v: z.string().nullable(),
-    w: z.string().nullable(),
-    x: z.string().nullable(),
-    y: z.string().nullable(),
-    z: z.string().nullable(),
+    answerType: z.number() //z.enum(['single', 'multiple', 'yesNo']),
   })
+  export const answerSchema = z
+    .object({
+      id: z.number(),
+      text: z.string(),
+      label: z.string(),
+      questionId: z.number(),
+    })
 
 export const questionsResponseSchema = z.object({
-  questions: questionSchema.array()
+  survey: z.object({
+    question: questionSchema,
+    answers: answerSchema.array()
+  }).array()
+  
 })
 
 
@@ -95,7 +91,7 @@ export type TQuestionsResponseSchema = z.infer<typeof questionsResponseSchema>;
 export const questionAnswerSchema = z
   .object({
     questionId: z.number(),
-    answer: z.string(),
+    answerId: z.number(),
     answerDesc: z.string().nullable(),
   })
 
@@ -106,3 +102,18 @@ export const questionAnswersResponseSchema = z.object({
 
 export type TQuestionAnswersResponseSchema = z.infer<typeof questionAnswersResponseSchema>;
 
+export const surveyDetailSchema = z.object({
+  surveyId: z.number(),
+  allParticipantCount: z.number(),
+  participationCount: z.number(),
+  questionDetails: z.object({
+    question: questionSchema,
+    answeredCount: z.number(),
+    answerDetails: z.object({
+      label: z.string().max(1),
+      text: z.string(),
+      choosenCount: z.number()
+    }).array()
+  }).array()
+})
+export type TSurveyDetailSchema = z.infer<typeof surveyDetailSchema>;

@@ -1,4 +1,4 @@
-import { TQuestionAnswersResponseSchema, getActiveSurveyResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema } from "./types"
+import { TQuestionAnswersResponseSchema, getActiveSurveyResponseSchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -9,11 +9,85 @@ export {
     getActiveSurvey,
     validateParticipant,
     getQuestions,
-    submitAnswers
+    submitAnswers,
+    getSurveys,
+    getSurveyDetails,
 }
 
 function beforeReq() {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    if (process.env.NODE_ENV == 'development') {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+    }
+}
+async function getSurveyDetails(surveyId: number) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/details?surveyId=" + surveyId)
+
+    try {
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Authorization': apiKey
+            },
+        })
+
+
+        if (response.ok) {
+
+            const data = await response.json()
+
+            const result = surveyDetailSchema.safeParse(data)
+            if (!result.success) {
+                console.log('unsuccesfull parse', result.error);
+
+                return undefined
+            }
+            return result.data
+        }
+        console.log("getSurveyDetails", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("getSurveyDetails error", error);
+    }
+
+    return undefined
+}
+
+
+async function getSurveys() {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/all")
+
+    try {
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Authorization': apiKey
+            },
+        })
+
+
+        if (response.ok) {
+
+            const data = await response.json()
+
+            const result = getSurveysResponseSchema.safeParse(data)
+            if (!result.success) {
+                console.log('unsuccesfull parse', result.error);
+
+                return undefined
+            }
+            return result.data
+        }
+        console.log("getSurveys", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("getSurveys error", error);
+    }
+
+    return undefined
 }
 
 
@@ -121,7 +195,7 @@ async function validateParticipant(email: string, codepart: string) {
 
 async function getActiveSurvey() {
     beforeReq()
-    const url = encodeURI(baseUrl + "/survey")
+    const url = encodeURI(baseUrl + "/survey/active-survey")
 
     try {
         const response = await fetch(url, {
