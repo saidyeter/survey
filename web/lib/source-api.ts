@@ -36,10 +36,9 @@ async function getSurveyDetails(surveyId: number) {
         if (response.ok) {
 
             const data = await response.json()
-
             const result = surveyDetailSchema.safeParse(data)
             if (!result.success) {
-                console.log('unsuccesfull parse', result.error);
+                console.log('unsuccesfull parse', result.error.errors[0]);
 
                 return undefined
             }

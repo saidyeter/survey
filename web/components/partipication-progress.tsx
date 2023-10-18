@@ -16,7 +16,7 @@ interface PartipicationProgressProps {
 
 export function PartipicationProgress({ current, currentText, total, totalText }: PartipicationProgressProps) {
     return (
-        <div className="w-full">
+        <div className="w-full pt-2 pb-2">
 
             <Progress value={current * 100 / total} className="w-full" />
             <div className="flex justify-between">

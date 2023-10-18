@@ -44,10 +44,20 @@ export default async function SurveyDetails({ params }: { params: { id: string }
             </Link>
         </div>)
     }
-    const { questionDetails } = details
+    const { questionDetails, survey } = details
     return (
         <div className="w-full">
-            <span>Anket : {details?.surveyId}</span>
+            <h1 className="text-xl leading-tight tracking-tighter md:text-2xl">
+                Anket ismi :  {survey.name}
+            </h1>
+
+            <p className="max-w-[700px] pt-2">
+                Anket Aciklamasi : {survey.description}
+            </p>
+
+            <p className="text-sm  pt-2">
+                {getLocaleDate(survey.startDate)}-{getLocaleDate(survey.endDate ?? new Date())}
+            </p>
 
             <PartipicationProgress
                 current={details.participationCount}
@@ -58,8 +68,7 @@ export default async function SurveyDetails({ params }: { params: { id: string }
 
             {questionDetails.map(qd => {
                 return (
-
-                    <div className="w-full pt-4 border-t-muted-foreground border-t-2">
+                    <div key={qd.question.id} className="w-full pt-2 pb-2 border-t-muted-foreground border-t-2">
                         <div className="text-lg font-semibold ">
                             <span className="text-sm text-muted-foreground font-normal pr-2">
                                 {qd.question.orderNumber} :
@@ -68,9 +77,13 @@ export default async function SurveyDetails({ params }: { params: { id: string }
                                 {qd.question.text}
                             </span>
                         </div>
-                        {qd.answerDetails.map(ad => {
+                        <span>
+                            Cevaplama sayisi : {qd.answeredCount}
+                        </span>
+
+                        {qd.answerDetails.map((ad, i) => {
                             return (
-                                <div className="">
+                                <div key={i}>
                                     <span className="pr-2">
                                         {ad.label} :  {ad.text}
                                     </span>
@@ -81,13 +94,9 @@ export default async function SurveyDetails({ params }: { params: { id: string }
 
                             )
                         })}
-
-
-
                     </div>
                 )
             })}
-
         </div>
     )
 }
