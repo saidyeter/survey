@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodError, z } from "zod";
 
 export const signInSchema = z
   .object({
@@ -64,25 +64,34 @@ export const questionSchema = z
     id: z.number(),
     orderNumber: z.number(),
     text: z.string(),
-    descriptiveAnswer: z.string().nullable(),
+    descriptiveAnswer: z.number().nullable(),
     surveyId: z.number(),
     required: z.boolean(),
-    answerType: z.number() //z.enum(['single', 'multiple', 'yesNo']),
-  })
-  export const answerSchema = z
-    .object({
-      id: z.number(),
-      text: z.string(),
-      label: z.string(),
-      questionId: z.number(),
+    answerType: z.number().transform(a => {
+      switch (a) {
+        case 0: return 'single'
+        case 1: return 'multiple'
+        case 2: return 'yesNo'
+
+      }
+      throw new ZodError([])
+
     })
+  })
+export const answerSchema = z
+  .object({
+    id: z.number(),
+    text: z.string(),
+    label: z.string(),
+    questionId: z.number(),
+  })
 
 export const questionsResponseSchema = z.object({
   survey: z.object({
     question: questionSchema,
     answers: answerSchema.array()
   }).array()
-  
+
 })
 
 
@@ -103,6 +112,7 @@ export const questionAnswersResponseSchema = z.object({
 export type TQuestionAnswersResponseSchema = z.infer<typeof questionAnswersResponseSchema>;
 
 export const surveyDetailSchema = z.object({
+  survey: surveySchema,
   surveyId: z.number(),
   allParticipantCount: z.number(),
   participationCount: z.number(),
@@ -110,6 +120,7 @@ export const surveyDetailSchema = z.object({
     question: questionSchema,
     answeredCount: z.number(),
     answerDetails: z.object({
+      id: z.number().optional(),
       label: z.string().max(1),
       text: z.string(),
       choosenCount: z.number()

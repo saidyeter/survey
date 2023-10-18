@@ -76,38 +76,44 @@ public class SurveyController : ControllerBase
             .Where(q => q.SurveyId == surveyId)
             .ToListAsync();
         var questionIdList = questions.Select(p => p.Id).ToList();
+
         var answers = await dbContext.Answers
             .Where(a => questionIdList.Contains(a.QuestionId))
             .ToListAsync();
 
-        var participantAnswers = dbContext.ParticipantAnswers.Where(pa => partipicionIdList.Contains(pa.ParticipationId));
-        var report = from p in partipicions
-                     join pa in participantAnswers on p.Id equals pa.ParticipationId
-                     join q in questions on pa.QuestionId equals q.Id
-                     join a in answers on pa.QuestionId equals a.QuestionId
-                     group new { p, pa, q, a } by a.QuestionId into grouped
-                     select new QuestionDetail
-                     {
-                         Question = grouped.First().q,
-                         AnsweredCount = 0,
-                         AnswerDetails = grouped
-                            .GroupBy(gpd => gpd.a.Id)
-                            .Select(gpd =>
-                                new AnswerDetail
-                                {
-                                    Label = gpd.First().a.Label,
-                                    Text = gpd.First().a.Text,
-                                    ChoosenCount = 0
-                                })
-                            .ToArray()
-                     };
+        var participantAnswers = dbContext.ParticipantAnswers.Where(pa => partipicionIdList.Contains(pa.ParticipationId)).ToList();
+
+        var report = participantAnswers
+            .GroupBy(gp => gp.QuestionId)
+            .Select(pa => new QuestionDetail
+            {
+                Question = questions.FirstOrDefault(q => q.Id == pa.Key),
+                AnsweredCount = pa.Count(),
+                AnswerDetails = pa
+                    .GroupBy(gba => gba.AnswerId)
+                    .Select(a =>
+                    {
+                        var _answer = answers.FirstOrDefault(x => x.Id == a.Key);
+                        return new AnswerDetail
+                        {
+                            ChoosenCount = a.Count(),
+                            Label = _answer?.Label,
+                            Text = _answer?.Text,
+                            Id = _answer?.Id ?? -1
+                        };
+                    })
+                    .OrderBy(a => a.Label)
+                    .ToArray()
+
+            }).ToArray();
 
         return Ok(new SurveyDetail
         {
+            Survey = survey,
             SurveyId = surveyId,
             AllParticipantCount = allParticipantCount,
             ParticipationCount = partipicions.Count,
-            QuestionDetails = report.ToArray()
+            QuestionDetails = report
         });
     }
 
@@ -274,11 +280,10 @@ public class QuestionDetail
     public Question Question { get; set; }
     public AnswerDetail[] AnswerDetails { get; set; }
     public int AnsweredCount { get; set; }
-
-
 }
 public class AnswerDetail
 {
+    public int Id { get; set; }
     public string Label { get; set; }
     public string Text { get; set; }
     public int ChoosenCount { get; set; }
@@ -287,6 +292,7 @@ public class AnswerDetail
 public class SurveyDetail
 {
     public int SurveyId { get; set; }
+    public Survey Survey { get; set; }
     public int AllParticipantCount { get; set; }
     public int ParticipationCount { get; set; }
     public QuestionDetail[] QuestionDetails { get; set; }
