@@ -12,10 +12,9 @@ export default async function Admin() {
     }
 
     const { surveys } = response
-    const activeStatus = 'active'
-    const active = surveys.find(s => s.status == activeStatus)
-    const olders = surveys.filter(s => s.status != activeStatus)
-    console.log(active, olders);
+    const active = surveys.find(s => s.status != 'ended')
+    const olders = surveys.filter(s => s.status == 'ended')
+    // console.log(active, olders);
     return (
         <>
             <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
@@ -24,6 +23,12 @@ export default async function Admin() {
             {active ?
                 <>
                     <span>{active.name}</span>
+                    <Link
+                        href={`/admin/new-survey/${active.id}`}
+                        className={buttonVariants()}
+                    >
+                        Detaylar
+                    </Link>
                 </>
                 :
                 <>
@@ -64,7 +69,7 @@ function SingleSurvey(params: TSurveySchema) {
             <div className="text-lg font-semibold aling-center">
                 {name}
                 <span className="text-sm text-muted-foreground font-normal">
-                    {` · ${getLocaleDate(startDate)}`}
+                    {startDate && ` · ${getLocaleDate(startDate)}`}
                     {endDate && ` · ${getLocaleDate(endDate)}`}
                 </span>
             </div>

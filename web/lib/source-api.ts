@@ -1,4 +1,4 @@
-import { TQuestionAnswersResponseSchema, getActiveSurveyResponseSchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema } from "./types"
+import { TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, checkNewSurveyIsAllowedResponse, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -12,6 +12,9 @@ export {
     submitAnswers,
     getSurveys,
     getSurveyDetails,
+    checkNewSurveyIsAllowed,
+    createNewSurvey,
+    getSurvey,
 }
 
 function beforeReq() {
@@ -19,6 +22,110 @@ function beforeReq() {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
     }
 }
+
+
+async function getSurvey(surveyId: number) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/" + surveyId)
+
+    try {
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Authorization': apiKey
+            },
+        })
+
+
+        if (response.ok) {
+
+            const data = await response.json()
+            const result = getSurveySchema.safeParse(data)
+            if (!result.success) {
+                console.log('unsuccesfull parse', result.error.errors[0]);
+
+                return undefined
+            }
+            return result.data
+        }
+        console.log("getSurvey", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("getSurvey error", error);
+    }
+
+    return undefined
+}
+
+
+
+async function createNewSurvey(req:TNewSurveyValidationSchema) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey")
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify(req)
+        })
+        if (response.ok) {
+            const data = await response.json()
+            const result = surveySchema.safeParse(data)
+            if (!result.success) {
+                console.log('unsuccesfull parse', result.error.errors[0]);
+
+                return undefined
+            }
+            return result.data
+        }
+        console.log("createNewSurvey", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("createNewSurvey error", error);
+    }
+
+    return undefined
+}
+
+async function checkNewSurveyIsAllowed() {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/check-new-survey-is-allowed")
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Authorization': apiKey
+            },
+        })
+
+        if (response.ok) {
+
+            const data = await response.json()
+            const result = checkNewSurveyIsAllowedResponse.safeParse(data)
+            if (!result.success) {
+                console.log('unsuccesfull parse', result.error.errors[0]);
+
+                return undefined
+            }
+            return result.data.allowed
+        }
+        console.log("getSurveyDetails", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("getSurveyDetails error", error);
+    }
+
+    return undefined
+}
+
+
+
+
 async function getSurveyDetails(surveyId: number) {
     beforeReq()
     const url = encodeURI(baseUrl + "/survey/details?surveyId=" + surveyId)
