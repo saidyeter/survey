@@ -10,7 +10,14 @@ public class Survey
 
     public DateTime? EndDate { get; set; }
 
-    public string Status { get; set; }
+    public SurveyStatus Status { get; set; }
 
     public string Description { get; set; }
+}
+
+public enum SurveyStatus
+{
+    Pre,
+    Running,
+    Ended
 }

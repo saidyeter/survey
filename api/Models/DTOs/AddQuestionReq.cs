@@ -33,14 +33,3 @@ public class AddQuestionReq
     }
     #endregion
 }
-
-public class GetQuestionsRes
-{
-    public SigleQuestion[] Survey { get; set; }
-}
-
-public class SigleQuestion
-{
-    public Question Question { get; set; }
-    public Answer[] Answers { get; set; }
-}

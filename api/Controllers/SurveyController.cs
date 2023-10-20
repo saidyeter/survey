@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using SurveyApi.DataAccess;
-using SurveyApi.Models.DTOs;
-using static System.Net.Mime.MediaTypeNames;
-using System.Globalization;
-using System.Text;
 using SurveyApi.DataAccess.Entities;
+using SurveyApi.Models.DTOs;
 
 namespace SurveyApi.Controllers;
 
@@ -23,7 +19,71 @@ public class SurveyController : ControllerBase
         this.dbContext = dbContext;
     }
 
-    //[OutputCache(Duration = 60 * 60)] // 1 saatligine cache yapar
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSurvey(int id)
+    {
+        var val = await dbContext.Surveys
+            .Where(s => s.Id == id)
+            .FirstOrDefaultAsync();
+
+        if (val is null)
+        {
+            return NotFound();
+        }
+        var qs = await dbContext.Questions
+            .Where(q => q.SurveyId == id)
+            .ToListAsync();
+
+
+        return Ok(new
+        {
+            survey = val,
+            questions = qs
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateSurveyReq req)
+    {
+        var val = await dbContext.Surveys
+            .Where(s => s.Status != SurveyStatus.Ended)
+            .FirstOrDefaultAsync();
+
+        if (val is not null)
+        {
+            return BadRequest();
+        }
+
+        var newSurvey = new Survey
+        {
+            Name = req.Name,
+            Description = req.Desc,
+            StartDate = null,
+            EndDate = null,
+            Status = SurveyStatus.Pre
+        };
+        await dbContext.AddAsync(newSurvey);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok(newSurvey);
+    }
+
+    [HttpGet("check-new-survey-is-allowed")]
+    public async Task<IActionResult> CheckNewSurveyIsAllowed()
+    {
+        var val = await dbContext.Surveys
+            .Where(s => s.Status != SurveyStatus.Ended)
+            .FirstOrDefaultAsync();
+
+        return Ok(new
+        {
+            allowed = val is null
+        });
+    }
+
+
     [HttpGet("active-survey")]
     public async Task<IActionResult> GetActiveSurvey()
     {
@@ -42,7 +102,7 @@ public class SurveyController : ControllerBase
     public async Task<IActionResult> GetSurveys()
     {
         var val = await dbContext.Surveys
-            .OrderBy(s => s.StartDate)
+            .OrderByDescending(s => s.StartDate)
             .ToListAsync();
         if (val is null)
         {
@@ -53,6 +113,7 @@ public class SurveyController : ControllerBase
             surveys = val
         });
     }
+
 
     [HttpGet("details")]
     public async Task<IActionResult> GetSurveyDetails([FromQuery] int surveyId)
@@ -107,7 +168,7 @@ public class SurveyController : ControllerBase
 
             }).ToArray();
 
-        return Ok(new SurveyDetail
+        return Ok(new
         {
             Survey = survey,
             SurveyId = surveyId,
@@ -116,6 +177,7 @@ public class SurveyController : ControllerBase
             QuestionDetails = report
         });
     }
+
 
     [HttpGet("temp")]
     public async Task<IActionResult> Seed()
@@ -154,7 +216,7 @@ public class SurveyController : ControllerBase
                 EndDate = startdate.AddMonths(1).AddDays(-1),
                 Name = $"{startdate.Year} {months[startdate.Month]} ayi verimlilik anketi",
                 Description = $"Bu anketle, {startdate.Year} {months[startdate.Month]} ve oncesindeki birkac ayin verimlilik durumunu gozlemlemeyi planliyoruz",
-                Status = "ended"
+                Status = SurveyStatus.Ended
             });
         }
         dbContext.Surveys.AddRange(surveys);
@@ -275,25 +337,3 @@ public class SurveyController : ControllerBase
 
 }
 
-public class QuestionDetail
-{
-    public Question Question { get; set; }
-    public AnswerDetail[] AnswerDetails { get; set; }
-    public int AnsweredCount { get; set; }
-}
-public class AnswerDetail
-{
-    public int Id { get; set; }
-    public string Label { get; set; }
-    public string Text { get; set; }
-    public int ChoosenCount { get; set; }
-}
-
-public class SurveyDetail
-{
-    public int SurveyId { get; set; }
-    public Survey Survey { get; set; }
-    public int AllParticipantCount { get; set; }
-    public int ParticipationCount { get; set; }
-    public QuestionDetail[] QuestionDetails { get; set; }
-}

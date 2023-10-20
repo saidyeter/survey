@@ -47,3 +47,15 @@ GET {{SurveyApi_HostAddress}}/survey/details?surveyId=1
 Authorization: {{AuthKey}}
 
 ###
+
+GET {{SurveyApi_HostAddress}}/survey/check-new-available
+Authorization: {{AuthKey}}
+
+###
+
+
+GET {{SurveyApi_HostAddress}}/survey/1
+Authorization: {{AuthKey}}
+
+###
+
