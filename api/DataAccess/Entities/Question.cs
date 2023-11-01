@@ -8,7 +8,7 @@ public class Question
 
     public string Text { get; set; }
 
-    public int? DescriptiveAnswer { get; set; }
+    public string DescriptiveAnswer { get; set; }
 
     public int SurveyId { get; set; }
 

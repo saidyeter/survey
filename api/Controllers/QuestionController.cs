@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SurveyApi.DataAccess;
+using SurveyApi.DataAccess.Entities;
 using SurveyApi.Models.DTOs;
+using System.Net.Sockets;
 
 namespace SurveyApi.Controllers;
 
@@ -17,15 +19,26 @@ public class QuestionController : ControllerBase
         this.dbContext = dbContext;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddQuestion(AddQuestionReq val)
+    [HttpPost("{SurveyId}")]
+    public async Task<IActionResult> AddQuestion(int SurveyId, AddQuestionReq val)
     {
         // validation
+        var requestedSurvey = dbContext.Surveys
+          .Where(x => x.Id == SurveyId)
+          .FirstOrDefault();
 
-        var data = val.ToDbModel();
+        if (requestedSurvey is null || requestedSurvey.EndDate < DateTime.Now)
+        {
+            logger.LogInformation("No Surveys found ({SurveyId})", SurveyId);
+            return BadRequest();
+        }
+
+        var data = val.ToDbModel(SurveyId);
         await dbContext.Questions.AddAsync(data);
         await dbContext.SaveChangesAsync();
-        return Ok(data);
+        await dbContext.Answers.AddRangeAsync(val.Answers.Select(a => a.ToDbModel(data.Id)));
+        await dbContext.SaveChangesAsync();
+        return Ok();
     }
 
     [HttpGet]
@@ -61,10 +74,10 @@ public class QuestionController : ControllerBase
         //            join a in 
         var survey = dbContext.Questions
             .Where(x => x.SurveyId == requestedSurvey.Id)
-            .Select(l=> new
+            .Select(l => new
             {
-                question=l,
-                answers= dbContext.Answers.Where(a=> a.QuestionId== l.Id).ToList()
+                question = l,
+                answers = dbContext.Answers.Where(a => a.QuestionId == l.Id).ToList()
             });
 
         return Ok(new
@@ -72,4 +85,4 @@ public class QuestionController : ControllerBase
             survey
         });
     }
-} 
+}
