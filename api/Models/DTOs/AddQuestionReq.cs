@@ -9,38 +9,54 @@ public class AddQuestionReq
 
     public string Text { get; set; }
 
-    //public string DescriptiveAnswer { get; set; }
+    public string DescriptiveAnswer { get; set; }
 
-    public int SurveyId { get; set; }
+    public bool IsRequired { get; set; }
 
-    public bool Required { get; set; }
+    public string AnswerType { get; set; }
 
-    public int AnswerType { get; set; }
+    public AddQuestionReqSingleAnswer[] Answers { get; set; }
     #endregion
 
     #region Methods
-    public Question ToDbModel()
+    public Question ToDbModel(int SurveyId)
     {
+        var answerType =
+            AnswerType == "single" ? DataAccess.Entities.AnswerType.Single :
+            AnswerType == "multiple" ?
+            DataAccess.Entities.AnswerType.Multiple :
+            throw new Exception("Unexpected AnswerType: " + AnswerType);
         return new Question
         {
             OrderNumber = OrderNumber,
             Text = Text,
-            DescriptiveAnswer = -1,
+            DescriptiveAnswer = DescriptiveAnswer,
             SurveyId = SurveyId,
-            Required = Required,
-            AnswerType = (AnswerType)AnswerType,
+            Required = IsRequired,
+            AnswerType = answerType,
         };
     }
     #endregion
 }
 
-public class GetQuestionsRes
+public class AddQuestionReqSingleAnswer
 {
-    public SigleQuestion[] Survey { get; set; }
-}
+    #region Properties
+    public string Text { get; set; }
 
-public class SigleQuestion
-{
-    public Question Question { get; set; }
-    public Answer[] Answers { get; set; }
+    public string Label { get; set; }
+    #endregion
+
+    #region Methods
+    public Answer ToDbModel(int questionId)
+    {
+
+        return new Answer
+        {
+            QuestionId = questionId,
+            Label = Label,
+            Text = Text,
+        };
+    }
+    #endregion
 }

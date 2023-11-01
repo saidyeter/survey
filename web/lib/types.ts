@@ -1,4 +1,4 @@
-import { ZodError, z } from "zod";
+import { z } from "zod";
 
 export const signInSchema = z
   .object({
@@ -22,10 +22,21 @@ const survey = z
   .object({
     id: z.number(),
     name: z.string(),
-    startDate: z.string().transform(s => new Date(s)),
+    startDate: z.string().transform(s => new Date(s)).nullable(),
     endDate: z.string().transform(s => new Date(s)).nullable(),
     description: z.string(),
-    status: z.string()
+    status: z.number().transform((v, ctx) => {
+      switch (v) {
+        case 0: return 'pre'
+        case 1: return 'running'
+        case 2: return 'ended'
+      }
+      ctx.addIssue({
+        message: 'Expected 0 or 1 or 2, received: ' + v,
+        code: "custom"
+      })
+      return z.NEVER
+    })
   })
 
 export const surveySchema = survey
@@ -64,18 +75,20 @@ export const questionSchema = z
     id: z.number(),
     orderNumber: z.number(),
     text: z.string(),
-    descriptiveAnswer: z.number().nullable(),
+    descriptiveAnswer: z.string().nullable(),
     surveyId: z.number(),
     required: z.boolean(),
-    answerType: z.number().transform(a => {
+    answerType: z.number().transform((a, ctx) => {
       switch (a) {
         case 0: return 'single'
         case 1: return 'multiple'
         case 2: return 'yesNo'
-
       }
-      throw new ZodError([])
-
+      ctx.addIssue({
+        message: 'Expected 0 or 1 or 2, received: ' + a,
+        code: "custom"
+      })
+      return z.NEVER
     })
   })
 export const answerSchema = z
@@ -128,3 +141,58 @@ export const surveyDetailSchema = z.object({
   }).array()
 })
 export type TSurveyDetailSchema = z.infer<typeof surveyDetailSchema>;
+
+export const checkNewSurveyIsAllowedResponse = z.object({
+  allowed: z.boolean()
+})
+
+export type TCheckNewSurveyIsAllowed = z.infer<typeof checkNewSurveyIsAllowedResponse>
+
+
+
+export const newSurveyValidationSchema = z
+  .object({
+    name: z.string().min(5, 'En az 5 karakter giriniz'),
+    desc: z.string().min(5, 'En az 5 karakter giriniz'),
+  })
+
+export type TNewSurveyValidationSchema = z.infer<typeof newSurveyValidationSchema>;
+
+
+export const getSurveySchema = z.object({
+  survey: surveySchema,
+  questions: questionSchema.array()
+})
+export type TGetSurveySchema = z.infer<typeof getSurveySchema>;
+
+
+
+
+export const newQuestionSchema = z
+  .object({
+    orderNumber: z.number(),
+    text: z.string({ required_error: 'Soru icerigi zorunlu alandir' }).min(5, '5 karakterden fazla girin'),
+    descriptiveAnswer: z.string().optional().nullable(),
+    isDescriptiveAnswerWanted: z.boolean().default(false),
+    isrequired: z.boolean().default(true),
+    answerType: z.string(),
+    answers: z.object({
+      text: z.string().min(2, 'En az 2 karakter girilmelidir'),
+    }).array().min(2, 'En az 2 cevap eklenmelidir')
+      .transform(d => {
+        const labels = 'ABCDEFGHJKLMNOPRSTUVYZ'
+
+        return (
+          d.map((v, i) => {
+            return {
+              text: v.text,
+              label: labels[i]
+            }
+          })
+        )
+      })
+  }).refine(d => (d.isDescriptiveAnswerWanted && d.descriptiveAnswer && d.answers.some(a => a.label == d.descriptiveAnswer)) || !d.isDescriptiveAnswerWanted, {
+    message: 'Aciklama girilmesi isteniyorsa, aciklama istenen secenek isaretlenmelidir',
+    path: ['descriptiveAnswer']
+  })
+export type TNewQuestionSchema = z.infer<typeof newQuestionSchema>;
