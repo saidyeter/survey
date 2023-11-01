@@ -1,4 +1,4 @@
-import { buttonVariants } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { getSurveys } from "@/lib/source-api"
 import { TSurveySchema } from "@/lib/types"
 import { getLocaleDate } from "@/lib/utils"
@@ -21,15 +21,15 @@ export default async function Admin() {
                 Aktif Anket
             </h2>
             {active ?
-                <>
+                <div className="w-full border-t-2 ">
                     <span>{active.name}</span>
                     <Link
                         href={`/admin/new-survey/${active.id}`}
-                        className={buttonVariants()}
+                        className={buttonVariants({ variant: 'outline' })}
                     >
                         Detaylar
                     </Link>
-                </>
+                </div>
                 :
                 <>
                     <span>Aktif anket bulunamadi</span>
@@ -65,20 +65,23 @@ export default async function Admin() {
 function SingleSurvey(params: TSurveySchema) {
     const { id, startDate, status, description, endDate, name } = params
     return (
-        <div className="w-full pt-4 border-t-muted-foreground border-t-2">
-            <div className="text-lg font-semibold aling-center">
-                {name}
+        <div className="w-full pt-4 border-t-foreground border-b-2">
+            <Link
+                href={`/admin/survey-details/${id}`}
+                className="flex flex-col space-y-1"
+            >
+                <span className="text-lg font-semibold aling-center">
+                    {name}
+                </span>
                 <span className="text-sm text-muted-foreground font-normal">
                     {startDate && ` · ${getLocaleDate(startDate)}`}
                     {endDate && ` · ${getLocaleDate(endDate)}`}
                 </span>
-            </div>
 
-            <Link
-                href={`/admin/survey-details/${id}`}
-                className={buttonVariants({ variant: "secondary" })}
-            >
-                Anket detaylari icin tiklayiniz
+                <Button variant={'outline'} className="w-1/3">
+                    Detaylar
+                </Button>
+
             </Link>
         </div>
     )

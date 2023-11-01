@@ -7,8 +7,6 @@ import { createNewSurvey } from '@/lib/source-api'
 
 
 export async function create(formData: FormData) {
-    'use server'
-
     const parseResult= newSurveyValidationSchema.safeParse({
         name: formData.get('name'),
         desc: formData.get('desc')

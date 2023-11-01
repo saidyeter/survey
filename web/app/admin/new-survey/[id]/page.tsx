@@ -1,11 +1,13 @@
+import NewQuestionForm from "@/components/new-question-form"
 import { buttonVariants } from "@/components/ui/button"
 import { getSurvey } from "@/lib/source-api"
 import Link from "next/link"
 
 export default async function SurveyPrep({ params }: { params: { id: string } }) {
-
+    
     const surveyId = parseInt(params.id)
-
+    console.log('surveyId',surveyId);
+    
     if (surveyId.toString() != params.id) {
 
         return (<div>
@@ -41,12 +43,6 @@ export default async function SurveyPrep({ params }: { params: { id: string } })
             <p className="max-w-[700px] text-lg text-muted-foreground">
                 {survey.description}
             </p>
-            <Link
-                href={`/admin/new-survey/${surveyId}/new-question`}
-                className={buttonVariants()}
-            >
-                Yeni soru ekle
-            </Link>
             <div>
                 {questions.map(q => {
                     return (
@@ -56,6 +52,9 @@ export default async function SurveyPrep({ params }: { params: { id: string } })
                     )
                 })}
             </div>
+
+            <NewQuestionForm surveyid={surveyId} order={questions.length + 1} />
+
         </div>
     )
 }

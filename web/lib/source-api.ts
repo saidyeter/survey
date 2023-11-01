@@ -1,4 +1,4 @@
-import { TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, checkNewSurveyIsAllowedResponse, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
+import { TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, checkNewSurveyIsAllowedResponse, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -15,6 +15,7 @@ export {
     checkNewSurveyIsAllowed,
     createNewSurvey,
     getSurvey,
+    createNewQuestion
 }
 
 function beforeReq() {
@@ -23,6 +24,30 @@ function beforeReq() {
     }
 }
 
+async function createNewQuestion(surveyId: number, req: TNewQuestionSchema) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/question/"+surveyId)
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify(req)
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("createNewQuestion", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("createNewQuestion error", error);
+    }
+
+    return false
+}
 
 async function getSurvey(surveyId: number) {
     beforeReq()
@@ -60,7 +85,7 @@ async function getSurvey(surveyId: number) {
 
 
 
-async function createNewSurvey(req:TNewSurveyValidationSchema) {
+async function createNewSurvey(req: TNewSurveyValidationSchema) {
     beforeReq()
     const url = encodeURI(baseUrl + "/survey")
 

@@ -75,7 +75,7 @@ export const questionSchema = z
     id: z.number(),
     orderNumber: z.number(),
     text: z.string(),
-    descriptiveAnswer: z.number().nullable(),
+    descriptiveAnswer: z.string().nullable(),
     surveyId: z.number(),
     required: z.boolean(),
     answerType: z.number().transform((a, ctx) => {
@@ -170,26 +170,29 @@ export type TGetSurveySchema = z.infer<typeof getSurveySchema>;
 
 export const newQuestionSchema = z
   .object({
-    orderNumber: z.string().transform(o=> parseInt(o)),
-    text: z.string({required_error:'Soru icerigi zorunlu alandir'}).min(5,'5 karakterden fazla girin'),
-    descriptiveAnswer: z.string(),
-    surveyId: z.string().transform(o=> parseInt(o)),
-    required: z.boolean().default(true),
-    answerType: z.string().transform((a, ctx) => {
-      switch (a) {
-        case 'single': return 0
-        case 'multiple': return 1
-        case 'yesNo': return 2
-      }
-      ctx.addIssue({
-        message: 'Expected single or multiple or yesNo, received: ' + a,
-        code: "custom"
-      })
-      return z.NEVER
-    }),
+    orderNumber: z.number(),
+    text: z.string({ required_error: 'Soru icerigi zorunlu alandir' }).min(5, '5 karakterden fazla girin'),
+    descriptiveAnswer: z.string().optional().nullable(),
+    isDescriptiveAnswerWanted: z.boolean().default(false),
+    isrequired: z.boolean().default(true),
+    answerType: z.string(),
     answers: z.object({
-      text: z.string(),
-      label: z.string(),
-    }).array().min(2,'En az 2 cevap eklenmelidir')
-  }) 
-  export type TNewQuestionSchema = z.infer<typeof newQuestionSchema>;
+      text: z.string().min(2, 'En az 2 karakter girilmelidir'),
+    }).array().min(2, 'En az 2 cevap eklenmelidir')
+      .transform(d => {
+        const labels = 'ABCDEFGHJKLMNOPRSTUVYZ'
+
+        return (
+          d.map((v, i) => {
+            return {
+              text: v.text,
+              label: labels[i]
+            }
+          })
+        )
+      })
+  }).refine(d => (d.isDescriptiveAnswerWanted && d.descriptiveAnswer && d.answers.some(a => a.label == d.descriptiveAnswer)) || !d.isDescriptiveAnswerWanted, {
+    message: 'Aciklama girilmesi isteniyorsa, aciklama istenen secenek isaretlenmelidir',
+    path: ['descriptiveAnswer']
+  })
+export type TNewQuestionSchema = z.infer<typeof newQuestionSchema>;
