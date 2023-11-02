@@ -1,22 +1,51 @@
-# next-template
+# Survey Web
 
-A Next.js 13 template for building apps with Radix UI and Tailwind CSS.
+Pages
 
-## Usage
-
-```bash
-npx create-next-app -e https://github.com/shadcn/next-template
-```
-
-## Features
-
-- Next.js 13 App Directory
-- Radix UI Primitives
-- Tailwind CSS
-- Icons from [Lucide](https://lucide.dev)
-- Dark mode with `next-themes`
-- Tailwind CSS class sorting, merging and linting.
-
-## License
-
-Licensed under the [MIT license](https://github.com/shadcn/ui/blob/main/LICENSE.md).
+Root  
+│   layout.tsx  
+│   page.tsx  
+│  
+├───admin  
+│   │   layout.tsx  
+│   │   page.tsx  
+│   │  
+│   ├───new-survey  
+│   │   │   page.tsx  
+│   │   │  
+│   │   └───[id]  
+│   │           page.tsx  
+│   │  
+│   ├───questions  
+│   │       page.tsx  
+│   │  
+│   └───survey-details  
+│       └───[id]  
+│               page.tsx  
+│  
+├───api  
+│   ├───auth  
+│   │   └───[...nextauth]  
+│   │           route.ts  
+│   │  
+│   ├───get-questions  
+│   │       route.ts  
+│   │  
+│   ├───partipiciant  
+│   │       route.ts  
+│   │  
+│   └───submit-answers  
+│           route.ts  
+│  
+├───login  
+│       page.tsx  
+│  
+└───survey  
+    │   layout.tsx  
+    │   page.tsx  
+    │  
+    ├───completed  
+    │       page.tsx  
+    │  
+    └───questions  
+            page.tsx  
