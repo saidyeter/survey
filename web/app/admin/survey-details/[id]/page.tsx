@@ -56,7 +56,7 @@ export default async function SurveyDetails({ params }: { params: { id: string }
             </p>
 
             <p className="text-sm  pt-2">
-                {getLocaleDate(survey.startDate)}-{getLocaleDate(survey.endDate ?? new Date())}
+                {getLocaleDate(survey.startDate ?? new Date())}-{getLocaleDate(survey.endDate ?? new Date())}
             </p>
 
             <PartipicationProgress

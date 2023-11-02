@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { signIn } from 'next-auth/react'
 import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
     const searchParams = useSearchParams()
@@ -31,11 +33,8 @@ export default function LoginPage() {
 
     return (
         <div className="w-1/2 m-auto pt-4">
-
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-2">
-
-
-                <input
+                <Input
                     {...register("email")}
                     type="email"
                     placeholder="E-Posta"
@@ -45,23 +44,21 @@ export default function LoginPage() {
                     <p className="text-red-500">{`${errors.email.message}`}</p>
                 )}
 
-                <input
+                <Input
                     {...register("password")}
                     type="password"
                     placeholder="Parola"
                     className="px-4 py-2 rounded"
                 />
-
                 {errors.password && (
                     <p className="text-red-500">{`${errors.password.message}`}</p>
                 )}
-                <button
+                <Button
                     disabled={isSubmitting}
                     type="submit"
-                    className="bg-blue-500 disabled:bg-gray-500 py-2 rounded"
                 >
                     Giriş Yap
-                </button>
+                </Button>
                 {error && (
                     <p className="text-red-500 text-center">{`${error}`}</p>
                 )}

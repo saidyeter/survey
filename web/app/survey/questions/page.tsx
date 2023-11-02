@@ -40,7 +40,7 @@ export default function SurveyQuestions() {
                             </p>
                         {d.answers.map(ans=>{
                             return(
-                                <div>
+                                <div key={ans.id}>
                                      <label>
                                         <input type="radio" name={`${d.question.id}`} value={ans.id} />
                                         {ans.label} : {ans.text}
