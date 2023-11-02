@@ -1,5 +1,5 @@
 import NewQuestionForm from "@/components/new-question-form"
-import QuestionCard from "@/components/question-card"
+import QuestionsAccordion from "@/components/questions-accordion"
 import { buttonVariants } from "@/components/ui/button"
 import { getSurvey } from "@/lib/source-api"
 import Link from "next/link"
@@ -37,20 +37,14 @@ export default async function SurveyPrep({ params }: { params: { id: string } })
 
     const { survey, qnas } = data
     return (
-        <div>
+        <div className="w-full">
             <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
                 {survey.name}
             </h1>
             <p className="max-w-[700px] text-lg text-muted-foreground">
                 {survey.description}
             </p>
-            <div>
-                {qnas.map(q => {
-                    return (
-                        <QuestionCard {...q} key={q.question.id} />
-                    )
-                })}
-            </div>
+            <QuestionsAccordion QnAs={qnas} />
 
             <NewQuestionForm surveyid={surveyId} order={qnas.length + 1} />
 

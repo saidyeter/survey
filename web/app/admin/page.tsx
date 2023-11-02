@@ -74,7 +74,7 @@ function SingleSurvey(params: TSurveySchema) {
                     {name}
                 </span>
                 <span className="text-sm text-muted-foreground font-normal">
-                    {startDate && ` · ${getLocaleDate(startDate)}`}
+                    {startDate && `${getLocaleDate(startDate)}`}
                     {endDate && ` · ${getLocaleDate(endDate)}`}
                 </span>
 
