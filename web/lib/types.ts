@@ -91,6 +91,8 @@ export const questionSchema = z
       return z.NEVER
     })
   })
+
+
 export const answerSchema = z
   .object({
     id: z.number(),
@@ -99,16 +101,19 @@ export const answerSchema = z
     questionId: z.number(),
   })
 
-export const questionsResponseSchema = z.object({
-  survey: z.object({
+  export const qnaSchema=z.object({
     question: questionSchema,
     answers: answerSchema.array()
-  }).array()
+  })
+  export type TQnASchema = z.infer<typeof qnaSchema>;
+
+export const questionsResponseSchema = z.object({
+  survey: qnaSchema.array()
 
 })
 
-
 export type TQuestionsResponseSchema = z.infer<typeof questionsResponseSchema>;
+
 
 export const questionAnswerSchema = z
   .object({
@@ -161,7 +166,7 @@ export type TNewSurveyValidationSchema = z.infer<typeof newSurveyValidationSchem
 
 export const getSurveySchema = z.object({
   survey: surveySchema,
-  questions: questionSchema.array()
+  qnas: qnaSchema.array()
 })
 export type TGetSurveySchema = z.infer<typeof getSurveySchema>;
 
@@ -172,7 +177,7 @@ export const newQuestionSchema = z
   .object({
     orderNumber: z.number(),
     text: z.string({ required_error: 'Soru icerigi zorunlu alandir' }).min(5, '5 karakterden fazla girin'),
-    descriptiveAnswer: z.string().optional().nullable(),
+    descriptiveAnswer: z.string().nullable(),
     isDescriptiveAnswerWanted: z.boolean().default(false),
     isrequired: z.boolean().default(true),
     answerType: z.string(),

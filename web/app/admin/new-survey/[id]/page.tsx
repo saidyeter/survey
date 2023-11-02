@@ -1,13 +1,14 @@
 import NewQuestionForm from "@/components/new-question-form"
+import QuestionCard from "@/components/question-card"
 import { buttonVariants } from "@/components/ui/button"
 import { getSurvey } from "@/lib/source-api"
 import Link from "next/link"
 
 export default async function SurveyPrep({ params }: { params: { id: string } }) {
-    
+
     const surveyId = parseInt(params.id)
-    console.log('surveyId',surveyId);
-    
+    console.log('surveyId', surveyId);
+
     if (surveyId.toString() != params.id) {
 
         return (<div>
@@ -34,7 +35,7 @@ export default async function SurveyPrep({ params }: { params: { id: string } })
         </div>)
     }
 
-    const { survey, questions } = data
+    const { survey, qnas } = data
     return (
         <div>
             <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
@@ -44,16 +45,14 @@ export default async function SurveyPrep({ params }: { params: { id: string } })
                 {survey.description}
             </p>
             <div>
-                {questions.map(q => {
+                {qnas.map(q => {
                     return (
-                        <div>
-                            {q.text}
-                        </div>
+                        <QuestionCard {...q} key={q.question.id} />
                     )
                 })}
             </div>
 
-            <NewQuestionForm surveyid={surveyId} order={questions.length + 1} />
+            <NewQuestionForm surveyid={surveyId} order={qnas.length + 1} />
 
         </div>
     )

@@ -47,7 +47,7 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
         text: "Hayir"
       }],
       answerType: 'single',
-      descriptiveAnswer: undefined,
+      descriptiveAnswer: null,
       isDescriptiveAnswerWanted: false
     }
   });
@@ -149,7 +149,7 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
                   </RadioGroup>
                 </FormControl>
                 <FormDescription>
-                  Cevaplardan sadece bir şıkı mı seçebilsin yoksa birden fazla işaretleyebilsin mi?
+                  Cevaplardan sadece bir şıkkı mı seçebilsin yoksa birden fazla işaretleyebilsin mi?
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -192,7 +192,6 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
                       className="flex space-x-1"
                     >
                       {fields.map((val, i) => {

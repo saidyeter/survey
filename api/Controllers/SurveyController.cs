@@ -23,23 +23,28 @@ public class SurveyController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSurvey(int id)
     {
-        var val = await dbContext.Surveys
-            .Where(s => s.Id == id)
-            .FirstOrDefaultAsync();
+        var survey = await dbContext.Surveys
+           .Where(x => x.Id == id)
+           .FirstOrDefaultAsync();
 
-        if (val is null)
+        if (survey is null)
         {
+            logger.LogInformation("No Surveys found ({id})", id);
             return NotFound();
         }
-        var qs = await dbContext.Questions
-            .Where(q => q.SurveyId == id)
-            .ToListAsync();
 
+        var qnas =await dbContext.Questions
+            .Where(x => x.SurveyId == survey.Id)
+            .Select(l => new
+            {
+                question = l,
+                answers = dbContext.Answers.Where(a => a.QuestionId == l.Id).ToList()
+            }).ToListAsync();
 
         return Ok(new
         {
-            survey = val,
-            questions = qs
+            survey,
+            qnas
         });
     }
 

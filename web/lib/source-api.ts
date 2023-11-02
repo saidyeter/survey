@@ -26,7 +26,7 @@ function beforeReq() {
 
 async function createNewQuestion(surveyId: number, req: TNewQuestionSchema) {
     beforeReq()
-    const url = encodeURI(baseUrl + "/question/"+surveyId)
+    const url = encodeURI(baseUrl + "/question/" + surveyId)
 
     try {
         const response = await fetch(url, {
@@ -68,7 +68,7 @@ async function getSurvey(surveyId: number) {
             const data = await response.json()
             const result = getSurveySchema.safeParse(data)
             if (!result.success) {
-                console.log('unsuccesfull parse', result.error.errors[0]);
+                console.log('unsuccesfull parse', result.error.errors[0],JSON.stringify(data));
 
                 return undefined
             }
