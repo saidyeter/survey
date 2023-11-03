@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/card"
 
 import { Button } from "./ui/button";
+import { raiseUp } from "@/actions/raise-up-question";
+import { lowerDown } from "@/actions/lower-down-question";
+import { remove } from "@/actions/remove-question";
 
 export default function QuestionCard(params: TQnASchema) {
   const { question, answers } = params
@@ -53,14 +56,14 @@ export default function QuestionCard(params: TQnASchema) {
           <Button type="button" size={'icon'} onClick={() => { }}>
             <Pencil />
           </Button>
-          <Button type="button" variant={'outline'} size={'icon'} onClick={() => { }}>
+          <Button type="button" variant={'outline'} size={'icon'} onClick={() => { raiseUp(question.surveyId, question.id) }}>
             <ChevronUp />
           </Button>
-          <Button type="button" variant={'outline'} size={'icon'} onClick={() => { }}>
+          <Button type="button" variant={'outline'} size={'icon'} onClick={() => { lowerDown(question.surveyId, question.id) }}>
             <ChevronDown />
           </Button>
           <Button type="button" variant={'destructive'}
-            size={'icon'} onClick={() => { }}>
+            size={'icon'} onClick={() => { remove(question.surveyId, question.id) }}>
             <Trash2 />
           </Button>
         </div>

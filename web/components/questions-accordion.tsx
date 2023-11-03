@@ -17,7 +17,7 @@ export default function QuestionsAccordion(params: QuestionsAccordionProps) {
     return (
         <Accordion type="single" collapsible>
             <div>
-                {params.QnAs.map(q => {
+                {params.QnAs.sort((a,b)=> a.question.orderNumber - b.question.orderNumber).map(q => {
                     return (
                         <AccordionItem key={q.question.id} value={q.question.id.toString()}>
                             <AccordionTrigger>Soru {q.question.orderNumber}: {q.question.text}</AccordionTrigger>

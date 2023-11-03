@@ -1,6 +1,7 @@
 import { PartipicationProgress } from "@/components/partipication-progress"
+import QuestionDetailCard from "@/components/question-detail-card"
 import { buttonVariants } from "@/components/ui/button"
-import { getSurveyDetails } from "@/lib/source-api"
+import { checkPreSurveyExists, getActiveSurvey, getSurveyDetails } from "@/lib/source-api"
 import { getLocaleDate } from "@/lib/utils"
 import Link from "next/link"
 
@@ -45,6 +46,9 @@ export default async function SurveyDetails({ params }: { params: { id: string }
         </div>)
     }
     const { questionDetails, survey } = details
+
+    const preSurvey = await checkPreSurveyExists()
+
     return (
         <div className="w-full">
             <h1 className="text-xl leading-tight tracking-tighter md:text-2xl">
@@ -68,33 +72,12 @@ export default async function SurveyDetails({ params }: { params: { id: string }
 
             {questionDetails.map(qd => {
                 return (
-                    <div key={qd.question.id} className="w-full pt-2 pb-2 border-t-muted-foreground border-t-2">
-                        <div className="text-lg font-semibold ">
-                            <span className="text-sm text-muted-foreground font-normal pr-2">
-                                {qd.question.orderNumber} :
-                            </span>
-                            <span>
-                                {qd.question.text}
-                            </span>
-                        </div>
-                        <span>
-                            Cevaplama sayisi : {qd.answeredCount}
-                        </span>
-
-                        {qd.answerDetails.map((ad, i) => {
-                            return (
-                                <div key={i}>
-                                    <span className="pr-2">
-                                        {ad.label} :  {ad.text}
-                                    </span>
-                                    <span className="font-bold">
-                                        {ad.choosenCount}
-                                    </span>
-                                </div>
-
-                            )
-                        })}
-                    </div>
+                    <QuestionDetailCard
+                        showCopy={preSurvey?.exists}
+                        activeSurvey={preSurvey?.id ?? -1}
+                        key={qd.question.id}
+                        questionDetail={qd}
+                    />
                 )
             })}
         </div>

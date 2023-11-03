@@ -7,7 +7,7 @@ import Link from "next/link"
 export default async function SurveyPrep({ params }: { params: { id: string } }) {
 
     const surveyId = parseInt(params.id)
-    console.log('surveyId', surveyId);
+    // console.log('surveyId', surveyId);
 
     if (surveyId.toString() != params.id) {
 
