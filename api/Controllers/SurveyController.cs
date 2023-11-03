@@ -33,7 +33,7 @@ public class SurveyController : ControllerBase
             return NotFound();
         }
 
-        var qnas =await dbContext.Questions
+        var qnas = await dbContext.Questions
             .Where(x => x.SurveyId == survey.Id)
             .Select(l => new
             {
@@ -85,6 +85,20 @@ public class SurveyController : ControllerBase
         return Ok(new
         {
             allowed = val is null
+        });
+    }
+
+    [HttpGet("check-pre-survey-exists")]
+    public async Task<IActionResult> CheckPreSurveyExists()
+    {
+        var val = await dbContext.Surveys
+            .Where(s => s.Status == SurveyStatus.Pre)
+            .FirstOrDefaultAsync();
+
+        return Ok(new
+        {
+            exists = val is not null,
+            id = val?.Id
         });
     }
 
