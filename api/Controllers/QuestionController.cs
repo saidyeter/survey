@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SurveyApi.DataAccess;
 using SurveyApi.DataAccess.Entities;
 using SurveyApi.Models.DTOs;
-using System.Net.Sockets;
 
 namespace SurveyApi.Controllers;
 
@@ -19,21 +19,167 @@ public class QuestionController : ControllerBase
         this.dbContext = dbContext;
     }
 
-    [HttpPost("{SurveyId}")]
-    public async Task<IActionResult> AddQuestion(int SurveyId, AddQuestionReq val)
-    {
-        // validation
-        var requestedSurvey = dbContext.Surveys
-          .Where(x => x.Id == SurveyId)
-          .FirstOrDefault();
 
-        if (requestedSurvey is null || requestedSurvey.EndDate < DateTime.Now)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> RemoveQuestion(int id)
+    {
+        var currentQuestion = await dbContext.Questions.Where(q => q.Id == id).FirstOrDefaultAsync();
+        if (currentQuestion is null)
         {
-            logger.LogInformation("No Surveys found ({SurveyId})", SurveyId);
+            return Ok();
+        }
+
+        var currentSurvey = await dbContext.Surveys
+        .Where(x => x.Id == currentQuestion.SurveyId)
+        .FirstOrDefaultAsync();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No Surveys found ({surveyId})", currentQuestion.SurveyId);
+            return BadRequest();
+        }
+        if (currentSurvey.Status != SurveyStatus.Pre)
+        {
+            logger.LogInformation("Related survey is not suitable to remove a question ({surveyId})", currentQuestion.SurveyId);
             return BadRequest();
         }
 
-        var data = val.ToDbModel(SurveyId);
+        var allQuestions = await dbContext.Questions
+              .Where(x => x.SurveyId == currentQuestion.SurveyId)
+              .OrderBy(x => x.OrderNumber)
+              .ToListAsync();
+
+        // 10 sorudan 5.yi sildim
+        foreach (var item in allQuestions)
+        {
+            if (item.OrderNumber <= currentQuestion.OrderNumber)
+            {
+                continue;
+            }
+            else
+            {
+                item.OrderNumber--;
+            }
+        }
+        dbContext.UpdateRange(allQuestions);
+        dbContext.Remove(currentQuestion);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+
+    [HttpPost("lower-order/{id}")]
+    public async Task<IActionResult> LowerDownQuestionOrder(int id)
+    {
+        var currentQuestion = await dbContext.Questions.Where(q => q.Id == id).FirstOrDefaultAsync();
+        if (currentQuestion is null)
+        {
+            return BadRequest();
+        }
+
+        var currentSurvey = await dbContext.Surveys
+            .Where(x => x.Id == currentQuestion.SurveyId)
+            .FirstOrDefaultAsync();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No Surveys found ({surveyId})", currentQuestion.SurveyId);
+            return BadRequest();
+        }
+        if (currentSurvey.Status != SurveyStatus.Pre)
+        {
+            logger.LogInformation("Related survey is not suitable to change question order ({surveyId})", currentQuestion.SurveyId);
+            return BadRequest();
+        }
+
+        var nextQuestion = await dbContext.Questions
+            .Where(x => x.SurveyId == currentQuestion.SurveyId && x.OrderNumber == currentQuestion.OrderNumber + 1)
+            .FirstOrDefaultAsync();
+
+        if (nextQuestion is null)
+        {
+            // currentQuestion zaten son sirada
+            return Ok();
+        }
+
+        currentQuestion.OrderNumber = nextQuestion.OrderNumber;
+        nextQuestion.OrderNumber = currentQuestion.OrderNumber - 1;
+
+        dbContext.Update(nextQuestion);
+        dbContext.Update(currentQuestion);
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpPost("raise-order/{id}")]
+    public async Task<IActionResult> RaiseUpQuestionOrder(int id)
+    {
+        var currentQuestion = await dbContext.Questions.Where(q => q.Id == id).FirstOrDefaultAsync();
+        if (currentQuestion is null)
+        {
+            return BadRequest();
+        }
+
+        var currentSurvey = await dbContext.Surveys
+            .Where(x => x.Id == currentQuestion.SurveyId)
+            .FirstOrDefaultAsync();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No Surveys found ({surveyId})", currentQuestion.SurveyId);
+            return BadRequest();
+        }
+
+        if (currentSurvey.Status != SurveyStatus.Pre)
+        {
+            logger.LogInformation("Related survey is not suitable to change question order ({surveyId})", currentQuestion.SurveyId);
+            return BadRequest();
+        }
+
+        var previousQuestion = await dbContext.Questions
+            .Where(x => x.SurveyId == currentQuestion.SurveyId && x.OrderNumber == currentQuestion.OrderNumber - 1)
+            .FirstOrDefaultAsync();
+
+        if (previousQuestion is null)
+        {
+            // currentQuestion zaten ilk sirada
+            return Ok();
+        }
+
+        previousQuestion.OrderNumber = currentQuestion.OrderNumber;
+        currentQuestion.OrderNumber = previousQuestion.OrderNumber - 1;
+
+        dbContext.Update(previousQuestion);
+        dbContext.Update(currentQuestion);
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpPost("{surveyId}")]
+    public async Task<IActionResult> AddQuestion(int surveyId, AddQuestionReq val)
+    {
+        // validation
+        var currentSurvey = dbContext.Surveys
+          .Where(x => x.Id == surveyId)
+          .FirstOrDefault();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No Surveys found ({SurveyId})", surveyId);
+            return BadRequest();
+        }
+
+        if (currentSurvey.Status != SurveyStatus.Pre)
+        {
+            logger.LogInformation("Related survey is not suitable to add a new question ({surveyId})", surveyId);
+            return BadRequest();
+        }
+
+        var data = val.ToDbModel(surveyId);
         await dbContext.Questions.AddAsync(data);
         await dbContext.SaveChangesAsync();
         await dbContext.Answers.AddRangeAsync(val.Answers.Select(a => a.ToDbModel(data.Id)));
@@ -84,5 +230,66 @@ public class QuestionController : ControllerBase
         {
             survey
         });
+    }
+
+    [HttpPost("copy-single-question/{surveyId}")]
+    public async Task<IActionResult> CopySingleQuestion(int surveyId, [FromQuery] int questionId)
+    {
+        // validation
+        if (questionId == 0)
+        {
+            logger.LogInformation("Invalid questionId ({questionId})", questionId);
+            return BadRequest();
+        }
+
+        var currentSurvey = await dbContext.Surveys
+          .Where(x => x.Id == surveyId)
+          .FirstOrDefaultAsync();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No Surveys found ({surveyId})", surveyId);
+            return BadRequest();
+        }
+
+        if (currentSurvey.Status != SurveyStatus.Pre)
+        {
+            logger.LogInformation("Related survey is not suitable to add new question ({surveyId})", surveyId);
+            return BadRequest();
+        }
+
+        var requestedQuestion = await dbContext.Questions
+            .Where(x => x.Id == questionId)
+            .FirstOrDefaultAsync();
+
+        if (requestedQuestion is null)
+        {
+            logger.LogInformation("No question found ({questionId})", questionId);
+            return BadRequest();
+        }
+
+        var orderNumber = dbContext.Questions
+            .Where(x => x.SurveyId == surveyId)
+            .Count() + 1;
+
+        requestedQuestion.OrderNumber = orderNumber;
+        requestedQuestion.Id = 0;
+        requestedQuestion.SurveyId = surveyId;
+        dbContext.Add(requestedQuestion);
+        await dbContext.SaveChangesAsync();
+
+
+        var answers = await dbContext.Answers
+            .Where(x => x.QuestionId == questionId)
+            .ToListAsync();
+
+        foreach (var item in answers)
+        {
+            item.QuestionId = requestedQuestion.Id;
+        }
+        dbContext.UpdateRange(answers);
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
     }
 }
