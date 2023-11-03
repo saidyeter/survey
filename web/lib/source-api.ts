@@ -1,4 +1,4 @@
-import { TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, checkNewSurveyIsAllowedResponse, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
+import { TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -15,7 +15,12 @@ export {
     checkNewSurveyIsAllowed,
     createNewSurvey,
     getSurvey,
-    createNewQuestion
+    createNewQuestion,
+    raiseUpQuestion,
+    lowerDownQuestion,
+    removeQuestion,
+    copySingleQuestion,
+    checkPreSurveyExists,
 }
 
 function beforeReq() {
@@ -23,6 +28,141 @@ function beforeReq() {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
     }
 }
+
+async function checkPreSurveyExists() {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/check-pre-survey-exists")
+
+    try {
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Authorization': apiKey
+            },
+        })
+
+
+        if (response.ok) {
+
+            const data = await response.json()
+            const result = checkPreSurveyExistsScheme.safeParse(data)
+            if (!result.success) {
+                console.log('unsuccesfull parse', result.error.errors[0], JSON.stringify(data));
+
+                return undefined
+            }
+            return result.data
+        }
+        console.log("checkPreSurveyExists", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("checkPreSurveyExists error", error);
+    }
+
+    return undefined
+}
+
+
+async function removeQuestion(questionId: number) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/question/" + questionId)
+
+    try {
+        const response = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify({})
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("removeQuestion", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("removeQuestion error", error);
+    }
+
+    return false
+}
+
+async function copySingleQuestion(surveyId: number, questionId: number) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/question/copy-single-question/" + surveyId + "?questionId=" + questionId)
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify({})
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("copySingleQuestion", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("copySingleQuestion error", error);
+    }
+    return false
+}
+
+async function lowerDownQuestion(questionId: number) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/question/lower-order/" + questionId)
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify({})
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("lowerDownQuestion", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("lowerDownQuestion error", error);
+    }
+
+    return false
+}
+
+async function raiseUpQuestion(questionId: number) {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/question/raise-order/" + questionId)
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify({})
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("raiseUpQuestion", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("raiseUpQuestion error", error);
+    }
+
+    return false
+}
+
 
 async function createNewQuestion(surveyId: number, req: TNewQuestionSchema) {
     beforeReq()
@@ -68,7 +208,7 @@ async function getSurvey(surveyId: number) {
             const data = await response.json()
             const result = getSurveySchema.safeParse(data)
             if (!result.success) {
-                console.log('unsuccesfull parse', result.error.errors[0],JSON.stringify(data));
+                console.log('unsuccesfull parse', result.error.errors[0], JSON.stringify(data));
 
                 return undefined
             }
@@ -82,8 +222,6 @@ async function getSurvey(surveyId: number) {
 
     return undefined
 }
-
-
 
 async function createNewSurvey(req: TNewSurveyValidationSchema) {
     beforeReq()

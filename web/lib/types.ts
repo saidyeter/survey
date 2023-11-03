@@ -101,11 +101,11 @@ export const answerSchema = z
     questionId: z.number(),
   })
 
-  export const qnaSchema=z.object({
-    question: questionSchema,
-    answers: answerSchema.array()
-  })
-  export type TQnASchema = z.infer<typeof qnaSchema>;
+export const qnaSchema = z.object({
+  question: questionSchema,
+  answers: answerSchema.array()
+})
+export type TQnASchema = z.infer<typeof qnaSchema>;
 
 export const questionsResponseSchema = z.object({
   survey: qnaSchema.array()
@@ -129,21 +129,24 @@ export const questionAnswersResponseSchema = z.object({
 
 export type TQuestionAnswersResponseSchema = z.infer<typeof questionAnswersResponseSchema>;
 
+export const questionDetailSchema = z.object({
+  question: questionSchema,
+  answeredCount: z.number(),
+  answerDetails: z.object({
+    id: z.number().optional(),
+    label: z.string().max(1),
+    text: z.string(),
+    choosenCount: z.number()
+  }).array()
+});
+export type TQuestionDetailSchema = z.infer<typeof questionDetailSchema>;
+
 export const surveyDetailSchema = z.object({
   survey: surveySchema,
   surveyId: z.number(),
   allParticipantCount: z.number(),
   participationCount: z.number(),
-  questionDetails: z.object({
-    question: questionSchema,
-    answeredCount: z.number(),
-    answerDetails: z.object({
-      id: z.number().optional(),
-      label: z.string().max(1),
-      text: z.string(),
-      choosenCount: z.number()
-    }).array()
-  }).array()
+  questionDetails: questionDetailSchema.array()
 })
 export type TSurveyDetailSchema = z.infer<typeof surveyDetailSchema>;
 
@@ -170,7 +173,10 @@ export const getSurveySchema = z.object({
 })
 export type TGetSurveySchema = z.infer<typeof getSurveySchema>;
 
-
+export const checkPreSurveyExistsScheme = z.object({
+  exists: z.boolean(),
+  id: z.number().optional().nullable()
+})
 
 
 export const newQuestionSchema = z
