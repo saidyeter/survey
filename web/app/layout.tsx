@@ -9,6 +9,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import SessionProvider from "@/components/session-provider";
 import { getServerSession } from "next-auth";
+import { BreadCrumb } from "@/components/breadcrumb"
 
 export const viewport: Viewport = {
   themeColor: [
@@ -52,6 +53,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <div className="relative flex min-h-screen flex-col">
                 <SiteHeader />
+                <BreadCrumb />
                 <div className="flex-1">{children}</div>
               </div>
               <TailwindIndicator />
