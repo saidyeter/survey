@@ -2,26 +2,21 @@
 
 import { TSurveySchema } from "@/lib/types";
 import Link from "next/link";
-import { Button, buttonVariants } from "./ui/button";
+import { Button } from "./ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react";
-import { getLocaleDate } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { start } from "@/actions/survey";
+import { Label } from "@radix-ui/react-label";
 
 
 interface PreSurveyShowcaseProps {
-    survey?: TSurveySchema
+    survey?: TSurveySchema,
+    showStart: boolean
 }
 
 export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
-    const { survey } = params
+    const { survey, showStart } = params
 
     if (!survey || survey.status != 'pre') {
         return (
@@ -60,20 +55,35 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
                     <p>{statusDesc}</p>
                 </CardContent>
                 <CardFooter>
-                    <>
-                        <Button onClick={async () => {
-                            const r = await start()
-                            console.log('r', r);
-                        }}>
-                            Baslat
-                        </Button>
-                        <Button variant={'outline'}>
-                            Isim/Aciklama Duzenle
-                        </Button>
-                        <Button variant={'destructive'}>
-                            SIL
-                        </Button>
-                    </>
+                    <div className="flex flex-col space-y-4 w-full">
+
+                        <div >
+                            {showStart ?
+
+                                <Button onClick={async () => {
+                                    const r = await start()
+                                    console.log('r', r);
+                                }}
+                                    size={'lg'}
+                                    className="text-lg"
+                                >
+                                    Baslat
+                                </Button>
+                                :
+                                <Label>
+                                    Baslatmak icin Soru eklemeniz gereklidir
+                                </Label>
+                            }
+                        </div>
+                        <div className="flex justify-between">
+                            <Button variant={'outline'}>
+                                Isim/Aciklama Duzenle
+                            </Button>
+                            <Button variant={'destructive'}>
+                                Sil
+                            </Button>
+                        </div>
+                    </div>
                 </CardFooter>
             </Card>
 

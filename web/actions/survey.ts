@@ -1,18 +1,61 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { finishSurvey, startSurvey } from '@/lib/source-api'
+import { finishSurvey, getQuestions, startSurvey, submitAnswers } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
-import { TNewSurveyValidationSchema, } from '@/lib/types'
+import { TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, } from '@/lib/types'
 import { createNewSurvey } from '@/lib/source-api'
+import { cookies } from 'next/headers'
+
+
+export async function submitAttendeeAnswers(data: TQuestionAnswersResponseSchema) {
+    const cookieStore = cookies()
+    const ticket = cookieStore.get('ticket')
+    if (!ticket?.value) {
+        return {
+            success: false,
+            reason: 'no ticket acquired'
+        }
+    }
+    const res = await submitAnswers(ticket.value, data)
+    if (!res) {
+        return {
+            success: false,
+            reason: 'server error'
+        }
+    }
+    redirect('/survey/completed')
+}
+
+export async function getSurveyQuestions() {
+    const cookieStore = cookies()
+    const ticket = cookieStore.get('ticket')
+    if (!ticket?.value) {
+        return {
+            success: false,
+            reason: 'no ticket acquired'
+        }
+    }
+
+    const res = await getQuestions(ticket?.value)
+
+    if (!res) {
+        return {
+            success: false,
+            reason: 'no ticket or active no survey'
+        }
+    }
+
+    return {
+        success: true,
+        data: res
+    }
+}
+
 
 
 export async function create(data: TNewSurveyValidationSchema) {
-    console.log(1);
-
     const result = await createNewSurvey(data)
-    console.log('on server', result);
-
     if (result) {
         revalidatePath('/admin')
         redirect('/admin/survey/pre/')

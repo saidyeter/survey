@@ -19,8 +19,8 @@ public class AnswerController : ControllerBase
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> SubmitAnswers([FromQuery] string ticket, SubmitAnswersReq val)
+    [HttpPost("{ticket}")]
+    public async Task<IActionResult> SubmitAnswers(string ticket, SubmitAnswersReq val)
     {
 
         if (string.IsNullOrWhiteSpace(ticket))
@@ -35,13 +35,14 @@ public class AnswerController : ControllerBase
         }
 
         var survey = dbContext.Surveys.Where(x => x.Id == participation.SurveyId).FirstOrDefault();
-        if (survey is null || survey.EndDate < DateTime.Now)
+        if (survey is null || survey.Status != SurveyStatus.Running)
         {
             logger.LogInformation("No Surveys found ({ticket})", ticket);
             dbContext.Participations.Remove(participation);
             await dbContext.SaveChangesAsync();
             return Unauthorized();
         }
+
         participation.EndDate = DateTime.Now;
         dbContext.Update(participation);
         await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToParticipantAnswer(participation.Id)));

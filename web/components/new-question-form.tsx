@@ -46,7 +46,6 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
     resolver: zodResolver(newQuestionSchema),
     defaultValues: {
       text: '',
-      orderNumber: props.order,
       isrequired: true,
       answers: [{
         label: 'A',
@@ -73,9 +72,10 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
   })
 
   async function formSubmit(data: TNewQuestionSchema) {
-    const result = await create( data)
+    const result = await create(data)
     if (result.success) {
       reset()
+      window.scrollTo(0, 0);
     }
 
   };
@@ -90,7 +90,7 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
         <AccordionItem value="item-1">
           <AccordionTrigger>
             <Label className="text-2xl">
-              Yeni soru
+              Yeni soru ekle
             </Label>
           </AccordionTrigger>
           <AccordionContent>
@@ -98,24 +98,6 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
               <form
                 onSubmit={handleSubmit(formSubmit)} /*action={create}*/ /*onSubmit={handleSubmit(formSubmit)}*/
                 className="flex flex-col gap-y-2 " >
-
-
-                <FormField
-                  control={form.control}
-                  name="orderNumber"
-                  render={({ field }) => (
-                    <FormItem className="rounded-lg border p-4">
-                      <FormLabel>Soru sirasi : {field.value}</FormLabel>
-                      <FormControl>
-                        <Input type="hidden" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Soru sirasini, soruyu girdikten sonra degistirebilirsiniz
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <FormField
                   control={form.control}
@@ -264,7 +246,7 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
                           render={({ field }) => (
                             <FormItem className="rounded-lg border p-4 mb-2">
                               <FormLabel>Cevap {labels[i]}</FormLabel>
-                              <FormControl className="o-8">
+                              <FormControl>
                                 <div className="">
                                   <div className="flex space-x-3">
                                     <Input placeholder={`Cevap ${labels[i]} icin icerik giriniz`} {...field} />

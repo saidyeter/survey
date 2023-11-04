@@ -118,8 +118,8 @@ export type TQuestionsResponseSchema = z.infer<typeof questionsResponseSchema>;
 export const questionAnswerSchema = z
   .object({
     questionId: z.number(),
-    answerId: z.number(),
-    answerDesc: z.string().nullable(),
+    answerId: z.string().transform(q=> parseInt(q)).optional(),
+    answerDesc: z.string().optional(),
   })
 
 export const questionAnswersResponseSchema = z.object({
@@ -181,7 +181,6 @@ export const checkPreSurveyExistsScheme = z.object({
 
 export const newQuestionSchema = z
   .object({
-    orderNumber: z.number(),
     text: z.string({ required_error: 'Soru icerigi zorunlu alandir' }).min(5, '5 karakterden fazla girin'),
     descriptiveAnswer: z.string().nullable(),
     isDescriptiveAnswerWanted: z.boolean().default(false),
