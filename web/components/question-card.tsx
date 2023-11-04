@@ -14,8 +14,13 @@ import {
 import { Button } from "./ui/button";
 import { raiseUp, lowerDown, remove } from "@/actions/question";
 
-export default function QuestionCard(params: TQnASchema) {
-  const { question, answers } = params
+interface QuestionCardProps {
+  qna: TQnASchema,
+  showButtons?: boolean
+}
+
+export default function QuestionCard(params: QuestionCardProps) {
+  const { question, answers } = params.qna
   return (
 
     <Card className="mt-4">
@@ -49,24 +54,25 @@ export default function QuestionCard(params: TQnASchema) {
           ))}
         </div>
       </CardContent>
-      <CardFooter>
-        <div className="flex space-x-3 text-sm">
-          <Button type="button" size={'icon'} onClick={() => { }}>
-            <Pencil />
-          </Button>
-          <Button type="button" variant={'outline'} size={'icon'} onClick={() => { raiseUp(question.id) }}>
-            <ChevronUp />
-          </Button>
-          <Button type="button" variant={'outline'} size={'icon'} onClick={() => { lowerDown(question.id) }}>
-            <ChevronDown />
-          </Button>
-          <Button type="button" variant={'destructive'}
-            size={'icon'} onClick={() => { remove(question.id) }}>
-            <Trash2 />
-          </Button>
-        </div>
-      </CardFooter>
+      {params.showButtons &&
+        <CardFooter>
+          <div className="flex space-x-3 text-sm">
+            <Button type="button" size={'icon'} onClick={() => { }}>
+              <Pencil />
+            </Button>
+            <Button type="button" variant={'outline'} size={'icon'} onClick={() => { raiseUp(question.id) }}>
+              <ChevronUp />
+            </Button>
+            <Button type="button" variant={'outline'} size={'icon'} onClick={() => { lowerDown(question.id) }}>
+              <ChevronDown />
+            </Button>
+            <Button type="button" variant={'destructive'}
+              size={'icon'} onClick={() => { remove(question.id) }}>
+              <Trash2 />
+            </Button>
+          </div>
+        </CardFooter>
+      }
     </Card>
-
   )
 }

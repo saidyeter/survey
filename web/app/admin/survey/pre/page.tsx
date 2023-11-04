@@ -39,7 +39,7 @@ export default async function Pre() {
     return (
         <div className="w-full">
             <PreSurveyManagement survey={survey} showStart={qnas.length > 0} />
-            <QuestionsAccordion QnAs={qnas} />
+            <QuestionsAccordion QnAs={qnas} showButtons />
             <NewQuestionForm surveyid={data.id} order={qnas.length + 1} />
         </div>
     )

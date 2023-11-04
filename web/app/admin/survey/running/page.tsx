@@ -35,7 +35,7 @@ export default async function Running() {
     return (
         <div className="w-full">
             <RunningSurveyManagement survey={survey} />
-            <QuestionsAccordion QnAs={qnas} />
+            <QuestionsAccordion QnAs={qnas}  />
         </div>
     )
 }
