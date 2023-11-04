@@ -1,13 +1,23 @@
 # survey
 
 ## todo
-- Add check for already completed participations on api
-- Add new question page on web
-- Add survey management on web
-- Add reports for survey resulst on web
-- Add endpoint for creating reports
 - Style survey questions page
-- Search and implement rich text editor for questions
+- anket baslat, bitir
+- breadcrumb
+- chart ekle
+- rapor sayfasini duzenle
+- tum sorulari kopyalamayi ekle
+- kopyalama islemleri sonrasinda toast cikar
+- soru edit ekle
+- anket sil
+- anket baslik bilgilerini duzenle
+- baslatma/bitirme/silme icin onay cikar
+- nav bar itemleri duzenle
+- katilimcilari excelden yukle
+- tum stringlerin tr karakterlerini kontrol et
+- anket sayfasini duzenle
+- anket bitince tekrar anasayfada ankete basla diye gosterme   
+- anket bitiminde rapor olusturmayi baslat
 
 ## issues
 - Fix hardcoded url on redirection to `/survey/complete`

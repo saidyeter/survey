@@ -1,8 +1,8 @@
 import ParticipantValidation from "@/components/participant-validation"
-import { getActiveSurvey } from "@/lib/source-api"
+import { getRunningSurvey } from "@/lib/source-api"
 
 export default async function Survey() {
-    const survey = await getActiveSurvey()
+    const survey = await getRunningSurvey()
 
     if (!survey) {
         return (

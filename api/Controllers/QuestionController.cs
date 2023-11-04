@@ -159,27 +159,21 @@ public class QuestionController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("{surveyId}")]
-    public async Task<IActionResult> AddQuestion(int surveyId, AddQuestionReq val)
+    [HttpPost]
+    public async Task<IActionResult> AddQuestion(AddQuestionReq val)
     {
         // validation
         var currentSurvey = dbContext.Surveys
-          .Where(x => x.Id == surveyId)
+          .Where(x => x.Status == SurveyStatus.Pre)
           .FirstOrDefault();
 
         if (currentSurvey is null)
         {
-            logger.LogInformation("No Surveys found ({SurveyId})", surveyId);
+            logger.LogInformation("No pre survey found");
             return BadRequest();
         }
 
-        if (currentSurvey.Status != SurveyStatus.Pre)
-        {
-            logger.LogInformation("Related survey is not suitable to add a new question ({surveyId})", surveyId);
-            return BadRequest();
-        }
-
-        var data = val.ToDbModel(surveyId);
+        var data = val.ToDbModel(currentSurvey.Id);
         await dbContext.Questions.AddAsync(data);
         await dbContext.SaveChangesAsync();
         await dbContext.Answers.AddRangeAsync(val.Answers.Select(a => a.ToDbModel(data.Id)));
@@ -232,8 +226,8 @@ public class QuestionController : ControllerBase
         });
     }
 
-    [HttpPost("copy-single-question/{surveyId}")]
-    public async Task<IActionResult> CopySingleQuestion(int surveyId, [FromQuery] int questionId)
+    [HttpPost("copy-single-question/{questionId}")]
+    public async Task<IActionResult> CopySingleQuestion(int questionId)
     {
         // validation
         if (questionId == 0)
@@ -242,19 +236,14 @@ public class QuestionController : ControllerBase
             return BadRequest();
         }
 
+
         var currentSurvey = await dbContext.Surveys
-          .Where(x => x.Id == surveyId)
+          .Where(x => x.Status == SurveyStatus.Pre)
           .FirstOrDefaultAsync();
 
         if (currentSurvey is null)
         {
-            logger.LogInformation("No Surveys found ({surveyId})", surveyId);
-            return BadRequest();
-        }
-
-        if (currentSurvey.Status != SurveyStatus.Pre)
-        {
-            logger.LogInformation("Related survey is not suitable to add new question ({surveyId})", surveyId);
+            logger.LogInformation("No pre survey found");
             return BadRequest();
         }
 
@@ -269,12 +258,12 @@ public class QuestionController : ControllerBase
         }
 
         var orderNumber = dbContext.Questions
-            .Where(x => x.SurveyId == surveyId)
+            .Where(x => x.SurveyId == currentSurvey.Id)
             .Count() + 1;
 
         requestedQuestion.OrderNumber = orderNumber;
         requestedQuestion.Id = 0;
-        requestedQuestion.SurveyId = surveyId;
+        requestedQuestion.SurveyId = currentSurvey.Id;
         dbContext.Add(requestedQuestion);
         await dbContext.SaveChangesAsync();
 
@@ -286,8 +275,9 @@ public class QuestionController : ControllerBase
         foreach (var item in answers)
         {
             item.QuestionId = requestedQuestion.Id;
+            item.Id = 0;
         }
-        dbContext.UpdateRange(answers);
+        dbContext.AddRange(answers);
         await dbContext.SaveChangesAsync();
 
         return Ok();

@@ -29,7 +29,7 @@ export default function ActiveSurveyShowcase(params: ActiveSurveyShowcaseProps) 
                 <AlertTitle>Aktif anket yok!</AlertTitle>
                 <AlertDescription>
                     <Link
-                        href={`/admin/new-survey/`}
+                        href={`/admin/survey/new`}
                         className="underline"
                     >
                         Buraya
@@ -48,15 +48,13 @@ export default function ActiveSurveyShowcase(params: ActiveSurveyShowcaseProps) 
 
         <div className="w-full pt-4 border-t-foreground border-b-2">
             <Link
-                href={`/admin/new-survey/${survey.id}`}
+                href={`/admin/survey/${status}`}
                 className="flex flex-col space-y-1"
             >
                 <Card>
                     <CardHeader>
                         <CardTitle>
                             {name}
-
-
                         </CardTitle>
                         {status == 'running' &&
                             <CardDescription>
@@ -65,7 +63,7 @@ export default function ActiveSurveyShowcase(params: ActiveSurveyShowcaseProps) 
                         }
                     </CardHeader>
                     <CardContent>
-                        <p>
+                        <div>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger>
@@ -80,7 +78,7 @@ export default function ActiveSurveyShowcase(params: ActiveSurveyShowcaseProps) 
                                 </Tooltip>
                             </TooltipProvider>
                             &nbsp;{description}
-                        </p>
+                        </div>
                     </CardContent>
                     <CardFooter>
                         <Button variant={'outline'} className="w-1/3">

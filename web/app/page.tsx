@@ -2,10 +2,10 @@ import Link from "next/link"
 
 import { siteConfig } from "@/config/site"
 import { buttonVariants } from "@/components/ui/button"
-import { getActiveSurvey } from "@/lib/source-api"
+import { getRunningSurvey } from "@/lib/source-api"
 
 export default async function IndexPage() {
-  const survey = await getActiveSurvey()
+  const survey = await getRunningSurvey()
 
   return (
     <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">

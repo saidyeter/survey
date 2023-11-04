@@ -5,19 +5,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+
+
 
 export default function ParticipantValidation() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [error, setError] = useState(searchParams.get('error') ? 'Kullanıcı adı veya parola hatalı!' : '')
+    const form = useForm<TPartipiciantValidationSchema>({
+        resolver: zodResolver(partipiciantValidationSchema),
+    });
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
-    } = useForm<TPartipiciantValidationSchema>({
-        resolver: zodResolver(partipiciantValidationSchema),
-    });
+    } = form
 
     const onSubmit = async (data: TPartipiciantValidationSchema) => {
         const result = await fetch('/api/partipiciant', {
@@ -43,38 +49,46 @@ export default function ParticipantValidation() {
 
     return (
         <div className="pt-4 w-full">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>E-Posta</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="E-Posta" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    E-Posta adresinizi girin.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="code"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Eczane kodunun 1. ve 3. hanesi</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Eczane kodunun 1. ve 3. hanesi" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                Eczane kodunun 1. ve 3. hanesini girin
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit">Doğrula ve Başla</Button>
+                </form>
+            </Form>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-y-2">
-                <input
-                    {...register("email")}
-                    placeholder="E-Posta"
-                    className="px-4 py-2 rounded"
-                />
-                {errors.email && (
-                    <p className="text-red-500">{`${errors.email.message}`}</p>
-                )}
 
-                <input
-                    {...register("code")}
-                    placeholder="Eczane kodunun 1. ve 3. hanesi"
-                    className="px-4 py-2 rounded"
-                />
-
-                {errors.code && (
-                    <p className="text-red-500">{`${errors.code.message}`}</p>
-                )}
-
-                <button
-                    disabled={isSubmitting}
-                    type="submit"
-                    className="bg-blue-500 disabled:bg-gray-500 py-2 rounded"
-                >
-                    Doğrula ve Başla
-                </button>
-                {error && (
-                    <p className="text-red-500 text-center">{`${error}`}</p>
-                )}
-            </form>
+         
         </div>
     );
 }

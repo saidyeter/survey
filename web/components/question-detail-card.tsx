@@ -1,12 +1,11 @@
 "use client"
 import { TQuestionDetailSchema } from "@/lib/types"
 import { Button } from "./ui/button"
-import { copySingle } from "@/actions/copy-single-question"
+import { copySingle } from "@/actions/question"
 
 interface QuestionDetailCardProps {
     questionDetail: TQuestionDetailSchema,
-    showCopy?: boolean,
-    activeSurvey: number
+    showCopy?: boolean
 }
 
 export default function QuestionDetailCard(params: QuestionDetailCardProps) {
@@ -27,7 +26,7 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
                     </span>
                 </div>
                 {params.showCopy &&
-                    <Button variant='outline' onClick={() => { copySingle(params.activeSurvey, question.id) }}>Aktif Ankete Kopyala</Button>
+                    <Button variant='outline' onClick={() => { copySingle(question.id) }}>Aktif Ankete Kopyala</Button>
                 }
             </div>
 
