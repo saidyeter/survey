@@ -4,26 +4,25 @@ import { TPartipiciantValidationSchema, partipiciantValidationSchema } from "@/l
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Terminal } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 
 
 
 export default function ParticipantValidation() {
     const router = useRouter()
-    const searchParams = useSearchParams()
-    const [error, setError] = useState(searchParams.get('error') ? 'Kullanıcı adı veya parola hatalı!' : '')
+    const [error, setError] = useState('')
     const form = useForm<TPartipiciantValidationSchema>({
         resolver: zodResolver(partipiciantValidationSchema),
+        defaultValues: {
+            code: '',
+            email: ''
+        }
     });
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-        reset,
-    } = form
 
     const onSubmit = async (data: TPartipiciantValidationSchema) => {
         const result = await fetch('/api/partipiciant', {
@@ -41,7 +40,8 @@ export default function ParticipantValidation() {
             router.push('/survey/completed')
         }
         else {
-            setError('Hatalı bilgi!')
+            setError('Girilen bilgilerde bazısı hatalı!')
+            form.reset()
         }
 
     };
@@ -49,6 +49,16 @@ export default function ParticipantValidation() {
 
     return (
         <div className="pt-4 w-full">
+            {error &&
+
+                <Alert>
+                    <Terminal className="h-4 w-4" />
+                    <AlertTitle>Hata olustu!</AlertTitle>
+                    <AlertDescription>
+                        {error}
+                    </AlertDescription>
+                </Alert>
+            }
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
@@ -77,18 +87,19 @@ export default function ParticipantValidation() {
                                     <Input placeholder="Eczane kodunun 1. ve 3. hanesi" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                Eczane kodunun 1. ve 3. hanesini girin
+                                    Eczane kodunun 1. ve 3. hanesini girin
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     <Button type="submit">Doğrula ve Başla</Button>
+
                 </form>
             </Form>
 
 
-         
+
         </div>
     );
 }

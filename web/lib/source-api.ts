@@ -35,8 +35,6 @@ function beforeReq() {
 async function getPreSurvey() {
     beforeReq()
     const url = encodeURI(baseUrl + "/survey/pre-survey")
-    console.log(1);
-
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -463,7 +461,7 @@ async function getSurveys() {
 
 async function submitAnswers(ticket: string, answers: TQuestionAnswersResponseSchema) {
     beforeReq()
-    const url = encodeURI(baseUrl + "/answer?ticket=" + ticket)
+    const url = encodeURI(baseUrl + "/answer/" + ticket)
 
     try {
         const response = await fetch(url, {
@@ -490,7 +488,7 @@ async function submitAnswers(ticket: string, answers: TQuestionAnswersResponseSc
 
 async function getQuestions(ticket: string) {
     beforeReq()
-    const url = encodeURI(baseUrl + "/question?ticket=" + ticket)
+    const url = encodeURI(baseUrl + "/question/" + ticket)
 
     try {
         const response = await fetch(url, {
