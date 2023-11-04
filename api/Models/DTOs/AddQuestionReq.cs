@@ -5,7 +5,6 @@ namespace SurveyApi.Models.DTOs;
 public class AddQuestionReq
 {
     #region Properties
-    public int OrderNumber { get; set; }
 
     public string Text { get; set; }
 
@@ -19,7 +18,7 @@ public class AddQuestionReq
     #endregion
 
     #region Methods
-    public Question ToDbModel(int SurveyId)
+    public Question ToDbModel(int surveyId, int OrderNumber)
     {
         var answerType =
             AnswerType == "single" ? DataAccess.Entities.AnswerType.Single :
@@ -31,7 +30,7 @@ public class AddQuestionReq
             OrderNumber = OrderNumber,
             Text = Text,
             DescriptiveAnswer = DescriptiveAnswer,
-            SurveyId = SurveyId,
+            SurveyId = surveyId,
             Required = IsRequired,
             AnswerType = answerType,
         };

@@ -173,7 +173,11 @@ public class QuestionController : ControllerBase
             return BadRequest();
         }
 
-        var data = val.ToDbModel(currentSurvey.Id);
+        var orderNumber = dbContext.Questions
+            .Where(x => x.SurveyId == currentSurvey.Id)
+            .Count() + 1;
+
+        var data = val.ToDbModel(currentSurvey.Id, orderNumber);
         await dbContext.Questions.AddAsync(data);
         await dbContext.SaveChangesAsync();
         await dbContext.Answers.AddRangeAsync(val.Answers.Select(a => a.ToDbModel(data.Id)));
@@ -181,8 +185,8 @@ public class QuestionController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetQuestions([FromQuery] string ticket)
+    [HttpGet("{ticket}")]
+    public async Task<IActionResult> GetQuestions(string ticket)
     {
         if (string.IsNullOrWhiteSpace(ticket))
         {
