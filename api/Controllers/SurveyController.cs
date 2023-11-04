@@ -52,12 +52,18 @@ public class SurveyController : ControllerBase
     public async Task<IActionResult> Create(CreateSurveyReq req)
     {
         var val = await dbContext.Surveys
-            .Where(s => s.Status != SurveyStatus.Ended)
-            .FirstOrDefaultAsync();
+           .Where(s => s.Status != SurveyStatus.Ended)
+           .ToListAsync();
 
-        if (val is not null)
+        if (val.Count == 1)
         {
+            // zaten 1 bitmemis anket var
             return BadRequest();
+        }
+
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single active survey");
         }
 
         var newSurvey = new Survey
@@ -106,16 +112,43 @@ public class SurveyController : ControllerBase
     [HttpGet("active-survey")]
     public async Task<IActionResult> GetActiveSurvey()
     {
-        var now = DateTime.Now;
         var val = await dbContext.Surveys
-            .Where(u => u.StartDate < now && (u.EndDate > now || u.EndDate == null))
-            .FirstOrDefaultAsync();
-        if (val is null)
+            .Where(u => u.Status == SurveyStatus.Running)
+            .ToListAsync();
+
+        if (val is null || val.Count == 0)
         {
             return NotFound();
         }
-        return Ok(val);
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single active survey");
+        }
+
+        return Ok(val.First());
     }
+
+
+    [HttpGet("pre-survey")]
+    public async Task<IActionResult> GetPreSurvey()
+    {
+        var val = await dbContext.Surveys
+            .Where(u => u.Status == SurveyStatus.Pre)
+            .ToListAsync();
+
+        if (val is null || val.Count == 0)
+        {
+            return NotFound();
+        }
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single pre survey");
+        }
+
+        return Ok(val.First());
+    }
+
+
 
     [HttpGet("all")]
     public async Task<IActionResult> GetSurveys()
@@ -354,5 +387,85 @@ public class SurveyController : ControllerBase
         return Ok();
     }
 
+
+    [HttpPost("start-survey")]
+    public async Task<IActionResult> Start()
+    {
+        var val = await dbContext.Surveys
+            .Where(s => s.Status != SurveyStatus.Ended)
+            .ToListAsync();
+
+        if (val.Count == 0)
+        {
+            // baslatacak anket yok
+            return BadRequest();
+        }
+
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single survey");
+        }
+
+        var activeSurvey = val.First();
+
+        if (activeSurvey.Status == SurveyStatus.Running)
+        {
+            // anket zaten baslatilmis
+            return BadRequest();
+        }
+
+        if (dbContext.Questions.Count(x => x.SurveyId == activeSurvey.Id) < 1)
+        {
+            // hic soru yok
+            return BadRequest();
+
+        }
+
+        activeSurvey.Status = SurveyStatus.Running;
+        activeSurvey.StartDate = DateTime.Now;
+
+        dbContext.Update(activeSurvey);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+
+    [HttpPost("finish-survey")]
+    public async Task<IActionResult> Finish()
+    {
+        var val = await dbContext.Surveys
+            .Where(s => s.Status != SurveyStatus.Ended)
+            .ToListAsync();
+
+        if (val.Count == 0)
+        {
+            // baslatacak anket yok
+            return BadRequest();
+        }
+
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single survey");
+        }
+
+        var activeSurvey = val.First();
+
+        if (activeSurvey.Status == SurveyStatus.Pre)
+        {
+            // anket henuz baslatilmamis
+            return BadRequest();
+        }
+
+        activeSurvey.Status = SurveyStatus.Ended;
+        activeSurvey.EndDate = DateTime.Now;
+
+        dbContext.Update(activeSurvey);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
 }
 

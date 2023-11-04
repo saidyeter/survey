@@ -6,7 +6,7 @@ const apiKey = env.DB_API_KEY ?? ''
 
 export {
     getUser,
-    getActiveSurvey,
+    getRunningSurvey,
     validateParticipant,
     getQuestions,
     submitAnswers,
@@ -21,12 +21,100 @@ export {
     removeQuestion,
     copySingleQuestion,
     checkPreSurveyExists,
+    startSurvey,
+    finishSurvey,
+    getPreSurvey
 }
 
 function beforeReq() {
     if (process.env.NODE_ENV == 'development') {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
     }
+}
+
+async function getPreSurvey() {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/pre-survey")
+    console.log(1);
+
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Authorization': apiKey
+            },
+            cache: 'no-cache'            
+        })
+        if (response.ok) {
+            const data = await response.json()
+            const result = getActiveSurveyResponseSchema.safeParse(data)
+            if (!result.success) {
+
+                console.log('unsuccesfull parse', result.error);
+
+                return undefined
+            }
+            return result.data
+        }
+        console.log("getActiveSurvey", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("getActiveSurvey error", error);
+    }
+
+    return undefined
+}
+
+async function finishSurvey() {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/finish-survey/")
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify({}),
+            cache: 'no-cache'
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("finishSurvey", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("finishSurvey error", error);
+    }
+
+    return false
+}
+
+async function startSurvey() {
+    beforeReq()
+    const url = encodeURI(baseUrl + "/survey/start-survey/")
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': apiKey
+            },
+            body: JSON.stringify({}),
+            cache: 'no-cache'
+        })
+        if (response.ok) {
+            return true
+        }
+        console.log("startSurvey", response.status, await response.text(), url)
+
+    } catch (error) {
+        console.log("startSurvey error", error);
+    }
+
+    return false
 }
 
 async function checkPreSurveyExists() {
@@ -40,6 +128,7 @@ async function checkPreSurveyExists() {
             headers: {
                 'Authorization': apiKey
             },
+            cache: 'no-cache'
         })
 
 
@@ -63,7 +152,6 @@ async function checkPreSurveyExists() {
     return undefined
 }
 
-
 async function removeQuestion(questionId: number) {
     beforeReq()
     const url = encodeURI(baseUrl + "/question/" + questionId)
@@ -75,7 +163,8 @@ async function removeQuestion(questionId: number) {
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({}),
+            cache: 'no-cache'
         })
         if (response.ok) {
             return true
@@ -89,9 +178,9 @@ async function removeQuestion(questionId: number) {
     return false
 }
 
-async function copySingleQuestion(surveyId: number, questionId: number) {
+async function copySingleQuestion(questionId: number) {
     beforeReq()
-    const url = encodeURI(baseUrl + "/question/copy-single-question/" + surveyId + "?questionId=" + questionId)
+    const url = encodeURI(baseUrl + "/question/copy-single-question/" + questionId)
 
     try {
         const response = await fetch(url, {
@@ -100,7 +189,8 @@ async function copySingleQuestion(surveyId: number, questionId: number) {
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({}),
+            cache: 'no-cache'
         })
         if (response.ok) {
             return true
@@ -124,7 +214,8 @@ async function lowerDownQuestion(questionId: number) {
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({}),
+            cache: 'no-cache'
         })
         if (response.ok) {
             return true
@@ -149,7 +240,8 @@ async function raiseUpQuestion(questionId: number) {
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({}),
+            cache: 'no-cache'
         })
         if (response.ok) {
             return true
@@ -164,9 +256,9 @@ async function raiseUpQuestion(questionId: number) {
 }
 
 
-async function createNewQuestion(surveyId: number, req: TNewQuestionSchema) {
+async function createNewQuestion(req: TNewQuestionSchema) {
     beforeReq()
-    const url = encodeURI(baseUrl + "/question/" + surveyId)
+    const url = encodeURI(baseUrl + "/question")
 
     try {
         const response = await fetch(url, {
@@ -175,7 +267,8 @@ async function createNewQuestion(surveyId: number, req: TNewQuestionSchema) {
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify(req)
+            body: JSON.stringify(req),
+            cache: 'no-cache'
         })
         if (response.ok) {
             return true
@@ -200,6 +293,7 @@ async function getSurvey(surveyId: number) {
             headers: {
                 'Authorization': apiKey
             },
+            cache: 'no-cache',
         })
 
 
@@ -234,7 +328,8 @@ async function createNewSurvey(req: TNewSurveyValidationSchema) {
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify(req)
+            body: JSON.stringify(req),
+            cache: 'no-cache'
         })
         if (response.ok) {
             const data = await response.json()
@@ -264,6 +359,7 @@ async function checkNewSurveyIsAllowed() {
             headers: {
                 'Authorization': apiKey
             },
+            cache: 'no-cache'
         })
 
         if (response.ok) {
@@ -299,7 +395,9 @@ async function getSurveyDetails(surveyId: number) {
             method: "GET",
             headers: {
                 'Authorization': apiKey
-            },
+            },  
+            cache:'no-cache'
+            // to do : sil
         })
 
 
@@ -308,6 +406,8 @@ async function getSurveyDetails(surveyId: number) {
             const data = await response.json()
             const result = surveyDetailSchema.safeParse(data)
             if (!result.success) {
+                console.log(JSON.stringify(data));
+                
                 console.log('unsuccesfull parse', result.error.errors[0]);
 
                 return undefined
@@ -335,6 +435,7 @@ async function getSurveys() {
             headers: {
                 'Authorization': apiKey
             },
+            cache: 'no-cache'
         })
 
 
@@ -371,7 +472,8 @@ async function submitAnswers(ticket: string, answers: TQuestionAnswersResponseSc
                 'content-type': 'application/json',
                 'Authorization': apiKey
             },
-            body: JSON.stringify(answers)
+            body: JSON.stringify(answers),
+            cache: 'no-cache'
         })
         if (response.ok) {
             return true
@@ -395,7 +497,8 @@ async function getQuestions(ticket: string) {
             method: "GET",
             headers: {
                 'Authorization': apiKey
-            }
+            },
+            cache: 'no-cache'
         })
         if (response.ok) {
             const data = await response.json()
@@ -432,7 +535,8 @@ async function validateParticipant(email: string, codepart: string) {
             body: JSON.stringify({
                 "email": email,
                 "codepart": codepart
-            })
+            }),
+            cache: 'no-cache'
         })
         if (response.status == 200) {
             const data = await response.json()
@@ -462,7 +566,7 @@ async function validateParticipant(email: string, codepart: string) {
 
 
 
-async function getActiveSurvey() {
+async function getRunningSurvey() {
     beforeReq()
     const url = encodeURI(baseUrl + "/survey/active-survey")
 
@@ -472,6 +576,7 @@ async function getActiveSurvey() {
             headers: {
                 'Authorization': apiKey
             },
+            cache: 'no-cache'
         })
         if (response.ok) {
             const data = await response.json()
@@ -510,7 +615,8 @@ async function getUser(email: string, password: string) {
             body: JSON.stringify({
                 "email": email,
                 "password": password
-            })
+            }),
+            cache: 'no-cache'
         })
 
         if (response.ok) {
