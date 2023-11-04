@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache'
 import { TNewQuestionSchema } from '@/lib/types'
 import { createNewQuestion, copySingleQuestion, lowerDownQuestion, removeQuestion } from '@/lib/source-api'
 import { raiseUpQuestion } from '@/lib/source-api'
-import { cookies } from 'next/headers'
 
 
 export async function remove(questionId: number) {
@@ -15,9 +14,6 @@ export async function remove(questionId: number) {
 
 
 export async function raiseUp(questionId: number) {
-    const cookieStore = cookies()
-    console.log(cookieStore.getAll());
-
     const result = await raiseUpQuestion(questionId)
     revalidatePath('/admin/survey/pre/')
     return result;
