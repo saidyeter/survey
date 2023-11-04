@@ -12,13 +12,9 @@ export const siteConfig = {
       href: "/admin",
     },
     {
-      title: "Sorular",
-      href: "/admin/questions",
-    },
-    {
-      title: "Yeni Soru",
-      href: "/admin/new-question",
-    },
+      title: "Tamamlanmis Anketler",
+      href: "/admin/survey/ended",
+    }
   ] as NavItem[],
   links: {
     mail: "mailto:said@yeter.com",
