@@ -20,6 +20,7 @@ export default async function Admin() {
                 <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
                     Aktif Anket
                 </h2>
+                
                 <ActiveSurveyShowcase survey={active} />
             </div>
             <div className="">

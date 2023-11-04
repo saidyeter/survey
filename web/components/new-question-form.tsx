@@ -21,7 +21,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Separator } from "./ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Switch } from "./ui/switch";
-import { create } from "@/actions/new-question";
+import { create } from "@/actions/question";
 
 import {
   Accordion,
@@ -73,7 +73,7 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
   })
 
   async function formSubmit(data: TNewQuestionSchema) {
-    const result = await create(props.surveyid, data)
+    const result = await create( data)
     if (result.success) {
       reset()
     }

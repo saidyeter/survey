@@ -1,7 +1,7 @@
 import { PartipicationProgress } from "@/components/partipication-progress"
 import QuestionDetailCard from "@/components/question-detail-card"
 import { buttonVariants } from "@/components/ui/button"
-import { checkPreSurveyExists, getActiveSurvey, getSurveyDetails } from "@/lib/source-api"
+import { checkPreSurveyExists, getSurveyDetails } from "@/lib/source-api"
 import { getLocaleDate } from "@/lib/utils"
 import Link from "next/link"
 
@@ -74,7 +74,6 @@ export default async function SurveyDetails({ params }: { params: { id: string }
                 return (
                     <QuestionDetailCard
                         showCopy={preSurvey?.exists}
-                        activeSurvey={preSurvey?.id ?? -1}
                         key={qd.question.id}
                         questionDetail={qd}
                     />

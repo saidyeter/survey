@@ -21,7 +21,7 @@ export default function OlderSurveysAccordion(params: TGetSurveysResponseSchema)
                 <Accordion type="single" collapsible>
                     {surveys.map(s => {
                         return (
-                            <AccordionItem value={`${s.id}`}>
+                            <AccordionItem value={`${s.id}`} key={`${s.id}`}>
                                 <AccordionTrigger>{s.name}</AccordionTrigger>
                                 <AccordionContent>
                                     <OlderSurveyCard key={s.id} {...s} />
