@@ -132,8 +132,8 @@ export function BreadCrumb() {
         <div className='flex mt-2 p-2 w-full text-sm flex-wrap sm:flex-nowrap items-center justify-start'>
             {parents.map((parent, i) => {
                 return (
-                    <div className='flex items-center'>
-                        <Link href={parent.path} key={parent.id}>
+                    <div key={parent.id} className='flex items-center'>
+                        <Link href={parent.path}>
                             <Sp i={parent.icon} v={parent.label} />
                         </Link>
                         {i + 1 != parents.length &&
