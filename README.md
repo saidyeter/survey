@@ -13,7 +13,8 @@
 - baslatma/bitirme/silme icin onay cikar
 - nav bar itemleri duzenle
 - katilimcilari excelden yukle
-- tum stringlerin tr karakterlerini kontrol et
+
+
 - anket sayfasini duzenle
 - anket bitince tekrar anasayfada ankete basla diye gosterme ???
 - anket bitiminde rapor olusturmayi baslat
@@ -21,6 +22,16 @@
 - cevap aciklamasini implemente et
 - zorunlu cevap vermeyi implemente et
 - zorunlu olmayanlari cevap vermeden gecmeyi implemente et
+- anket ekranin soru numaralarini yaz
+- anket ekraninda anket ismi ve aciklamasi olacak
+- ankete baslarken eczane GL kodu son 6 hanesi girilecek
+- giris yapinca direk admine gitsin
+- giris butonunu kaldir
+- raporda sifir da olsa tum secenekleri goster
+- aktif ankette typo icin edit olmali
+- raporu indirme ekle
+- gorselli soru yok
+- aktif ankette kac kisi basladi kac kisi tamamladi
 
 
 ## issues
