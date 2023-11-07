@@ -2,18 +2,12 @@
 
 ## todo
 
-- breadcrumb
-- chart ekle
-- rapor sayfasini duzenle
 - tum sorulari kopyalamayi ekle
 - kopyalama islemleri sonrasinda toast cikar
 - soru edit ekle
 - anket sil
 - anket baslik bilgilerini duzenle
 - baslatma/bitirme/silme icin onay cikar
-- nav bar itemleri duzenle
-- katilimcilari excelden yukle
-
 
 - anket sayfasini duzenle
 - anket bitince tekrar anasayfada ankete basla diye gosterme ???

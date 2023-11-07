@@ -2,6 +2,12 @@
 import { TQuestionDetailSchema } from "@/lib/types"
 import { Button } from "./ui/button"
 import { copySingle } from "@/actions/question"
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts"
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "./ui/avatar"
 
 interface QuestionDetailCardProps {
     questionDetail: TQuestionDetailSchema,
@@ -10,8 +16,16 @@ interface QuestionDetailCardProps {
 
 export default function QuestionDetailCard(params: QuestionDetailCardProps) {
     const { question, answeredCount, answerDetails } = params.questionDetail
+
+    const data = answerDetails.map(a => {
+        return {
+            name: a.label,
+            total: a.choosenCount
+        }
+    })
+
     return (
-        <div key={question.id} className="w-full pt-2 pb-2 border-t-muted-foreground border-t-2">
+        <div className="w-full rounded border p-2">
             <div className="text-lg font-semibold w-full flex justify-between pb-2">
                 <div className="w-full" >
                     <span className="text-sm text-muted-foreground font-normal pr-2">
@@ -29,20 +43,56 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
                     <Button variant='outline' onClick={() => { copySingle(question.id) }}>Aktif Ankete Kopyala</Button>
                 }
             </div>
+            <div className="w-full flex flex-row">
+                <div className="w-2/5">
+                    <ResponsiveContainer width="100%" height={350}>
+                        <PieChart >
+                            <Pie
+                                label={(d) => d.name + ': ' + d.value}
+                                data={data}
+                                dataKey="total"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={80}
+                                onClick={(d) => {
+                                    console.log(d);
 
-            {answerDetails.map((ad, i) => {
-                return (
-                    <div key={i}>
-                        <span className="pr-2">
-                            {ad.label} :  {ad.text}
-                        </span>
-                        <span className="font-bold">
-                            {ad.choosenCount}
-                        </span>
-                    </div>
-
-                )
-            })}
+                                }}
+                            >
+                                {
+                                    data.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={`#${colors[index]}`} />
+                                    ))
+                                }
+                            </Pie>
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="w-3/5 p-2 border-t-muted-foreground space-y-2 m-auto">
+                    {answerDetails.map((ad, i) => {
+                        return (
+                            <div key={i} className="flex items-center">
+                                <p className="text-sm text-muted-foreground">{ad.label}:&nbsp;</p>
+                                <p className="text-sm font-medium leading-none"> {ad.text}</p>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
         </div>
     )
 }
+
+const colors = [
+    '26577C',
+    'E55604',
+    '61A3BA',
+    'D2DE32',
+    'A2C579',
+    'A9A9A9',
+    'FECDA6',
+    'FF9130',
+    'FF5B22',
+]
