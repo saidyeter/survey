@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [Survey]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Database [Survey]    Script Date: 09-Nov-23 1:07:58 AM ******/
 CREATE DATABASE [Survey]
 GO
 ALTER DATABASE [Survey] SET COMPATIBILITY_LEVEL = 160
@@ -78,12 +78,12 @@ ALTER DATABASE [Survey] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_PO
 GO
 USE [Survey]
 GO
-/****** Object:  User [SurveyUser]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  User [SurveyUser]    Script Date: 09-Nov-23 1:07:59 AM ******/
 CREATE USER [SurveyUser] FOR LOGIN [SurveyUser] WITH DEFAULT_SCHEMA=[dbo]
 GO
 ALTER ROLE [db_owner] ADD MEMBER [SurveyUser]
 GO
-/****** Object:  Table [dbo].[Answers]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[Answers]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -96,7 +96,7 @@ CREATE TABLE [dbo].[Answers](
 	[QuestionId] [int] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ParticipantAnswers]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[ParticipantAnswers]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -113,7 +113,7 @@ CREATE TABLE [dbo].[ParticipantAnswers](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Participants]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[Participants]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -121,12 +121,10 @@ GO
 CREATE TABLE [dbo].[Participants](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[CreatedAt] [datetime] NOT NULL,
-	[Title] [nvarchar](200) NOT NULL,
-	[Address] [nvarchar](2000) NULL,
-	[LegalIdentifier] [nvarchar](50) NULL,
-	[Email] [nvarchar](200) NOT NULL,
 	[PType] [nvarchar](50) NULL,
-	[Code] [nvarchar](50) NULL,
+	[Code] [nvarchar](50) NOT NULL,
+	[Title] [nvarchar](200) NOT NULL,
+	[Email] [nvarchar](200) NOT NULL,
 	[Status] [nvarchar](50) NULL,
 	[City] [nvarchar](50) NULL,
 	[Subcity] [nvarchar](50) NULL,
@@ -136,7 +134,7 @@ CREATE TABLE [dbo].[Participants](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Participations]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[Participations]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -156,7 +154,7 @@ CREATE TABLE [dbo].[Participations](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Questions]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[Questions]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -176,7 +174,7 @@ CREATE TABLE [dbo].[Questions](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Surveys]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[Surveys]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -195,7 +193,7 @@ CREATE TABLE [dbo].[Surveys](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 08-Nov-23 11:51:04 PM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 09-Nov-23 1:07:59 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
