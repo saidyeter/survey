@@ -234,6 +234,27 @@ public class SurveyController : ControllerBase
     [HttpGet("temp")]
     public async Task<IActionResult> Seed()
     {
+
+        /*
+        truncate table [Answers];
+        truncate table [ParticipantAnswers];
+        truncate table [Participants];
+        truncate table [Participations];
+        truncate table [Questions];
+        truncate table [Surveys];
+        truncate table [Users];
+
+        select 
+        (select count(1) from [Answers]) as AnswerCount,
+        (select count(1) from [ParticipantAnswers]) as ParticipantAnswerCount,
+        (select count(1) from [Participants]) as ParticipantCount,
+        (select count(1) from [Participations]) as ParticipationCount,
+        (select count(1) from [Questions]) as QuestionCount,
+        (select count(1) from [Surveys]) as SurveyCount,
+        (select count(1) from [Users]) as UserCount;
+
+         */
+
         var random = new Random();
         var faker = new Faker();
 
@@ -241,14 +262,15 @@ public class SurveyController : ControllerBase
 
         foreach (var u in faker.GetFakeUser())
         {
-            var name = random.Next(1, 10) % 2 == 0 ? u.FirstName : u.LastName;
-            var title = random.Next(1, 10) % 2 == 0 ? "ECZANE " + name : name + " ECZANESI";
             participants.Add(new Participant
             {
-                Address = "address ",
                 Email = u.Email,
-                LegalIdentifier = u.Id,
-                Title = title,
+                Title = u.Title,
+                City = u.City,
+                Subcity = u.Subcity,
+                Code = u.Code,
+                PType = "Eczane",
+                Status = "Aktif"
             });
         }
         dbContext.AddRange(participants);
@@ -258,16 +280,16 @@ public class SurveyController : ControllerBase
         var months = new[] { "", "OCAK", "ŞUBAT", "MART", "NİSAN", "MAYIS", "HAZİRAN", "TEMMUZ", "AĞUSTOS", "EYLÜL", "EKİM", "KASIM", "ARALIK", };
         var now = DateTime.Now;
         var surveyDate = new DateTime(now.Year, now.Month, 1);
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 5; i++)
         {
-            surveyDate = surveyDate.AddMonths(-2);
+            surveyDate = surveyDate.AddMonths(-1 * random.Next(2, i + 5));
             var startdate = surveyDate.AddMonths(-1);
             surveys.Add(new Survey
             {
                 StartDate = startdate,
                 EndDate = startdate.AddMonths(1).AddDays(-1),
-                Name = $"{startdate.Year} {months[startdate.Month]} ayi verimlilik anketi",
-                Description = $"Bu anketle, {startdate.Year} {months[startdate.Month]} ve oncesindeki birkac ayin verimlilik durumunu gozlemlemeyi planliyoruz",
+                Name = $"{i + 1}. Anket",
+                Description = i % 2 == 0 ? "" : $"{i + 1}. Anketin aciklamasi",
                 Status = SurveyStatus.Ended
             });
         }
@@ -287,7 +309,7 @@ public class SurveyController : ControllerBase
                     OrderNumber = qCounter++,
                     Text = fq.Text,
                     SurveyId = s.Id,
-                    Required = fq.Required,
+                    Required = random.Next(1, 10) % 4 != 0,
                     AnswerType = AnswerType.Single,
                 };
                 dbContext.Add(q);
@@ -312,10 +334,10 @@ public class SurveyController : ControllerBase
         {
             var pCount = participants.Count;
             var length = pCount
-                - s.StartDate?.Month * 28
-                - (s.StartDate?.Month % 3 == 0 ? 500 : 0)
-                - (s.StartDate?.Month % 5 == 0 ? 300 : 0)
-                - (s.StartDate?.Month % 7 == 0 ? 100 : 0);
+                - s.StartDate?.Month * 2
+                - (s.StartDate?.Month % 3 == 0 ? 5 : 0)
+                - (s.StartDate?.Month % 5 == 0 ? 3 : 0)
+                - (s.StartDate?.Month % 7 == 0 ? 1 : 0);
 
             var picked = new HashSet<int>();
             for (var i = 0; i < length; i++)
@@ -355,10 +377,11 @@ public class SurveyController : ControllerBase
                 .Where(a => questionIdList.Contains(a.QuestionId))
                 .ToList();
 
+
             var counter = 0;
             foreach (var q in qs)
             {
-                if (!q.Required && random.Next(1, 10) % 2 == 0)
+                if (!q.Required && random.Next(1, 10) % 3 == 0)
                 {
                     continue;
                 }
@@ -375,13 +398,21 @@ public class SurveyController : ControllerBase
                 counter++;
             }
 
-            if (counter > 2000)
+            if (counter > 500)
             {
                 await dbContext.SaveChangesAsync();
                 counter = 0;
             }
         }
 
+
+        dbContext.Users.Add(new User
+        {
+            DisplayName = "admin",
+            Email = "s@yeter.com",
+            Password = "8B45F97536AEFCE77C9243D387FA587C55C624765F466CA3CFE2AD22F28AB3EA21D3E224DAA91CE6EEEA60FB02D2635CA710CFCF3B8BCB1B3625F1086FEB4A21",
+            Salt = "95f5dc4d094b4c459990fbcf4f01c07e"
+        });
         await dbContext.SaveChangesAsync();
 
         return Ok();
