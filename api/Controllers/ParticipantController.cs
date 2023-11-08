@@ -33,10 +33,9 @@ public class ParticipantController : ControllerBase
             return NotFound();
         }
 
-        if (dbVal.LegalIdentifier[0] != val.CodePart[0] ||
-            dbVal.LegalIdentifier[2] != val.CodePart[1])
+        if (!dbVal.Code.ToLower().EndsWith(val.CodePart))
         {
-            logger.LogInformation("Code does not match ({email}). Actual: {codepart}, expected:{code}", val.Email, val.CodePart, dbVal.LegalIdentifier);
+            logger.LogInformation("Code does not match ({email}). Actual: {codepart}, expected:{code}", val.Email, val.CodePart, dbVal.Code);
             return BadRequest();
         }
         var now = DateTime.Now;
