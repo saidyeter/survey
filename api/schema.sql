@@ -1,6 +1,6 @@
 USE [master]
 GO
-/****** Object:  Database [Survey]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  Database [Survey]    Script Date: 08-Nov-23 11:51:04 PM ******/
 CREATE DATABASE [Survey]
 GO
 ALTER DATABASE [Survey] SET COMPATIBILITY_LEVEL = 160
@@ -78,12 +78,25 @@ ALTER DATABASE [Survey] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_PO
 GO
 USE [Survey]
 GO
-/****** Object:  User [SurveyUser]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  User [SurveyUser]    Script Date: 08-Nov-23 11:51:04 PM ******/
 CREATE USER [SurveyUser] FOR LOGIN [SurveyUser] WITH DEFAULT_SCHEMA=[dbo]
 GO
 ALTER ROLE [db_owner] ADD MEMBER [SurveyUser]
 GO
-/****** Object:  Table [dbo].[ParticipantAnswers]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  Table [dbo].[Answers]    Script Date: 08-Nov-23 11:51:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Answers](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[Text] [nvarchar](200) NOT NULL,
+	[Label] [nvarchar](1) NOT NULL,
+	[QuestionId] [int] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ParticipantAnswers]    Script Date: 08-Nov-23 11:51:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -92,35 +105,15 @@ CREATE TABLE [dbo].[ParticipantAnswers](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[CreatedAt] [datetime] NOT NULL,
 	[ParticipationId] [int] NOT NULL,
-	[PartipiciantId] [int] NOT NULL,
 	[QuestionId] [int] NOT NULL,
-	[Answer] [nchar](1) NOT NULL,
-	[AnswerDesc] [nvarchar](2000) NULL,
+	[AnswerId] [int] NOT NULL,
  CONSTRAINT [PK_ParticipantAnswers] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ParticipantAnswers]    Script Date: 04-Oct-23 2:57:43 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Users](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[CreatedAt] [datetime] NOT NULL,
-	[Email] [nvarchar](200) NOT NULL,
-	[DisplayName] [nvarchar](200) NOT NULL,
-	[Password] [nvarchar](200) NOT NULL,
-	[Salt] [nvarchar](50) NOT NULL,
- CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Participants]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  Table [dbo].[Participants]    Script Date: 08-Nov-23 11:51:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -130,14 +123,20 @@ CREATE TABLE [dbo].[Participants](
 	[CreatedAt] [datetime] NOT NULL,
 	[Title] [nvarchar](200) NOT NULL,
 	[Address] [nvarchar](2000) NULL,
-	[LegalIdentifier] [nvarchar](50) NOT NULL,
+	[LegalIdentifier] [nvarchar](50) NULL,
+	[Email] [nvarchar](200) NOT NULL,
+	[PType] [nvarchar](50) NULL,
+	[Code] [nvarchar](50) NULL,
+	[Status] [nvarchar](50) NULL,
+	[City] [nvarchar](50) NULL,
+	[Subcity] [nvarchar](50) NULL,
  CONSTRAINT [PK_Participants] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Participations]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  Table [dbo].[Participations]    Script Date: 08-Nov-23 11:51:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -146,16 +145,18 @@ CREATE TABLE [dbo].[Participations](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[CreatedAt] [datetime] NOT NULL,
 	[PartipiciantId] [int] NOT NULL,
-	[StartDate] [datetime] NOT NULL,
-	[EndDate] [datetime] NOT NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
 	[AdditionalWords] [nvarchar](2000) NULL,
+	[ParticipationTicket] [nvarchar](50) NOT NULL,
+	[SurveyId] [int] NOT NULL,
  CONSTRAINT [PK_Participations] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Questions]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  Table [dbo].[Questions]    Script Date: 08-Nov-23 11:51:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -165,44 +166,17 @@ CREATE TABLE [dbo].[Questions](
 	[CreatedAt] [datetime] NOT NULL,
 	[OrderNumber] [int] NOT NULL,
 	[Text] [nvarchar](2000) NOT NULL,
-	[DescriptiveAnswer] [nchar](1) NULL,
-	[Active] [bit] NOT NULL,
+	[DescriptiveAnswer] [nvarchar](1) NULL,
 	[SurveyId] [int] NOT NULL,
 	[Required] [bit] NOT NULL,
-	[AnswerType] [nchar](10) NOT NULL,
-	[A] [nvarchar](200) NOT NULL,
-	[B] [nvarchar](200) NOT NULL,
-	[C] [nvarchar](200) NULL,
-	[D] [nvarchar](200) NULL,
-	[E] [nvarchar](200) NULL,
-	[F] [nvarchar](200) NULL,
-	[G] [nvarchar](200) NULL,
-	[H] [nvarchar](200) NULL,
-	[I] [nvarchar](200) NULL,
-	[J] [nvarchar](200) NULL,
-	[K] [nvarchar](200) NULL,
-	[L] [nvarchar](200) NULL,
-	[M] [nvarchar](200) NULL,
-	[N] [nvarchar](200) NULL,
-	[O] [nvarchar](200) NULL,
-	[P] [nvarchar](200) NULL,
-	[Q] [nvarchar](200) NULL,
-	[R] [nvarchar](200) NULL,
-	[S] [nvarchar](200) NULL,
-	[T] [nvarchar](200) NULL,
-	[U] [nvarchar](200) NULL,
-	[V] [nvarchar](200) NULL,
-	[W] [nvarchar](200) NULL,
-	[X] [nvarchar](200) NULL,
-	[Y] [nvarchar](200) NULL,
-	[Z] [nvarchar](200) NULL,
+	[AnswerType] [int] NOT NULL,
  CONSTRAINT [PK_Questions] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Surveys]    Script Date: 04-Oct-23 2:57:43 PM ******/
+/****** Object:  Table [dbo].[Surveys]    Script Date: 08-Nov-23 11:51:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -211,8 +185,8 @@ CREATE TABLE [dbo].[Surveys](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[CreatedAt] [datetime] NOT NULL,
 	[Name] [nvarchar](50) NOT NULL,
-	[StartDate] [datetime] NOT NULL,
-	[EndDate] [datetime] NOT NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
 	[Status] [int] NOT NULL,
 	[Description] [nvarchar](2000) NULL,
  CONSTRAINT [PK_Surveys] PRIMARY KEY CLUSTERED 
@@ -221,9 +195,29 @@ CREATE TABLE [dbo].[Surveys](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[Users]    Script Date: 08-Nov-23 11:51:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CreatedAt] [datetime] NOT NULL,
+	[DisplayName] [nvarchar](200) NOT NULL,
+	[Email] [nvarchar](200) NOT NULL,
+	[Password] [nvarchar](200) NOT NULL,
+	[Salt] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Answers] ADD  CONSTRAINT [DF_Answers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+GO
 ALTER TABLE [dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 GO
-ALTER TABLE [dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_Answer]  DEFAULT ((0)) FOR [Answer]
+ALTER TABLE [dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_Answer]  DEFAULT ((0)) FOR [AnswerId]
 GO
 ALTER TABLE [dbo].[Participants] ADD  CONSTRAINT [DF_Participants_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 GO
@@ -231,13 +225,13 @@ ALTER TABLE [dbo].[Participations] ADD  CONSTRAINT [DF_Participations_CreatedAt]
 GO
 ALTER TABLE [dbo].[Questions] ADD  CONSTRAINT [DF_Questions_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 GO
-ALTER TABLE [dbo].[Questions] ADD  CONSTRAINT [DF_Questions_Active]  DEFAULT ((1)) FOR [Active]
-GO
 ALTER TABLE [dbo].[Questions] ADD  CONSTRAINT [DF_Questions_Required]  DEFAULT ((1)) FOR [Required]
 GO
 ALTER TABLE [dbo].[Surveys] ADD  CONSTRAINT [DF_Surveys_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 GO
 ALTER TABLE [dbo].[Surveys] ADD  CONSTRAINT [DF_Surveys_Status]  DEFAULT ((0)) FOR [Status]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 GO
 USE [master]
 GO
