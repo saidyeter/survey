@@ -82,12 +82,12 @@ export default function ParticipantValidation() {
                         name="code"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Eczane kodunun 1. ve 3. hanesi</FormLabel>
+                                <FormLabel>Eczane kodunun son 6 hanesi</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Eczane kodunun 1. ve 3. hanesi" {...field} />
+                                    <Input placeholder="Eczane kodunun son 6 hanesi" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                    Eczane kodunun 1. ve 3. hanesini girin
+                                    Eczane kodunun son 6 hanesini girin
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
