@@ -1,4 +1,4 @@
-﻿@SurveyApi_HostAddress = https://localhost:7215
+﻿@SurveyApi_HostAddress = http://localhost:5220
 @SurveyWeb_HostAddress = http://localhost:3000
 @AuthKey = WtRhT4DAxgpkpqvMyZv5jKmb5PfU9a
 
