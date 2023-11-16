@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { submitAttendeeAnswers } from "@/actions/survey";
+import { useState } from "react";
 
 
 export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema) {
@@ -37,6 +38,7 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
     await submitAttendeeAnswers(params)
   }
 
+  const [s, setS] = useState(0)
   return (
     <div className="pt-4 w-full">
       <Form {...form}>
@@ -44,7 +46,8 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
 
           {survey.map(({ question, answers }, i) => {
             return (
-              <div key={question.id}>
+              <div key={question.id}
+                className={`${i != s ? 'hidden' : ''}`}>
                 <input
                   type="hidden"
                   value={question.id}
@@ -55,7 +58,10 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                   name={`answers.${i}.answerId`}
                   render={({ field }) => (
                     <FormItem className="rounded-lg border p-4 mb-2">
-                      <FormLabel>{question.text}</FormLabel>
+                      <FormLabel>
+                        <span className="text-muted-foreground">{i + 1}. Soru: </span>
+                        {question.text}
+                      </FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -74,6 +80,26 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                               </FormItem>
                             )
                           })}
+
+                          <div className="flex w-full space-x-3 justify-end">
+                            <Button
+                              className={`${s == 0 && 'hidden'}`}
+                              type="button"
+                              onClick={() => setS(p => {
+                                p--
+                                return p
+                              })}>Onceki</Button>
+                            <Button
+                              className={`${s == survey.length - 1 && 'hidden'}`}
+                              type="button"
+                              onClick={() => {
+                                setS(p => {
+                                  p++
+                                  return p
+                                })
+                              }
+                              }>Sonraki</Button>
+                          </div>
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
@@ -84,9 +110,18 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
 
             )
           })}
-          <Button>Bitir</Button>
+          <Button className={`${s != survey.length - 1 && 'hidden'}`}>Bitir</Button>
         </form>
       </Form>
     </div>
   )
 }
+
+const colors = [
+  'red',
+  'blue',
+  'green',
+  'yellow',
+  'brown',
+
+]
