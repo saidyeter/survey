@@ -35,4 +35,4 @@
 
 ## tools
 
-docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=my_p@ssW0rd' -p 1433:1433 --name azuresqledge -d mcr.microsoft.com/azure-sql-edge
+docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e 'MSSQL_SA_PASSWORD=my_p@ssW0rd' -p 14333:1433 --name azuresqledge -d mcr.microsoft.com/azure-sql-edge

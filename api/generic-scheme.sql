@@ -86,18 +86,18 @@ CREATE TABLE [Survey].[dbo].[Users](
 (
 	[Id] ASC
 ))
-ALTER TABLE [dbo].[Answers] ADD  CONSTRAINT [DF_Answers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[Answers] ADD  CONSTRAINT [DF_Answers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 
 
-ALTER TABLE [dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
-ALTER TABLE [dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_Answer]  DEFAULT ((0)) FOR [AnswerId]
-ALTER TABLE [dbo].[Participants] ADD  CONSTRAINT [DF_Participants_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
-ALTER TABLE [dbo].[Participations] ADD  CONSTRAINT [DF_Participations_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
-ALTER TABLE [dbo].[Questions] ADD  CONSTRAINT [DF_Questions_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
-ALTER TABLE [dbo].[Questions] ADD  CONSTRAINT [DF_Questions_Required]  DEFAULT ((1)) FOR [Required]
-ALTER TABLE [dbo].[Surveys] ADD  CONSTRAINT [DF_Surveys_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
-ALTER TABLE [dbo].[Surveys] ADD  CONSTRAINT [DF_Surveys_Status]  DEFAULT ((0)) FOR [Status]
-ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[ParticipantAnswers] ADD  CONSTRAINT [DF_ParticipantAnswers_Answer]  DEFAULT ((0)) FOR [AnswerId]
+ALTER TABLE [Survey].[dbo].[Participants] ADD  CONSTRAINT [DF_Participants_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[Participations] ADD  CONSTRAINT [DF_Participations_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[Questions] ADD  CONSTRAINT [DF_Questions_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[Questions] ADD  CONSTRAINT [DF_Questions_Required]  DEFAULT ((1)) FOR [Required]
+ALTER TABLE [Survey].[dbo].[Surveys] ADD  CONSTRAINT [DF_Surveys_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
+ALTER TABLE [Survey].[dbo].[Surveys] ADD  CONSTRAINT [DF_Surveys_Status]  DEFAULT ((0)) FOR [Status]
+ALTER TABLE [Survey].[dbo].[Users] ADD  CONSTRAINT [DF_Users_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 
 
 

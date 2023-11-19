@@ -1,6 +1,6 @@
 "use client"
 
-import { TQuestionAnswersResponseSchema, TQuestionsResponseSchema, questionAnswersResponseSchema } from "@/lib/types"
+import { TQuestionAnswersFormSchema, TQuestionsResponseSchema, questionAnswersFormSchema } from "@/lib/types"
 import { Button } from "./ui/button"
 
 import {
@@ -21,33 +21,73 @@ import { useState } from "react";
 
 
 export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema) {
-  const form = useForm<TQuestionAnswersResponseSchema>({
-    resolver: zodResolver(questionAnswersResponseSchema),
+  const form = useForm<TQuestionAnswersFormSchema>({
+    resolver: zodResolver(questionAnswersFormSchema),
     defaultValues: {
       answers: survey.map(q => {
         return {
           questionId: q.question.id,
-          answerId: q.question.required ? q.answers[0].id : undefined,
+          answerId: undefined,
           answerDesc: undefined,
         }
       })
     }
   })
 
-  async function formSubmit(params: TQuestionAnswersResponseSchema) {
-    await submitAttendeeAnswers(params)
+  async function formSubmit(params: TQuestionAnswersFormSchema) {
+    setError('')
+    let overallError = ''
+    let succeed = true
+    params.answers.forEach((v, i) => {
+      const q = survey.find(x => x.question.id == v.questionId)
+      if (q?.question.required && !v.answerId) {
+        succeed = false
+        overallError += `${i + 1},`
+
+      }
+    })
+
+    if (succeed) {
+      await submitAttendeeAnswers(params)
+      // console.log(params);
+    }
+    else {
+      setError(overallError.substring(0, overallError.length - 1) + `. soru` + (overallError.length == 2 ? '' : 'lar') + ` zorunludur. Cevapladiktan sonra bitirebilirsiniz.`)
+    }
+
+  }
+
+  function nextQuestion() {
+    if (survey[s].question.required && !form.getValues().answers[s].answerId) {
+      setError(`${s}. soru zorunludur`)
+      return
+    }
+
+    setS(p => {
+      p++
+      return p
+    })
+  }
+  function prevQuestion() {
+    setS(p => {
+      p--
+      return p
+    })
   }
 
   const [s, setS] = useState(0)
+
+  const [error, setError] = useState('')
+
   return (
-    <div className="pt-4 w-full">
+    <div className="pt-4 w-3/4 q-a-f">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(formSubmit)} >
 
           {survey.map(({ question, answers }, i) => {
             return (
               <div key={question.id}
-                className={`${i != s ? 'hidden' : ''}`}>
+                className={`transition-opacity duration-150 ${i != s ? 'opacity-0 hidden' : 'opacity-100'}`}>
                 <input
                   type="hidden"
                   value={question.id}
@@ -57,7 +97,7 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                   control={form.control}
                   name={`answers.${i}.answerId`}
                   render={({ field }) => (
-                    <FormItem className="rounded-lg border p-4 mb-2">
+                    <FormItem className="">
                       <FormLabel>
                         <span className="text-muted-foreground">{i + 1}. Soru: </span>
                         {question.text}
@@ -81,25 +121,6 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                             )
                           })}
 
-                          <div className="flex w-full space-x-3 justify-end">
-                            <Button
-                              className={`${s == 0 && 'hidden'}`}
-                              type="button"
-                              onClick={() => setS(p => {
-                                p--
-                                return p
-                              })}>Onceki</Button>
-                            <Button
-                              className={`${s == survey.length - 1 && 'hidden'}`}
-                              type="button"
-                              onClick={() => {
-                                setS(p => {
-                                  p++
-                                  return p
-                                })
-                              }
-                              }>Sonraki</Button>
-                          </div>
                         </RadioGroup>
                       </FormControl>
                       <FormMessage />
@@ -110,6 +131,18 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
 
             )
           })}
+          <div className="flex w-full space-x-3 justify-end">
+            <Button
+              className={`${s == 0 && 'hidden'}`}
+              type="button"
+              onClick={prevQuestion}>Onceki</Button>
+            <Button
+              className={`${s == survey.length - 1 && 'hidden'}`}
+              type="button"
+              onClick={nextQuestion}>Sonraki</Button>
+          </div>
+          <br />
+          {error && <p className="text-destructive">{error}</p>}
           <Button className={`${s != survey.length - 1 && 'hidden'}`}>Bitir</Button>
         </form>
       </Form>
