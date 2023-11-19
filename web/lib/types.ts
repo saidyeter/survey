@@ -118,16 +118,31 @@ export type TQuestionsResponseSchema = z.infer<typeof questionsResponseSchema>;
 export const questionAnswerSchema = z
   .object({
     questionId: z.number(),
-    answerId: z.string().transform(q=> parseInt(q)).optional(),
+    answerId: z.string().optional(),
     answerDesc: z.string().optional(),
   })
 
-export const questionAnswersResponseSchema = z.object({
+export const questionAnswersFormSchema = z.object({
   answers: questionAnswerSchema.array()
 })
 
 
-export type TQuestionAnswersResponseSchema = z.infer<typeof questionAnswersResponseSchema>;
+export type TQuestionAnswersFormSchema = z.infer<typeof questionAnswersFormSchema>;
+
+
+export const questionAnswerReqSchema = z
+  .object({
+    questionId: z.number(),
+    answerId: z.string().transform(a => parseInt(a)).optional(),
+    answerDesc: z.string().optional(),
+  })
+
+export const questionAnswersReqSchema = z.object({
+  answers: questionAnswerReqSchema.array()
+})
+
+
+export type TQuestionAnswersReqSchema = z.infer<typeof questionAnswersReqSchema>;
 
 export const questionDetailSchema = z.object({
   question: questionSchema,

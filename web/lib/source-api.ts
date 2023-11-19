@@ -1,4 +1,4 @@
-import { TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
+import { TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -459,7 +459,7 @@ async function getSurveys() {
 }
 
 
-async function submitAnswers(ticket: string, answers: TQuestionAnswersResponseSchema) {
+async function submitAnswers(ticket: string, answers: TQuestionAnswersReqSchema) {
     beforeReq()
     const url = encodeURI(baseUrl + "/answer/" + ticket)
 

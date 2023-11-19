@@ -3,12 +3,12 @@
 import { revalidatePath } from 'next/cache'
 import { finishSurvey, getQuestions, startSurvey, submitAnswers } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
-import { TNewSurveyValidationSchema, TQuestionAnswersResponseSchema, } from '@/lib/types'
+import { TNewSurveyValidationSchema, TQuestionAnswersFormSchema, questionAnswersFormSchema, questionAnswersReqSchema, } from '@/lib/types'
 import { createNewSurvey } from '@/lib/source-api'
 import { cookies } from 'next/headers'
 
 
-export async function submitAttendeeAnswers(data: TQuestionAnswersResponseSchema) {
+export async function submitAttendeeAnswers(data: TQuestionAnswersFormSchema) {
     const cookieStore = cookies()
     const ticket = cookieStore.get('ticket')
     if (!ticket?.value) {
@@ -17,7 +17,16 @@ export async function submitAttendeeAnswers(data: TQuestionAnswersResponseSchema
             reason: 'no ticket acquired'
         }
     }
-    const res = await submitAnswers(ticket.value, data)
+
+    var reqData = questionAnswersReqSchema.safeParse(data);
+    if (!reqData.success) {
+        return {
+            success: false,
+            reason: 'invalid data'
+        }
+    }
+
+    const res = await submitAnswers(ticket.value, reqData.data)
     if (!res) {
         return {
             success: false,
