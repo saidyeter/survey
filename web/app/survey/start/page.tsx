@@ -13,8 +13,8 @@ export default async function SurveyStart() {
         )
     }
     return (
-        <div>
-            <div>
+        <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="w-full">
                 <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
                     {survey.name}
                 </h1>
@@ -22,9 +22,8 @@ export default async function SurveyStart() {
                     {survey.description}
                 </p>
             </div>
-            <div>
+            <div className="w-full">
                 <ParticipantValidation />
-
             </div>
         </div>
     )
