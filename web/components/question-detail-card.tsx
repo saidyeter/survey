@@ -25,7 +25,7 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
     })
 
     return (
-        <div className="w-full rounded border p-2">
+        <div className="w-full rounded border p-2 mb-4">
             <div className="text-lg font-semibold w-full flex justify-between pb-2">
                 <div className="w-full" >
                     <span className="text-sm text-muted-foreground font-normal pr-2">
@@ -86,6 +86,17 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
 }
 
 const colors = [
+    '860A35',
+    '7752FE',
+    '22092C',
+    'F4CE14',
+    '001B79',
+    'ED7D31',
+    '363062',
+    '164863',
+    '3A4D39',
+    '0C356A',
+    'CE5A67',
     '26577C',
     'E55604',
     '61A3BA',
