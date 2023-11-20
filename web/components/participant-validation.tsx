@@ -11,8 +11,6 @@ import { Button } from "./ui/button";
 import { Terminal } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 
-
-
 export default function ParticipantValidation() {
     const router = useRouter()
     const [error, setError] = useState('')
@@ -43,17 +41,15 @@ export default function ParticipantValidation() {
             setError('Girilen bilgilerde bazısı hatalı!')
             form.reset()
         }
-
     };
-
 
     return (
         <div className="pt-4 w-full">
             {error &&
 
-                <Alert>
+                <Alert className="mt-4 mb-4">
                     <Terminal className="h-4 w-4" />
-                    <AlertTitle>Hata olustu!</AlertTitle>
+                    <AlertTitle>Hata oluştu!</AlertTitle>
                     <AlertDescription>
                         {error}
                     </AlertDescription>
@@ -66,13 +62,11 @@ export default function ParticipantValidation() {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>E-Posta</FormLabel>
+                                <FormLabel>E-Posta adresi</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="E-Posta" {...field} />
+                                    <Input placeholder="E-Posta adresinizi girin" {...field} />
                                 </FormControl>
-                                <FormDescription>
-                                    E-Posta adresinizi girin.
-                                </FormDescription>
+                                <FormDescription/>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -84,22 +78,16 @@ export default function ParticipantValidation() {
                             <FormItem>
                                 <FormLabel>Eczane kodunun son 6 hanesi</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Eczane kodunun son 6 hanesi" {...field} />
+                                    <Input placeholder="Eczane kodunun son 6 hanesini girin" {...field} />
                                 </FormControl>
-                                <FormDescription>
-                                    Eczane kodunun son 6 hanesini girin
-                                </FormDescription>
+                                <FormDescription/>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     <Button type="submit">Doğrula ve Başla</Button>
-
                 </form>
             </Form>
-
-
-
         </div>
     );
 }
