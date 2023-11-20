@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { submitAttendeeAnswers } from "@/actions/survey";
 import { useState } from "react";
+import { Separator } from "./ui/separator";
 
 
 export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema) {
@@ -58,8 +59,9 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
   }
 
   function nextQuestion() {
+    setError('')
     if (survey[s].question.required && !form.getValues().answers[s].answerId) {
-      setError(`${s}. soru zorunludur`)
+      setError(`${s + 1}. soru zorunludur`)
       return
     }
 
@@ -69,6 +71,8 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
     })
   }
   function prevQuestion() {
+    setError('')
+
     setS(p => {
       p--
       return p
@@ -80,11 +84,11 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
   const [error, setError] = useState('')
 
   return (
-    <div className="pt-4 w-3/4 q-a-f">
+    <div className="p-8 w-full q-a-f">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(formSubmit)} >
 
-          {survey.map(({ question, answers }, i) => {
+          {survey.map(({ question, answers }, i, arr) => {
             return (
               <div key={question.id}
                 className={`transition-opacity duration-150 ${i != s ? 'opacity-0 hidden' : 'opacity-100'}`}>
@@ -93,13 +97,13 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                   value={question.id}
                   {...form.register(`answers.${i}.questionId`)}
                 />
+                <span className="text-muted-foreground text-lg">{i + 1} / {arr.length}</span>
                 <FormField
                   control={form.control}
                   name={`answers.${i}.answerId`}
                   render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>
-                        <span className="text-muted-foreground">{i + 1}. Soru: </span>
+                    <FormItem>
+                      <FormLabel className="font-semibold text-xl">
                         {question.text}
                       </FormLabel>
                       <FormControl>
@@ -114,7 +118,7 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                                 <FormControl>
                                   <RadioGroupItem value={ans.id.toString()} />
                                 </FormControl>
-                                <FormLabel className="font-normal">
+                                <FormLabel className="font-normal text-lg">
                                   {ans.label} : {ans.text}
                                 </FormLabel>
                               </FormItem>
@@ -131,6 +135,7 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
 
             )
           })}
+          <Separator className="my-4" />
           <div className="flex w-full space-x-3 justify-end">
             <Button
               className={`${s == 0 && 'hidden'}`}
