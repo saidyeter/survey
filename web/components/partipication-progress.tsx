@@ -1,38 +1,64 @@
-//
-
 "use client"
 
-import { Progress } from "./ui/progress"
-
-
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 interface PartipicationProgressProps {
     current: number,
-    currentText?: string,
     total: number,
-    totalText?: string
-
 }
 
-export function PartipicationProgress({ current, currentText, total, totalText }: PartipicationProgressProps) {
+export function PartipicationProgress({ current, total }: PartipicationProgressProps) {
+
+    const data = [
+        {
+            name: 'Katılan',
+            total: current
+        },
+
+        {
+            name: 'Katılmayan',
+            total: total - current
+        }
+    ]
+
     return (
         <div className="w-full pt-2 pb-2">
 
-            <Progress value={current * 100 / total} className="w-full" />
-            <div className="flex justify-between">
-                <div>
-                    {currentText &&
-                        <span className="hidden sm:inline-block">{currentText}&nbsp;:&nbsp;</span>
-                    }
-                    <span>{current}</span>
-                </div>
-                <div>
-                    {totalText &&
-                        <span className="hidden sm:inline-block">{totalText}&nbsp;:&nbsp;</span>
-                    }
-                    <span>{total}</span>
-                </div>
-            </div>
+            <ResponsiveContainer width="100%" height={200}>
+                <PieChart >
+                    <Pie
+                        label={(d) => d.name + ': ' + d.value}
+                        data={data}
+                        dataKey="total"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={50}
+                        onClick={(d) => {
+                            console.log(d);
+
+                        }}
+                    >
+                        {
+                            data.map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={`#${colors[index]}`} />
+                            ))
+                        }
+                    </Pie>
+                    <Legend />
+                </PieChart>
+            </ResponsiveContainer>
         </div>
     )
 }
+const colors = [
+    '26577C',
+    'E55604',
+    '61A3BA',
+    'D2DE32',
+    'A2C579',
+    'A9A9A9',
+    'FECDA6',
+    'FF9130',
+    'FF5B22',
+]
