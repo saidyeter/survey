@@ -49,7 +49,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         >
           <SessionProvider session={session}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                <div className="flex-1">{children}</div>
+              <div className="flex-1">{children}</div>
               <TailwindIndicator />
             </ThemeProvider>
           </SessionProvider>
