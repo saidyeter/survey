@@ -12,82 +12,82 @@ import { Terminal } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 
 export default function ParticipantValidation() {
-    const router = useRouter()
-    const [error, setError] = useState('')
-    const form = useForm<TPartipiciantValidationSchema>({
-        resolver: zodResolver(partipiciantValidationSchema),
-        defaultValues: {
-            code: '',
-            email: ''
-        }
-    });
+  const router = useRouter()
+  const [error, setError] = useState('')
+  const form = useForm<TPartipiciantValidationSchema>({
+    resolver: zodResolver(partipiciantValidationSchema),
+    defaultValues: {
+      code: '',
+      email: ''
+    }
+  });
 
-    const onSubmit = async (data: TPartipiciantValidationSchema) => {
-        const result = await fetch('/api/partipiciant', {
-            method: "POST",
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
+  const onSubmit = async (data: TPartipiciantValidationSchema) => {
+    const result = await fetch('/api/partipiciant', {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
 
-        if (result.status == 200) {
-            router.push('/survey/questions')
-        }
-        else if (result.status == 208) {
-            router.push('/survey/completed')
-        }
-        else {
-            setError('Girilen bilgilerde bazısı hatalı!')
-            form.reset()
-        }
-    };
+    if (result.status == 200) {
+      router.push('/survey/questions')
+    }
+    else if (result.status == 208) {
+      router.push('/survey/completed')
+    }
+    else {
+      setError('Girilen bilgilerde bazısı hatalı!')
+      form.reset()
+    }
+  };
 
-    return (
-        <div className="pt-4 w-full">
-            {error &&
+  return (
+    <div className="pt-4 w-full">
+      {error &&
 
-                <Alert className="mt-4 mb-4">
-                    <Terminal className="h-4 w-4" />
-                    <AlertTitle>Hata oluştu!</AlertTitle>
-                    <AlertDescription>
-                        {error}
-                    </AlertDescription>
-                </Alert>
-            }
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>E-Posta adresi</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="E-Posta adresinizi girin" {...field} />
-                                </FormControl>
-                                <FormDescription/>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="code"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Eczane kodunun son 6 hanesi</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Eczane kodunun son 6 hanesini girin" {...field} />
-                                </FormControl>
-                                <FormDescription/>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit">Doğrula ve Başla</Button>
-                </form>
-            </Form>
-        </div>
-    );
+        <Alert className="mt-4 mb-4">
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Hata oluştu!</AlertTitle>
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+      }
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-Posta adresi</FormLabel>
+                <FormControl>
+                  <Input placeholder="E-Posta adresinizi girin" {...field} />
+                </FormControl>
+                <FormDescription />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Eczane kodunun son 6 hanesi</FormLabel>
+                <FormControl>
+                  <Input placeholder="Eczane kodunun son 6 hanesini girin" {...field} />
+                </FormControl>
+                <FormDescription />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">Doğrula ve Başla</Button>
+        </form>
+      </Form>
+    </div>
+  );
 }

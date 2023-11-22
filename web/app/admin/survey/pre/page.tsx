@@ -7,40 +7,38 @@ import { getPreSurvey, getSurvey } from "@/lib/source-api"
 import Link from "next/link"
 
 export default async function Pre() {
+  const data = await getPreSurvey()
+  if (!data) {
+    return (<div>
+      Yanlis Anket
+      <Link
+        href={`/admin`}
+        className={buttonVariants({ variant: "secondary" })}
+      >
+        Geri donmek icin tiklayiniz
+      </Link>
+    </div>)
+  }
 
+  const pre = await getSurvey(data.id)
+  if (!pre) {
+    return (<div>
+      Yanlis Anket
+      <Link
+        href={`/admin`}
+        className={buttonVariants({ variant: "secondary" })}
+      >
+        Geri donmek icin tiklayiniz
+      </Link>
+    </div>)
+  }
+  const { survey, qnas } = pre
 
-    const data = await getPreSurvey()
-    if (!data) {
-        return (<div>
-            Yanlis Anket
-            <Link
-                href={`/admin`}
-                className={buttonVariants({ variant: "secondary" })}
-            >
-                Geri donmek icin tiklayiniz
-            </Link>
-        </div>)
-    }
-
-    const pre = await getSurvey(data.id)
-    if (!pre) {
-        return (<div>
-            Yanlis Anket
-            <Link
-                href={`/admin`}
-                className={buttonVariants({ variant: "secondary" })}
-            >
-                Geri donmek icin tiklayiniz
-            </Link>
-        </div>)
-    }
-    const { survey, qnas } = pre
-
-    return (
-        <div className="w-full">
-            <PreSurveyManagement survey={survey} showStart={qnas.length > 0} />
-            <QuestionsAccordion QnAs={qnas} showButtons />
-            <NewQuestionForm surveyid={data.id} order={qnas.length + 1} />
-        </div>
-    )
+  return (
+    <div className="w-full">
+      <PreSurveyManagement survey={survey} showStart={qnas.length > 0} />
+      <QuestionsAccordion QnAs={qnas} showButtons />
+      <NewQuestionForm surveyid={data.id} order={qnas.length + 1} />
+    </div>
+  )
 }
