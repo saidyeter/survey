@@ -221,3 +221,37 @@ export const newQuestionSchema = z
     path: ['descriptiveAnswer']
   })
 export type TNewQuestionSchema = z.infer<typeof newQuestionSchema>;
+
+export const newParticipantSchema = z.object({
+  title: z.string(),
+  email: z.string(),
+  pType: z.string(),
+  status: z.string(),
+  code: z.string(),
+  city: z.string(),
+  subcity: z.string(),
+})
+export type TNewParticipantSchema = z.infer<typeof newParticipantSchema>;
+
+
+
+export const participantSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  email: z.string(),
+  pType: z.string(),
+  status: z.string(),
+  code: z.string(),
+  city: z.string(),
+  subcity: z.string(),
+})
+export type TParticipantSchema = z.infer<typeof participantSchema>;
+
+export const getParticipantsResponseSchema = z.object({
+  list: participantSchema.array(),
+  nextPage: z.number(),
+  pageSize: z.number(),
+  totalCount: z.number()
+})
+
+export type TGetParticipantsResponseSchema = z.infer<typeof getParticipantsResponseSchema>;

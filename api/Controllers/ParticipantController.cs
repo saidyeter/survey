@@ -85,4 +85,103 @@ public class ParticipantController : ControllerBase
             participation.ParticipationTicket,
         });
     }
+
+    [HttpGet("list")]
+    public async Task<IActionResult> ParticipantList([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string search)
+    {
+        IQueryable<Participant> list;
+        if (string.IsNullOrWhiteSpace(search))
+        {
+            list = dbContext.Participants;
+        }
+        else
+        {
+            list = dbContext.Participants
+            .Where(u => u.Email.Contains(search) || u.Title.Contains(search));
+        }
+
+        var res = await list
+            .Skip(pageSize * pageNumber)
+            .Take(pageSize)
+            .ToListAsync();
+
+        if (res.Count == 0)
+        {
+            logger.LogInformation("No Participants found ({search})", search);
+            return NotFound();
+        }
+        
+
+        return Ok(new
+        {
+            list = res,
+            nextPage = pageNumber + 1,
+            pageSize = pageSize,
+            totalCount= list.Count()
+        });
+    }
+
+
+    [HttpGet("single/{id}")]
+    public async Task<IActionResult> Participant(int id)
+    {
+
+        var res = await dbContext.Participants.Where(p => p.Id == id).FirstOrDefaultAsync();
+
+        if (res is null)
+        {
+            logger.LogInformation("No Participant found ({id})", id);
+            return NotFound();
+        }
+
+        return Ok(res);
+    }
+
+
+    [HttpPost("create")]
+    public async Task<IActionResult> Create(NewPartipiciantDto val)
+    {
+        var data = val.Map();
+        dbContext.Add(data);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok(data);
+    }
+
+    [HttpPost("edit/{id}")]
+    public async Task<IActionResult> Edit(int id, NewPartipiciantDto val)
+    {
+        var d = await dbContext.Participants.Where(p => p.Id == id).FirstOrDefaultAsync();
+        if (d is null)
+        {
+            return NotFound();
+        }
+
+
+        var data = val.Map(d);
+        dbContext.Update(data);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok(data);
+    }
+
+
+    [HttpPost("remove/{id}")]
+    public async Task<IActionResult> Remove(int id)
+    {
+        var res = await dbContext.Participants.Where(p => p.Id == id).FirstOrDefaultAsync();
+
+        if (res is null)
+        {
+            return Ok();
+        }
+
+        dbContext.Remove(res);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
 }

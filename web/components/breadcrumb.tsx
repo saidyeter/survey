@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
+import { User, Users, Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement } from 'react'
@@ -20,7 +20,15 @@ const nthSurvey = {
   path: '/admin/survey/ended/',
   parent: ['G0ic', '1jvg', 'SkDk',]
 }
+const nthPartipiciant = {
+  id: '60Mj',
+  label: '. Katılımcı',
+  icon: <User size='1rem' />,
+  path: '/admin/member/',
+  parent: ['G0ic', 'g8Dk']
+}
 const routes = [
+  nthPartipiciant,
   nthSurvey,
   {
     id: 'SkDk',
@@ -28,6 +36,20 @@ const routes = [
     icon: <CheckCheck size='1rem' />,
     path: '/admin/survey/ended',
     parent: ['G0ic', '1jvg',]
+  },
+  {
+    id: 'g8Dk',
+    label: 'Katılımcılar',
+    icon: <Users size='1rem' />,
+    path: '/admin/member',
+    parent: ['G0ic',]
+  },
+  {
+    id: '458k',
+    label: 'Yeni Katılımcı',
+    icon: <User size='1rem' />,
+    path: '/admin/member/new',
+    parent: ['G0ic',]
   },
   {
     id: 'D9nt',
@@ -98,18 +120,29 @@ export function BreadCrumb() {
     parent: string[];
   }[]
   if (/\d/.test(path)) {
+
+    let arr;
+
+    if (path.includes('member')) {
+      arr= nthPartipiciant
+    }
+    else {
+      arr= nthSurvey
+    }
+
     const surveyId = path.replace(/^\D+/g, '');
 
-    nthSurvey.parent.forEach(p => {
+    arr.parent.forEach(p => {
       const parent = routes.find(r => r.id == p)!
       parents.push(parent)
     });
+    
     parents.push({
-      id: nthSurvey.id,
-      icon: nthSurvey.icon,
+      id: arr.id,
+      icon: arr.icon,
       parent: [],
-      path: nthSurvey.path + surveyId,
-      label: surveyId + nthSurvey.label
+      path: arr.path + surveyId,
+      label: surveyId + arr.label
     })
   }
   else {

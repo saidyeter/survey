@@ -1,6 +1,7 @@
 import ActiveSurveyShowcase from "@/components/active-survey-showcase"
 import OlderSurveysAccordion from "@/components/older-surveys-accordion"
 import { getSurveys } from "@/lib/source-api"
+import Link from "next/link"
 
 export default async function Admin() {
   const response = await getSurveys()
@@ -14,9 +15,12 @@ export default async function Admin() {
   return (
     <div className="w-full" >
       <div className="">
-        <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
-          Aktif Anket
-        </h2>
+        <div className="flex justify-between">
+          <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
+            Aktif Anket
+          </h2>
+          <Link href='/admin/member'>Kisi yonetimi</Link>
+        </div>
 
         <ActiveSurveyShowcase survey={active} />
       </div>

@@ -1,4 +1,4 @@
-import { TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
+import { TNewParticipantSchema, TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getParticipantsResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, participantSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -23,13 +23,163 @@ export {
   checkPreSurveyExists,
   startSurvey,
   finishSurvey,
-  getPreSurvey
+  getPreSurvey,
+  getParticipants,
+  getSingleParticipant,
+  createNewPartipiciant,
+  updatePartipiciant,
+  deletePartipiciant
 }
 
 function beforeReq() {
   if (process.env.NODE_ENV == 'development') {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
   }
+}
+
+async function deletePartipiciant(id: number) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/participant/remove/" + id)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify({}),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      return true
+    }
+    console.log("deletePartipiciant", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("deletePartipiciant error", error);
+  }
+
+  return false
+}
+
+async function updatePartipiciant(id: number, req: TNewParticipantSchema) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/participant/edit/" + id)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(req),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      return true
+    }
+    console.log("updatePartipiciant", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("updatePartipiciant error", error);
+  }
+
+  return false
+}
+
+async function createNewPartipiciant(req: TNewParticipantSchema) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/participant/create")
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(req),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      return true
+    }
+    console.log("createNewPartipiciant", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("createNewPartipiciant error", error);
+  }
+
+  return false
+}
+
+async function getSingleParticipant(id: number) {
+  beforeReq()
+
+  const url = encodeURI(baseUrl + "/participant/single/" + id)
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        'Authorization': apiKey
+      },
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      const data = await response.json()
+      const result = participantSchema.safeParse(data)
+      if (!result.success) {
+
+        console.log('unsuccesfull parse', result.error);
+
+        return undefined
+      }
+      return result.data
+    }
+    console.log("getSingleParticipant", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("getSingleParticipant error", error);
+  }
+
+  return undefined
+}
+
+async function getParticipants(pageSize?: number, pageNumber?: number, search?: string) {
+  beforeReq()
+  const _pageSize = pageSize ?? 10
+  const _pageNumber = pageNumber ?? 0
+  const _search = search ?? ""
+
+  const url = encodeURI(baseUrl + "/participant/list?" + "pageSize=" + _pageSize + "&pageNumber=" + _pageNumber + "&search=" + _search)
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        'Authorization': apiKey
+      },
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      const data = await response.json()
+      const result = getParticipantsResponseSchema.safeParse(data)
+      if (!result.success) {
+
+        console.log('unsuccesfull parse', result.error);
+
+        return undefined
+      }
+      return result.data
+    }
+    console.log("getParticipants", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("getParticipants error", error);
+  }
+
+  return undefined
 }
 
 async function getPreSurvey() {
