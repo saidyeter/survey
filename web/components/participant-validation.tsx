@@ -13,6 +13,7 @@ import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 
 export default function ParticipantValidation() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const form = useForm<TPartipiciantValidationSchema>({
     resolver: zodResolver(partipiciantValidationSchema),
@@ -23,6 +24,7 @@ export default function ParticipantValidation() {
   });
 
   const onSubmit = async (data: TPartipiciantValidationSchema) => {
+    setLoading(true)
     const result = await fetch('/api/partipiciant', {
       method: "POST",
       headers: {
@@ -40,6 +42,7 @@ export default function ParticipantValidation() {
     else {
       setError('Girilen bilgilerde bazısı hatalı!')
       form.reset()
+      setLoading(false)
     }
   };
 
@@ -85,7 +88,10 @@ export default function ParticipantValidation() {
               </FormItem>
             )}
           />
-          <Button type="submit">Doğrula ve Başla</Button>
+          {loading ?
+            <>Bekleyiniz</> :
+            <Button type="submit">Doğrula ve Başla</Button>
+          }
         </form>
       </Form>
     </div>
