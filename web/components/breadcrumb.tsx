@@ -49,7 +49,7 @@ const routes = [
     label: 'Yeni Katılımcı',
     icon: <User size='1rem' />,
     path: '/admin/participant/new',
-    parent: ['G0ic',]
+    parent: ['G0ic','g8Dk']
   },
   {
     id: 'D9nt',

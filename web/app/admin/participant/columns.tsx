@@ -35,7 +35,7 @@ export const columns: ColumnDef<z.infer<typeof participantSchema>>[] = [
 
       return (
         <div>
-          <Link href={'/admin/member/' + d.id}
+          <Link href={'/admin/participant/' + d.id}
             className={buttonVariants({ variant: "ghost", size: 'icon' })}
           >
             <Pencil size='1.25rem' />

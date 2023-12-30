@@ -10,7 +10,7 @@ export default async function Edit({ params }: { params: { id: string } }) {
     return <GoBack
       title="Bulunamadi"
       desc=""
-      link="/admin/member"
+      link="/admin/participant"
     />
 
   }
@@ -20,7 +20,7 @@ export default async function Edit({ params }: { params: { id: string } }) {
     return <GoBack
       title="Bulunamadi"
       desc=""
-      link="/admin/member"
+      link="/admin/participant"
     />
 
   }
