@@ -20,6 +20,10 @@ import { submitAttendeeAnswers } from "@/actions/survey";
 import { useState } from "react";
 import { Separator } from "./ui/separator";
 import AnswerContent from "./answer-content";
+import Constants from "@/lib/constants"
+import { Label } from "./ui/label";
+
+
 
 
 export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema) {
@@ -120,7 +124,7 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                                   <RadioGroupItem value={ans.id.toString()} />
                                 </FormControl>
                                 <FormLabel className="font-normal text-lg">
-                                  {ans.label} :  
+                                  {ans.label} :
                                   <AnswerContent content={ans.text} />
                                 </FormLabel>
                               </FormItem>
@@ -137,6 +141,8 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
 
             )
           })}
+          <Separator className="my-4" />
+          <Label>{Constants.QuestionDescription}</Label>
           <Separator className="my-4" />
           <div className="flex w-full space-x-3 justify-end">
             <Button
