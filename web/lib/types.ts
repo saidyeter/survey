@@ -56,7 +56,7 @@ export type TGetSurveysResponseSchema = z.infer<typeof getSurveysResponseSchema>
 export const partipiciantValidationSchema = z
   .object({
     email: z.string().email("Hatalı E-Posta"),
-    code: z.string().length(6, "6 hane girin"),
+    code: z.string().length(14, "14 hane girin"),
   })
 
 export type TPartipiciantValidationSchema = z.infer<typeof partipiciantValidationSchema>;
