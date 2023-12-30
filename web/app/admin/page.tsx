@@ -19,7 +19,7 @@ export default async function Admin() {
           <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
             Aktif Anket
           </h2>
-          <Link href='/admin/member'>Kisi yonetimi</Link>
+          <Link href='/admin/participant'>Kisi yonetimi</Link>
         </div>
 
         <ActiveSurveyShowcase survey={active} />

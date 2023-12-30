@@ -3,7 +3,7 @@ import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import Link from "next/link"
 
-export default async function Members() {
+export default async function Participants() {
 
   const data = await getParticipants()
 
@@ -14,7 +14,7 @@ export default async function Members() {
         <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
           Katılımcılar
         </h2>
-        <Link href='/admin/member/new'>
+        <Link href='/admin/participant/new'>
           Yeni ekle
         </Link>
       </div>

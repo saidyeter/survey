@@ -24,7 +24,7 @@ const nthPartipiciant = {
   id: '60Mj',
   label: '. Katılımcı',
   icon: <User size='1rem' />,
-  path: '/admin/member/',
+  path: '/admin/participant/',
   parent: ['G0ic', 'g8Dk']
 }
 const routes = [
@@ -41,14 +41,14 @@ const routes = [
     id: 'g8Dk',
     label: 'Katılımcılar',
     icon: <Users size='1rem' />,
-    path: '/admin/member',
+    path: '/admin/participant',
     parent: ['G0ic',]
   },
   {
     id: '458k',
     label: 'Yeni Katılımcı',
     icon: <User size='1rem' />,
-    path: '/admin/member/new',
+    path: '/admin/participant/new',
     parent: ['G0ic',]
   },
   {
@@ -123,7 +123,7 @@ export function BreadCrumb() {
 
     let arr;
 
-    if (path.includes('member')) {
+    if (path.includes('participant')) {
       arr= nthPartipiciant
     }
     else {
