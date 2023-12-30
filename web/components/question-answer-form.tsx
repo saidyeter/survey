@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { submitAttendeeAnswers } from "@/actions/survey";
 import { useState } from "react";
 import { Separator } from "./ui/separator";
+import AnswerContent from "./answer-content";
 
 
 export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema) {
@@ -119,7 +120,8 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                                   <RadioGroupItem value={ans.id.toString()} />
                                 </FormControl>
                                 <FormLabel className="font-normal text-lg">
-                                  {ans.label} : {ans.text}
+                                  {ans.label} :  
+                                  <AnswerContent content={ans.text} />
                                 </FormLabel>
                               </FormItem>
                             )
@@ -154,12 +156,3 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
     </div>
   )
 }
-
-const colors = [
-  'red',
-  'blue',
-  'green',
-  'yellow',
-  'brown',
-
-]
