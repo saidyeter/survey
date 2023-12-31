@@ -21,7 +21,6 @@ export async function raiseUp(questionId: number) {
 }
 
 export async function create(data: TNewQuestionSchema) {
-    console.log("data", data);
 
     if (await createNewQuestion(data)) {
 

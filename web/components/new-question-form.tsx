@@ -21,6 +21,9 @@ import { Checkbox } from "./ui/checkbox";
 import { Separator } from "./ui/separator";
 import { create } from "@/actions/question";
 
+import { toast } from "sonner"
+import { Toaster, } from "@/components/ui/sonner"
+
 import {
   Accordion,
   AccordionContent,
@@ -77,12 +80,21 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
       reset()
       window.scrollTo(0, 0);
       setO('')
+      toast("Yeni soru olusturuldu", {
+        // description: "Sunday, December 03, 2023 at 9:00 AM",
+        action: {
+          label: "Tamam",
+          onClick: () => { },
+        },
+
+      })
     }
 
   };
   const labels = 'ABCDEFGHJKLMNOPRSTUVYZ'
   return (
     <div className="pt-8 w-full">
+      <Toaster />
       <Accordion
         type="single"
         collapsible
