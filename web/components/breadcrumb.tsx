@@ -1,6 +1,6 @@
 "use client"
 
-import { User, Users, Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
+import { User, HelpCircle, Users, Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement } from 'react'
@@ -27,9 +27,17 @@ const nthPartipiciant = {
   path: '/admin/participant/',
   parent: ['G0ic', 'g8Dk']
 }
+const nthQuestion = {
+  id: 'Rkow',
+  label: " id'li Soru",
+  icon: <HelpCircle size='1rem' />,
+  path: '/admin/survey/running/',
+  parent: ['G0ic', '1jvg', 'RwiS']
+}
 const routes = [
   nthPartipiciant,
   nthSurvey,
+  nthQuestion,
   {
     id: 'SkDk',
     label: 'Tamamlanmis Anketler',
@@ -49,7 +57,7 @@ const routes = [
     label: 'Yeni Katılımcı',
     icon: <User size='1rem' />,
     path: '/admin/participant/new',
-    parent: ['G0ic','g8Dk']
+    parent: ['G0ic', 'g8Dk']
   },
   {
     id: 'D9nt',
@@ -124,10 +132,13 @@ export function BreadCrumb() {
     let arr;
 
     if (path.includes('participant')) {
-      arr= nthPartipiciant
+      arr = nthPartipiciant
+    }
+    else if (path.includes('running')) {
+      arr = nthQuestion
     }
     else {
-      arr= nthSurvey
+      arr = nthSurvey
     }
 
     const surveyId = path.replace(/^\D+/g, '');
@@ -136,7 +147,7 @@ export function BreadCrumb() {
       const parent = routes.find(r => r.id == p)!
       parents.push(parent)
     });
-    
+
     parents.push({
       id: arr.id,
       icon: arr.icon,

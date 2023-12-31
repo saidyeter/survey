@@ -1,19 +1,11 @@
 "use client"
 
 import { TSurveySchema } from "@/lib/types";
-import Link from "next/link";
-import { Button, buttonVariants } from "./ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Terminal } from "lucide-react";
+import { Button } from "./ui/button";
 import { getLocaleDate } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { finish } from "@/actions/survey";
+import GoBack from "./go-back";
 
 
 interface RunningSurveyShowcaseProps {
@@ -24,22 +16,11 @@ export default function RunningSurveyManagement(params: RunningSurveyShowcasePro
   const { survey } = params
 
   if (!survey || survey.status != 'running') {
-    return (
-      <Alert>
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>Aktif anket yok!</AlertTitle>
-        <AlertDescription>
-          <Link
-            href={`/admin/`}
-            className="underline"
-          >
-            Buraya
-          </Link>
-          &nbsp;tiklayarak geri donebilirsiniz
-        </AlertDescription>
-      </Alert>
-
-    )
+    return <GoBack
+      title="Aktif anket yok"
+      desc=""
+      link="/admin"
+    />
   }
   const { id, startDate, status, description, endDate, name } = survey
 

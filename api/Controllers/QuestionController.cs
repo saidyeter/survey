@@ -185,6 +185,62 @@ public class QuestionController : ControllerBase
         return Ok();
     }
 
+
+    [HttpPost("update-on-running/{id}")]
+    public async Task<IActionResult> UpdateOnRunningQuestion(int id, UpdateOnRunningQuestionReq val)
+    {
+        var question = await dbContext.Questions
+            .Where(x => x.Id == id)
+            .SingleOrDefaultAsync();
+        if (question is null)
+        {
+            logger.LogInformation("No question found with {id} id", id);
+            return BadRequest();
+        }
+
+        var answers = await dbContext.Answers
+            .Where(a => a.QuestionId == id)
+            .ToListAsync();
+
+        if (answers.Count == 0)
+        {
+            logger.LogError("There is no answer for this question with {id} id", id);
+            throw new Exception($"There is no answer for this question with {id} id");
+        }
+
+        question.Text = val.Text;
+        foreach (var item in answers)
+        {
+            var fromReq = val.Answers.Where(a => a.Id == item.Id).SingleOrDefault();
+            if (fromReq is null)
+            {
+                logger.LogInformation("No answer found with {id} id in request", id);
+                return BadRequest();
+            }
+            item.Text = val.Text;
+        }
+        dbContext.Update(question);
+        dbContext.UpdateRange(answers);
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpGet("single/{id}")]
+    public async Task<IActionResult> GetSingleQuestion(int id)
+    {
+        var qna = await dbContext.Questions
+            .Where(x => x.Id == id)
+            .Select(l => new
+            {
+                question = l,
+                answers = dbContext.Answers.Where(a => a.QuestionId == l.Id).ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        return Ok(qna);
+    }
+
     [HttpGet("{ticket}")]
     public async Task<IActionResult> GetQuestions(string ticket)
     {

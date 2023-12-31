@@ -112,6 +112,8 @@ export const questionsResponseSchema = z.object({
 
 })
 
+
+
 export type TQuestionsResponseSchema = z.infer<typeof questionsResponseSchema>;
 
 
@@ -255,3 +257,15 @@ export const getParticipantsResponseSchema = z.object({
 })
 
 export type TGetParticipantsResponseSchema = z.infer<typeof getParticipantsResponseSchema>;
+
+const updateOnRunningQuestionAnswerSchema = z.object({
+  id: z.number(),
+  text: z.string(),
+  label: z.string()
+})
+
+export const updateOnRunningQuestionRequestSchema = z.object({
+  text: z.string(),
+  answers: updateOnRunningQuestionAnswerSchema.array()
+})
+export type TUpdateOnRunningQuestionRequestSchema = z.infer<typeof updateOnRunningQuestionRequestSchema>;

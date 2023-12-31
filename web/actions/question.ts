@@ -1,9 +1,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { TNewQuestionSchema } from '@/lib/types'
-import { createNewQuestion, copySingleQuestion, lowerDownQuestion, removeQuestion } from '@/lib/source-api'
+import { TNewQuestionSchema, TUpdateOnRunningQuestionRequestSchema } from '@/lib/types'
+import { createNewQuestion, copySingleQuestion, lowerDownQuestion, removeQuestion, updateSingleQuestionOnRunningSurvey } from '@/lib/source-api'
 import { raiseUpQuestion } from '@/lib/source-api'
+import { redirect } from 'next/navigation'
 
 
 export async function remove(questionId: number) {
@@ -45,4 +46,18 @@ export async function copySingle(questionId: number) {
     const result = await copySingleQuestion(questionId)
     revalidatePath('/admin/survey/pre/')
     return result;
+}
+
+
+export async function updateRunning(questionId: number, req: TUpdateOnRunningQuestionRequestSchema) {
+     if (await updateSingleQuestionOnRunningSurvey(questionId, req)) {
+
+        revalidatePath('/admin/survey/running/')
+        revalidatePath('/survey/questions')
+        redirect('/admin/survey/running/')
+      
+    }
+    return {
+        success: false,
+    }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, Pencil, ChevronUp, ChevronDown } from "lucide-react";
+import { Trash2, Pencil, ChevronUp, ChevronDown, CopyIcon } from "lucide-react";
 import { TQnASchema } from "@/lib/types";
 import {
   Card,
@@ -11,12 +11,31 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { raiseUp, lowerDown, remove } from "@/actions/question";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import Link from "next/link";
+
+
+
+
 
 interface QuestionCardProps {
   qna: TQnASchema,
-  showButtons?: boolean
+  showButtons?: boolean,
+  editable?: boolean
 }
 
 export default function QuestionCard(params: QuestionCardProps) {
@@ -26,8 +45,17 @@ export default function QuestionCard(params: QuestionCardProps) {
     <Card className="mt-4">
       <CardHeader>
         <CardDescription>Soru {question.orderNumber}{question.required && ` (Cevap verilmesi zorunlu)`}</CardDescription>
-        <CardTitle>{question.text}</CardTitle>
-
+        <div className="flex justify-between">
+          <CardTitle>{question.text}</CardTitle>
+          {params.editable &&
+            <Link
+              className={buttonVariants({ variant: 'ghost', size: 'icon' })}
+              href={`/admin/survey/running/${question.id}`}
+            >
+              <Pencil />
+            </Link>
+          }
+        </div>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">

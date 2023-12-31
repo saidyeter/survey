@@ -1,4 +1,4 @@
-import { TNewParticipantSchema, TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getParticipantsResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, participantSchema, partipiciantValidationResponseSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
+import { TNewParticipantSchema, TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, TUpdateOnRunningQuestionRequestSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getParticipantsResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, participantSchema, partipiciantValidationResponseSchema, qnaSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -28,7 +28,9 @@ export {
   getSingleParticipant,
   createNewPartipiciant,
   updatePartipiciant,
-  deletePartipiciant
+  deletePartipiciant,
+  getSingleQuestion,
+  updateSingleQuestionOnRunningSurvey
 }
 
 function beforeReq() {
@@ -36,6 +38,68 @@ function beforeReq() {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
   }
 }
+
+async function updateSingleQuestionOnRunningSurvey(id:number,req:TUpdateOnRunningQuestionRequestSchema) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/question/update-on-running/" + id)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(req),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+     return true
+    }
+    console.log("updateSingleQuestionOnRunningSurvey", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("updateSingleQuestionOnRunningSurvey error", error);
+  }
+
+  return false
+}
+
+
+async function getSingleQuestion(id:number) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/question/single/" + id)
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        'Authorization': apiKey
+      },
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      const data = await response.json()
+
+      const result = qnaSchema.safeParse(data)
+      if (!result.success) {
+
+        console.log('unsuccesfull parse', result.error);
+
+        return undefined
+      }
+      return result.data
+    }
+    console.log("getSingleQuestion", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("getSingleQuestion error", error);
+  }
+
+  return undefined
+}
+
+
 
 async function deletePartipiciant(id: number) {
   beforeReq()

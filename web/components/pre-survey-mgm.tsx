@@ -1,13 +1,11 @@
 "use client"
 
 import { TSurveySchema } from "@/lib/types";
-import Link from "next/link";
 import { Button } from "./ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Terminal } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
 import { start } from "@/actions/survey";
 import { Label } from "@radix-ui/react-label";
+import GoBack from "./go-back";
 
 
 interface PreSurveyShowcaseProps {
@@ -19,21 +17,11 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
   const { survey, showStart } = params
 
   if (!survey || survey.status != 'pre') {
-    return (
-      <Alert>
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>Aktif anket yok!</AlertTitle>
-        <AlertDescription>
-          <Link
-            href={`/admin/`}
-            className="underline"
-          >
-            Buraya
-          </Link>
-          &nbsp;tiklayarak geri donebilirsiniz
-        </AlertDescription>
-      </Alert>
-    )
+    return <GoBack
+      title="Aktif anket yok"
+      desc=""
+      link="/admin"
+    />
   }
   const { id, startDate, status, description, endDate, name } = survey
   const statusDesc = status == "pre" ? "Henuz yayinlanmadi" : "Aktif"
