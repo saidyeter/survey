@@ -1,3 +1,4 @@
+import GoBack from "@/components/go-back"
 import ParticipantValidation from "@/components/participant-validation"
 import { getRunningSurvey } from "@/lib/source-api"
 
@@ -5,12 +6,11 @@ export default async function SurveyStart() {
   const survey = await getRunningSurvey()
 
   if (!survey) {
-    return (
-      <p className="max-w-[700px] text-lg text-muted-foreground">
-        Şu an aktif bir anket bulunmamaktadır.<br className="hidden sm:inline" />
-        Anket açıldığı zaman size bildirilecektir.
-      </p>
-    )
+    return <GoBack
+      title="Aktif anket yok"
+      desc=""
+      link="/"
+    />
   }
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">

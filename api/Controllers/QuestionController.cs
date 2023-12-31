@@ -217,7 +217,7 @@ public class QuestionController : ControllerBase
                 logger.LogInformation("No answer found with {id} id in request", id);
                 return BadRequest();
             }
-            item.Text = val.Text;
+            item.Text = fromReq.Text;
         }
         dbContext.Update(question);
         dbContext.UpdateRange(answers);

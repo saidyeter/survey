@@ -178,7 +178,7 @@ export type TCheckNewSurveyIsAllowed = z.infer<typeof checkNewSurveyIsAllowedRes
 export const newSurveyValidationSchema = z
   .object({
     name: z.string().min(5, 'En az 5 karakter giriniz'),
-    desc: z.string().min(5, 'En az 5 karakter giriniz'),
+    desc: z.string().optional(),
   })
 
 export type TNewSurveyValidationSchema = z.infer<typeof newSurveyValidationSchema>;

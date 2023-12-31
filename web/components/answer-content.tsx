@@ -9,7 +9,7 @@ export default function AnswerContent(props: AnswerTextProps) {
   return (
     <>
       {p?.text}
-      {p?.video.name && p.video.url && p?.img.name && p.img.url &&
+      {(p?.video.name && p.video.url || p?.img.name && p.img.url) &&
         <br />
       }
 
