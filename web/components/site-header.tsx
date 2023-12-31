@@ -3,6 +3,7 @@ import { siteConfig } from "@/config/site"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LogoutButton } from "./logout"
 import Link from "next/link"
+import { Users } from "lucide-react"
 
 
 export function SiteHeader() {
@@ -12,6 +13,10 @@ export function SiteHeader() {
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
             <span className="inline-block font-bold">{siteConfig.name}</span>
+          </Link>
+          <Link href="/admin/participant" className="flex items-center space-x-2">
+            <Users size='1rem' />
+            <span className="inline-block">Katılımcılar</span>
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-4">
