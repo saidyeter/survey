@@ -9,11 +9,12 @@ import { TNewSurveyValidationSchema } from "@/lib/types"
 import { updatePre } from "@/actions/survey"
 import { Label } from "./ui/label"
 
-interface UpdatePreSurveyInfoProps {
+interface UpdateSurveyInfoProps {
+  id: number
   name: string,
   description?: string
 }
-export default function UpdatePreSurveyInfo(params: UpdatePreSurveyInfoProps) {
+export default function UpdateSurveyInfo(params: UpdateSurveyInfoProps) {
 
   const [editName, setEditName] = useState(params.name)
   const [editDesc, setEditDesc] = useState(params.description)
@@ -23,7 +24,7 @@ export default function UpdatePreSurveyInfo(params: UpdatePreSurveyInfoProps) {
       name: editName,
       desc: editDesc
     }
-    await updatePre(data)
+    await updatePre(params.id, data)
   }
 
   return (

@@ -33,7 +33,7 @@ export {
   updateSingleQuestionOnRunningSurvey,
   removePreSurvey,
   updateSingleQuestionOnPreSurvey,
-  updatePreSurveyInfo
+  updateSurveyInfo
 }
 
 function beforeReq() {
@@ -43,9 +43,9 @@ function beforeReq() {
 }
 
 
-async function updatePreSurveyInfo(req: TNewSurveyValidationSchema) {
+async function updateSurveyInfo(id: number, req: TNewSurveyValidationSchema) {
   beforeReq()
-  const url = encodeURI(baseUrl + "/survey/update-pre-survey-info")
+  const url = encodeURI(baseUrl + "/survey/update-survey-info/" + id)
 
   try {
     const response = await fetch(url, {

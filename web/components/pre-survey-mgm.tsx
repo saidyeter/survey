@@ -8,7 +8,7 @@ import { Label } from "@radix-ui/react-label";
 import GoBack from "./go-back";
 import { Play, Trash2 } from "lucide-react";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "./ui/alert-dialog";
-import UpdatePreSurveyInfo from "./update-pre-survey-info";
+import UpdateSurveyInfo from "./update-survey-info";
 
 
 interface PreSurveyShowcaseProps {
@@ -47,7 +47,8 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
           <div className="flex flex-col space-y-4 w-full">
             <div className="flex justify-between">
               <div className="flex space-x-2 items-center">
-                <UpdatePreSurveyInfo
+                <UpdateSurveyInfo
+                  id={id}
                   name={name}
                   description={description}
                 />

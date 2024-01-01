@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { finishSurvey, getQuestions, removePreSurvey, startSurvey, submitAnswers, updatePreSurveyInfo } from '@/lib/source-api'
+import { finishSurvey, getQuestions, removePreSurvey, startSurvey, submitAnswers, updateSurveyInfo } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
 import { TNewSurveyValidationSchema, TQuestionAnswersFormSchema, questionAnswersFormSchema, questionAnswersReqSchema, } from '@/lib/types'
 import { createNewSurvey } from '@/lib/source-api'
@@ -105,10 +105,11 @@ export async function finish() {
 
 }
 
-export async function updatePre(data: TNewSurveyValidationSchema) {
-    if (await updatePreSurveyInfo(data)) {
+export async function updatePre(id: number, data: TNewSurveyValidationSchema) {
+    if (await updateSurveyInfo(id, data)) {
         revalidatePath('/admin/survey/pre')
-        redirect('/admin/survey/pre')
+        revalidatePath('/admin/survey/running')
+        redirect('/admin')
     }
     return {
         success: false,

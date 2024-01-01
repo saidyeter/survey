@@ -6,6 +6,7 @@ import { getLocaleDate } from "@/lib/utils";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
 import { finish } from "@/actions/survey";
 import GoBack from "./go-back";
+import UpdateSurveyInfo from "./update-survey-info";
 
 
 interface RunningSurveyShowcaseProps {
@@ -41,6 +42,11 @@ export default function RunningSurveyManagement(params: RunningSurveyShowcasePro
         </CardContent>
         <CardFooter>
           <>
+            <UpdateSurveyInfo
+              id={id}
+              name={name}
+              description={description}
+            />
             <Button onClick={() => {
               const r = finish()
             }}>

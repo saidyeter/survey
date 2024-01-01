@@ -528,25 +528,30 @@ public class SurveyController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("update-pre-survey-info")]
-    public async Task<IActionResult> UpdatePreSurveyInfo(CreateSurveyReq req)
+    [HttpPost("update-survey-info/{id}")]
+    public async Task<IActionResult> UpdateSurveyInfo(int id, CreateSurveyReq req)
     {
         var surveys = await dbContext.Surveys
-            .Where(s => s.Status == SurveyStatus.Pre)
+            .Where(s => s.Id == id)
             .ToListAsync();
 
         if (surveys.Count == 0)
         {
-            logger.LogInformation("No pre survey found");
+            logger.LogInformation("No survey found by {id} id", id);
             return BadRequest();
         }
 
         if (surveys.Count > 1)
         {
-            throw new Exception("There must be single pre survey");
+            throw new Exception("There must be single survey");
         }
 
         var survey = surveys.First();
+        if (survey.Status == SurveyStatus.Ended)
+        {
+            logger.LogInformation("The survey is ended {id} id. And cant be any change ", id);
+            return BadRequest();
+        }
 
         survey.Name = req.Name;
         survey.Description = req.Desc;
