@@ -3,14 +3,12 @@
 import { TSurveySchema } from "@/lib/types";
 import { Button, buttonVariants } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
-import { removePre, start, update } from "@/actions/survey";
+import { removePre, start } from "@/actions/survey";
 import { Label } from "@radix-ui/react-label";
 import GoBack from "./go-back";
 import { Play, Trash2 } from "lucide-react";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "./ui/alert-dialog";
-import { Input } from "./ui/input";
-import { TNewSurveyValidationSchema } from "@/lib/types";
-import { useState } from "react";
+import UpdatePreSurveyInfo from "./update-pre-survey-info";
 
 
 interface PreSurveyShowcaseProps {
@@ -31,20 +29,7 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
   const { id, startDate, status, description, endDate, name } = survey
   const statusDesc = status == "pre" ? "Henüz yayınlanmadı" : "Aktif"
 
-
-  const [editName, setEditName] = useState(name)
-  const [editDesc, setEditDesc] = useState(description)
-
-  async function Update() {
-    const data: TNewSurveyValidationSchema = {
-      name: editName,
-      desc: editDesc
-    }
-    await update(data)
-  }
-
   return (
-
     <div className="w-full pt-4 border-t-foreground border-b-2">
       <Card>
         <CardHeader>
@@ -62,39 +47,10 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
           <div className="flex flex-col space-y-4 w-full">
             <div className="flex justify-between">
               <div className="flex space-x-2 items-center">
-
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant={'outline'}>
-                      İsim/Açıklama Düzenle
-                    </Button>
-                  </AlertDialogTrigger>
-
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Anket Bilgileri</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <Label>Anket ismi</Label>
-                          <Input placeholder="Anket ismi" value={editName} onChange={(v) => setEditName(v.target.value)} />
-
-                          <Label>Anket açıklaması</Label>
-                          <Input placeholder="Anket açıklaması" value={editDesc} onChange={(v) => setEditDesc(v.target.value)} />
-                        </CardContent>
-                      </Card>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Vazgeç</AlertDialogCancel>
-                      <AlertDialogAction onClick={Update}>
-                        Onayla
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-
-                </AlertDialog>
-
+                <UpdatePreSurveyInfo
+                  name={name}
+                  description={description}
+                />
                 {showStart ?
                   <Button onClick={() => start()}>
                     <Play size='1rem' />

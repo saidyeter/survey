@@ -105,7 +105,7 @@ export async function finish() {
 
 }
 
-export async function update(data: TNewSurveyValidationSchema) {
+export async function updatePre(data: TNewSurveyValidationSchema) {
     if (await updatePreSurveyInfo(data)) {
         revalidatePath('/admin/survey/pre')
         redirect('/admin/survey/pre')
