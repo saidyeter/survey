@@ -181,9 +181,6 @@ export default function CreateForm() {
                     <SelectItem value='Yalova'>Yalova</SelectItem>
                     <SelectItem value='Yozgat'>Yozgat</SelectItem>
                     <SelectItem value='Zonguldak'>Zonguldak</SelectItem>
-                    {/* <SelectItem t="light">Light</SelectItem>
-                    <SelectItem value">dark">Dark</SelectItem>
-                    <SelectItem em="system">System</SelectItem> */}
                   </SelectContent>
                 </Select>
 
