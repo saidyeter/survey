@@ -37,7 +37,7 @@ export default function NewSurveyForm() {
                   <Input placeholder="Anket Ismi" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Anket ismi olarak goruntulenecektir.
+                  Anket ismi olarak görüntülenecektir.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -53,7 +53,7 @@ export default function NewSurveyForm() {
                   <Input placeholder="Anket açıklaması" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Anket açıklaması olarak goruntulenecektir.
+                  Anket açıklaması olarak görüntülenecektir.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

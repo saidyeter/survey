@@ -528,5 +528,34 @@ public class SurveyController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("update-pre-survey-info")]
+    public async Task<IActionResult> UpdatePreSurveyInfo(CreateSurveyReq req)
+    {
+        var surveys = await dbContext.Surveys
+            .Where(s => s.Status == SurveyStatus.Pre)
+            .ToListAsync();
+
+        if (surveys.Count == 0)
+        {
+            logger.LogInformation("No pre survey found");
+            return BadRequest();
+        }
+
+        if (surveys.Count > 1)
+        {
+            throw new Exception("There must be single pre survey");
+        }
+
+        var survey = surveys.First();
+
+        survey.Name = req.Name;
+        survey.Description = req.Desc;
+
+        dbContext.Update(survey);
+
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
 }
 

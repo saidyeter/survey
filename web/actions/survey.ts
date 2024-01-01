@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { finishSurvey, getQuestions, removePreSurvey, startSurvey, submitAnswers } from '@/lib/source-api'
+import { finishSurvey, getQuestions, removePreSurvey, startSurvey, submitAnswers, updatePreSurveyInfo } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
 import { TNewSurveyValidationSchema, TQuestionAnswersFormSchema, questionAnswersFormSchema, questionAnswersReqSchema, } from '@/lib/types'
 import { createNewSurvey } from '@/lib/source-api'
@@ -21,7 +21,6 @@ export async function removePre() {
         success: false,
     }
 }
-
 
 export async function submitAttendeeAnswers(data: TQuestionAnswersFormSchema) {
     const cookieStore = cookies()
@@ -76,8 +75,6 @@ export async function getSurveyQuestions() {
     }
 }
 
-
-
 export async function create(data: TNewSurveyValidationSchema) {
     const result = await createNewSurvey(data)
     if (result) {
@@ -106,4 +103,14 @@ export async function finish() {
         redirect('/admin/')
     }
 
+}
+
+export async function update(data: TNewSurveyValidationSchema) {
+    if (await updatePreSurveyInfo(data)) {
+        revalidatePath('/admin/survey/pre')
+        redirect('/admin/survey/pre')
+    }
+    return {
+        success: false,
+    }
 }

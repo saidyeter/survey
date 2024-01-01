@@ -32,7 +32,8 @@ export {
   getSingleQuestion,
   updateSingleQuestionOnRunningSurvey,
   removePreSurvey,
-  updateSingleQuestionOnPreSurvey
+  updateSingleQuestionOnPreSurvey,
+  updatePreSurveyInfo
 }
 
 function beforeReq() {
@@ -42,6 +43,31 @@ function beforeReq() {
 }
 
 
+async function updatePreSurveyInfo(req: TNewSurveyValidationSchema) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/survey/update-pre-survey-info")
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(req),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      return true
+    }
+    console.log("updatePreSurveyInfo", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("updatePreSurveyInfo error", error);
+  }
+
+  return false
+}
 
 async function updateSingleQuestionOnPreSurvey(id: number, req: TNewQuestionSchema) {
   beforeReq()
