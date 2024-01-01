@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, Pencil, ChevronUp, ChevronDown, CopyIcon } from "lucide-react";
+import { Trash2, Pencil, ChevronUp, ChevronDown } from "lucide-react";
 import { TQnASchema } from "@/lib/types";
 import {
   Card,
@@ -14,22 +14,8 @@ import {
 import { Button, buttonVariants } from "./ui/button";
 import { raiseUp, lowerDown, remove } from "@/actions/question";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import Link from "next/link";
-
-
-
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "./ui/alert-dialog";
 
 
 interface QuestionCardProps {
@@ -41,7 +27,6 @@ interface QuestionCardProps {
 export default function QuestionCard(params: QuestionCardProps) {
   const { question, answers } = params.qna
   return (
-
     <Card className="mt-4">
       <CardHeader>
         <CardDescription>Soru {question.orderNumber}{question.required && ` (Cevap verilmesi zorunlu)`}</CardDescription>
@@ -59,7 +44,6 @@ export default function QuestionCard(params: QuestionCardProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">
-
           {answers.map((a) => (
             <div key={a.id}>
               <span className="text-sm text-muted-foreground">
@@ -85,19 +69,43 @@ export default function QuestionCard(params: QuestionCardProps) {
       {params.showButtons &&
         <CardFooter>
           <div className="flex space-x-3 text-sm">
-            <Button type="button" size={'icon'} onClick={() => { }}>
+            <Link
+              href={`/admin/survey/pre/${question.id}`}
+              className={buttonVariants({ variant: 'default', size: 'icon' })}
+            >
               <Pencil />
-            </Button>
+            </Link>
             <Button type="button" variant={'outline'} size={'icon'} onClick={() => { raiseUp(question.id) }}>
               <ChevronUp />
             </Button>
             <Button type="button" variant={'outline'} size={'icon'} onClick={() => { lowerDown(question.id) }}>
               <ChevronDown />
             </Button>
-            <Button type="button" variant={'destructive'}
-              size={'icon'} onClick={() => { remove(question.id) }}>
-              <Trash2 />
-            </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size='icon'>
+                  <Trash2 />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Onay Gerekli</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Bu soruyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => { remove(question.id) }}
+                    className={buttonVariants({ variant: 'destructive' })}
+                  >
+                    Onayla
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </CardFooter>
       }

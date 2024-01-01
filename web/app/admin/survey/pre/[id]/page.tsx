@@ -1,7 +1,6 @@
 import GoBack from "@/components/go-back"
-import UpdateQuestionOnRunningSurvey from "@/components/update-question-on-running-survey"
+import UpdateQuestionForm from "@/components/update-question-form"
 import { getSingleQuestion } from "@/lib/source-api"
-
 
 export default async function EditQuestion({ params }: { params: { id: string } }) {
 
@@ -23,9 +22,8 @@ export default async function EditQuestion({ params }: { params: { id: string } 
       link="/admin/survey/running"
     />
   }
-  
 
   return (
-    <UpdateQuestionOnRunningSurvey qna={qna} />
+    <UpdateQuestionForm {...qna} />
   )
 }

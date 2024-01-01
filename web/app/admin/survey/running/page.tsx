@@ -1,16 +1,13 @@
 import RunningSurveyManagement from "@/components/active-survey-mgm"
 import GoBack from "@/components/go-back"
-import NewQuestionForm from "@/components/new-question-form"
 import QuestionsAccordion from "@/components/questions-accordion"
-import { buttonVariants } from "@/components/ui/button"
 import { getRunningSurvey, getSurvey } from "@/lib/source-api"
-import Link from "next/link"
 
 export default async function Running() {
   const data = await getRunningSurvey()
   if (!data) {
     return <GoBack
-      title="Yanlis Anket"
+      title="Yanlış Anket"
       desc=""
       link="/admin"
     />
@@ -18,7 +15,7 @@ export default async function Running() {
   const pre = await getSurvey(data.id)
   if (!pre) {
     return <GoBack
-      title="Yanlis Anket"
+      title="Yanlış Anket"
       desc=""
       link="/admin"
     />

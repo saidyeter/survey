@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { TNewQuestionSchema, TUpdateOnRunningQuestionRequestSchema } from '@/lib/types'
-import { createNewQuestion, copySingleQuestion, lowerDownQuestion, removeQuestion, updateSingleQuestionOnRunningSurvey } from '@/lib/source-api'
+import { createNewQuestion, copySingleQuestion, lowerDownQuestion, removeQuestion, updateSingleQuestionOnRunningSurvey, updateSingleQuestionOnPreSurvey } from '@/lib/source-api'
 import { raiseUpQuestion } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
 
@@ -55,6 +55,17 @@ export async function updateRunning(questionId: number, req: TUpdateOnRunningQue
         revalidatePath('/survey/questions')
         redirect('/admin/survey/running/')
       
+    }
+    return {
+        success: false,
+    }
+}
+
+export async function updatePre(questionId: number, req: TNewQuestionSchema) {
+     if (await updateSingleQuestionOnPreSurvey(questionId, req)) {
+        revalidatePath('/admin/survey/pre')
+        revalidatePath('/survey/questions')
+        redirect('/admin/survey/pre')
     }
     return {
         success: false,

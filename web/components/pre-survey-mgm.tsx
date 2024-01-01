@@ -47,7 +47,10 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
         <CardFooter>
           <div className="flex flex-col space-y-4 w-full">
             <div className="flex justify-between">
-              <div className="flex space-x-2">
+              <div className="flex space-x-2 items-center">
+                <Button variant={'outline'}>
+                  İsim/Açıklama Düzenle
+                </Button>
                 {showStart ?
                   <Button onClick={() => start()}>
                     <Play size='1rem' />
@@ -58,9 +61,6 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
                     Başlatmak icin soru eklemeniz gereklidir
                   </Label>
                 }
-                <Button variant={'outline'}>
-                  İsim/Açıklama Düzenle
-                </Button>
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -86,12 +86,10 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-
             </div>
           </div>
         </CardFooter>
       </Card>
-
     </div>
 
   )

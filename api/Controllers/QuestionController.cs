@@ -185,6 +185,46 @@ public class QuestionController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("update/{id}")]
+    public async Task<IActionResult> UpdateQuestion(int id, AddQuestionReq val)
+    {
+        // validation
+        var currentSurvey = dbContext.Surveys
+          .Where(x => x.Status == SurveyStatus.Pre)
+          .FirstOrDefault();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No pre survey found");
+            return BadRequest();
+        }
+
+        var question = await dbContext.Questions
+            .Where(x => x.Id == id)
+            .FirstOrDefaultAsync();
+        if (question is null)
+        {
+            logger.LogInformation("No question is found by {id} id", id);
+            return BadRequest();
+        }
+
+        question.Text = val.Text;
+        question.DescriptiveAnswer = val.DescriptiveAnswer;
+        question.Required = val.IsRequired;
+        question.AnswerType =
+            val.AnswerType == "single" ? AnswerType.Single :
+            val.AnswerType == "multiple" ? AnswerType.Multiple :
+            throw new Exception("Unexpected AnswerType: " + val.AnswerType);
+        dbContext.Update(question);
+
+        var answers = dbContext.Answers.Where(a => a.QuestionId == question.Id).ToList();
+        dbContext.RemoveRange(answers);
+        await dbContext.SaveChangesAsync();
+
+        await dbContext.Answers.AddRangeAsync(val.Answers.Select(a => a.ToDbModel(question.Id)));
+        await dbContext.SaveChangesAsync();
+        return Ok();
+    }
 
     [HttpPost("update-on-running/{id}")]
     public async Task<IActionResult> UpdateOnRunningQuestion(int id, UpdateOnRunningQuestionReq val)

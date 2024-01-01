@@ -13,7 +13,7 @@ export default async function SurveyDetails({ params }: { params: { id: string }
 
   if (surveyId.toString() != params.id) {
     return <GoBack
-      title="Yanlis Anket"
+      title="Yanlış Anket"
       desc=""
       link="/admin"
     />

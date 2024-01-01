@@ -31,13 +31,42 @@ export {
   deletePartipiciant,
   getSingleQuestion,
   updateSingleQuestionOnRunningSurvey,
-  removePreSurvey
+  removePreSurvey,
+  updateSingleQuestionOnPreSurvey
 }
 
 function beforeReq() {
   if (process.env.NODE_ENV == 'development') {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
   }
+}
+
+
+
+async function updateSingleQuestionOnPreSurvey(id: number, req: TNewQuestionSchema) {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/question/update/" + id)
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify(req),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      return true
+    }
+    console.log("updateSingleQuestionOnRunningSurvey", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("updateSingleQuestionOnRunningSurvey error", error);
+  }
+
+  return false
 }
 
 async function removePreSurvey() {
@@ -66,8 +95,6 @@ async function removePreSurvey() {
   return false
 }
 
-
-
 async function updateSingleQuestionOnRunningSurvey(id: number, req: TUpdateOnRunningQuestionRequestSchema) {
   beforeReq()
   const url = encodeURI(baseUrl + "/question/update-on-running/" + id)
@@ -93,7 +120,6 @@ async function updateSingleQuestionOnRunningSurvey(id: number, req: TUpdateOnRun
 
   return false
 }
-
 
 async function getSingleQuestion(id: number) {
   beforeReq()
@@ -501,7 +527,6 @@ async function raiseUpQuestion(questionId: number) {
 
   return false
 }
-
 
 async function createNewQuestion(req: TNewQuestionSchema) {
   beforeReq()
