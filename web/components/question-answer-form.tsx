@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,14 +26,30 @@ import { Label } from "./ui/label";
 
 
 
-export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema) {
+export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: TQuestionsResponseSchema) {
+  function findId(qId: number) {
+    const aid = alreadyRespondedAnswers.find(a => a.questionId == qId)?.answerId
+    if (aid) {
+      return aid.toString()
+    }
+    return undefined
+  }
+
+  // console.log(alreadyRespondedAnswers, alreadyRespondedAnswers.map(t => findId(t.questionId)), survey.map(q => {
+  //   return {
+  //     questionId: q.question.id,
+  //     answerId: findId(q.question.id),
+  //     answerDesc: undefined,
+  //   }
+  // }));gnN
+
   const form = useForm<TQuestionAnswersFormSchema>({
     resolver: zodResolver(questionAnswersFormSchema),
     defaultValues: {
       answers: survey.map(q => {
         return {
           questionId: q.question.id,
-          answerId: undefined,
+          answerId: findId(q.question.id),
           answerDesc: undefined,
         }
       })
@@ -44,12 +60,16 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
     setError('')
     let overallError = ''
     let succeed = true
+    if (survey.length > s + 1) {
+      params.answers =
+        params.answers
+          .filter(a => a.questionId < survey[s].question.id)
+    }
     params.answers.forEach((v, i) => {
       const q = survey.find(x => x.question.id == v.questionId)
       if (q?.question.required && !v.answerId) {
         succeed = false
         overallError += `${i + 1},`
-
       }
     })
 
@@ -83,8 +103,10 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
       return p
     })
   }
+  // console.log(form.getValues('answers').filter(a => a.answerId !== undefined).length);
 
-  const [s, setS] = useState(0)
+
+  const [s, setS] = useState(form.getValues('answers').filter(a => a.answerId !== undefined).length )
 
   const [error, setError] = useState('')
 
@@ -94,6 +116,11 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
         <form onSubmit={form.handleSubmit(formSubmit)} >
 
           {survey.map(({ question, answers }, i, arr) => {
+            const answered = findId(question.id) != undefined
+            const disabled = answered
+            const defaultVal = answered ? findId(question.id)?.toString() : undefined
+            // console.log(i, question.id, 'answered', answered, 'disabled', disabled, 'defaultVal', defaultVal);
+
             return (
               <div key={question.id}
                 className={`transition-opacity duration-150 ${i != s ? 'opacity-0 hidden' : 'opacity-100'}`}>
@@ -114,6 +141,8 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
+                          defaultValue={defaultVal}
+                          disabled={disabled}
                         >
                           {answers.map(ans => {
                             return (
@@ -137,6 +166,9 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
                     </FormItem>
                   )}
                 />
+                {disabled &&
+                  <Label>Bu soru daha önce cevaplanmıştır</Label>
+                }
               </div>
 
             )
@@ -156,7 +188,13 @@ export default function QuestionAnswerForm({ survey }: TQuestionsResponseSchema)
           </div>
           <br />
           {error && <p className="text-destructive">{error}</p>}
-          <Button className={`${s != survey.length - 1 && 'hidden'}`}>Bitir</Button>
+
+
+          {s < survey.length - 1 ?
+            <Button variant='outline'>Sonra devam etmek üzere yarıda bırak</Button>
+            :
+            <Button>Bitir</Button>
+          }
         </form>
       </Form>
     </div>

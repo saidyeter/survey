@@ -22,19 +22,31 @@ public class AnswerController : ControllerBase
     [HttpPost("{ticket}")]
     public async Task<IActionResult> SubmitAnswers(string ticket, SubmitAnswersReq val)
     {
-
         if (string.IsNullOrWhiteSpace(ticket))
         {
             return Unauthorized();
         }
-        var participation = dbContext.Participations.Where(x => x.ParticipationTicket == ticket).FirstOrDefault();
+
+        var participation = dbContext.Participations
+            .Where(x => x.ParticipationTicket == ticket)
+            .FirstOrDefault();
+
         if (participation is null)
         {
             logger.LogInformation("No Participations found ({ticket})", ticket);
             return Unauthorized();
         }
 
-        var survey = dbContext.Surveys.Where(x => x.Id == participation.SurveyId).FirstOrDefault();
+        if (participation.EndDate != null)
+        {
+            logger.LogInformation("The participation already finished the survey ({ticket})", ticket);
+            return Unauthorized();
+        }
+
+        var survey = dbContext.Surveys
+            .Where(x => x.Id == participation.SurveyId)
+            .FirstOrDefault();
+
         if (survey is null || survey.Status != SurveyStatus.Running)
         {
             logger.LogInformation("No Surveys found ({ticket})", ticket);
@@ -43,49 +55,33 @@ public class AnswerController : ControllerBase
             return Unauthorized();
         }
 
-        participation.EndDate = DateTime.Now;
-        dbContext.Update(participation);
-        await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToParticipantAnswer(participation.Id)));
+        var respondedQuestionIdList = dbContext
+            .ParticipantAnswers
+            .Where(x => x.ParticipationId == participation.Id)
+            .Select(x => x.QuestionId)
+            .ToList();
+
+        var filteredAnswers = val.Answers
+            .Where(a => !respondedQuestionIdList.Contains(a.QuestionId))
+            .ToList();
+
+        if (filteredAnswers.Count == 0)
+        {
+            logger.LogInformation("These questions are already answered");
+            return Unauthorized();
+        }
+
+        var allQuestionCount = dbContext.Questions.Where(q => q.SurveyId == survey.Id).Count();
+
+        if (allQuestionCount == respondedQuestionIdList.Count + filteredAnswers.Count)
+        {
+            participation.EndDate = DateTime.Now;
+            dbContext.Update(participation);
+        }
+
+        await dbContext.AddRangeAsync(filteredAnswers.Select(i => i.ToParticipantAnswer(participation.Id)));
         await dbContext.SaveChangesAsync();
 
         return Ok();
     }
-
-
-
-
-    [HttpPost("{ticket}")]
-    public async Task<IActionResult> SubmitSingleAnswer(string ticket, SubmitAnswersReq val)
-    {
-
-        if (string.IsNullOrWhiteSpace(ticket))
-        {
-            return Unauthorized();
-        }
-        var participation = dbContext.Participations.Where(x => x.ParticipationTicket == ticket).FirstOrDefault();
-        if (participation is null)
-        {
-            logger.LogInformation("No Participations found ({ticket})", ticket);
-            return Unauthorized();
-        }
-
-        var survey = dbContext.Surveys.Where(x => x.Id == participation.SurveyId).FirstOrDefault();
-        if (survey is null || survey.Status != SurveyStatus.Running)
-        {
-            logger.LogInformation("No Surveys found ({ticket})", ticket);
-            dbContext.Participations.Remove(participation);
-            await dbContext.SaveChangesAsync();
-            return Unauthorized();
-        }
-
-        participation.EndDate = DateTime.Now;
-        dbContext.Update(participation);
-        await dbContext.AddRangeAsync(val.Answers.Select(i => i.ToParticipantAnswer(participation.Id)));
-        await dbContext.SaveChangesAsync();
-
-        return Ok();
-    }
-
-
-
 }

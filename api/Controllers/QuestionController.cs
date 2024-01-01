@@ -310,8 +310,6 @@ public class QuestionController : ControllerBase
         participation.StartDate = DateTime.Now;
         await dbContext.SaveChangesAsync();
 
-        //var survey= from q in dbContext.Questions
-        //            join a in 
         var survey = dbContext.Questions
             .Where(x => x.SurveyId == requestedSurvey.Id)
             .Select(l => new
@@ -320,9 +318,12 @@ public class QuestionController : ControllerBase
                 answers = dbContext.Answers.Where(a => a.QuestionId == l.Id).ToList()
             });
 
+        var alreadyRespondedAnswers = dbContext.ParticipantAnswers.Where(x => x.ParticipationId == participation.Id).ToList();
+
         return Ok(new
         {
-            survey
+            survey,
+            alreadyRespondedAnswers
         });
     }
 

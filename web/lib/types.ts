@@ -56,7 +56,7 @@ export type TGetSurveysResponseSchema = z.infer<typeof getSurveysResponseSchema>
 export const partipiciantValidationSchema = z
   .object({
     email: z.string().email("Hatalı E-Posta"),
-    code: z.string().length(14, "14 hane girin"),
+    code: z.string().min(10, "10 haneden az olamaz"),
   })
 
 export type TPartipiciantValidationSchema = z.infer<typeof partipiciantValidationSchema>;
@@ -107,9 +107,14 @@ export const qnaSchema = z.object({
 })
 export type TQnASchema = z.infer<typeof qnaSchema>;
 
+export const participantAnswer = z.object({
+  participationId: z.number(),
+  questionId: z.number(),
+  answerId: z.number(),
+})
 export const questionsResponseSchema = z.object({
-  survey: qnaSchema.array()
-
+  survey: qnaSchema.array(),
+  alreadyRespondedAnswers: participantAnswer.array()
 })
 
 
