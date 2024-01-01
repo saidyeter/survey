@@ -68,7 +68,7 @@ public class AnswerController : ControllerBase
         if (filteredAnswers.Count == 0)
         {
             logger.LogInformation("These questions are already answered");
-            return Unauthorized();
+            return Ok();
         }
 
         var allQuestionCount = dbContext.Questions.Where(q => q.SurveyId == survey.Id).Count();

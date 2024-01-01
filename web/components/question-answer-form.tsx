@@ -35,13 +35,14 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
     return undefined
   }
 
-  // console.log(alreadyRespondedAnswers, alreadyRespondedAnswers.map(t => findId(t.questionId)), survey.map(q => {
-  //   return {
-  //     questionId: q.question.id,
-  //     answerId: findId(q.question.id),
-  //     answerDesc: undefined,
-  //   }
-  // }));gnN
+  const lastMarked = alreadyRespondedAnswers.filter(x => x.answerId !== undefined)
+
+  let max = -1
+  if (lastMarked.length > 0) {
+    const maxQuestionId = Math.max(...lastMarked.map((l) => l.questionId))
+    max = survey.findIndex(s => s.question.id == maxQuestionId)
+  }
+
 
   const form = useForm<TQuestionAnswersFormSchema>({
     resolver: zodResolver(questionAnswersFormSchema),
@@ -106,7 +107,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
   // console.log(form.getValues('answers').filter(a => a.answerId !== undefined).length);
 
 
-  const [s, setS] = useState(form.getValues('answers').filter(a => a.answerId !== undefined).length )
+  const [s, setS] = useState(max + 1)
 
   const [error, setError] = useState('')
 
