@@ -20,6 +20,7 @@ import Link from "next/link"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
+import { ChevronDown, ChevronUp } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -27,7 +28,9 @@ interface DataTableProps<TData, TValue> {
   totalRecCount: number,
   pageSize: number,
   pageNumber: number,
-  search: string | undefined
+  search: string,
+  orderDirection: string,
+  orderColumn: string
 }
 
 export function DataTable<TData, TValue>({
@@ -36,29 +39,21 @@ export function DataTable<TData, TValue>({
   totalRecCount,
   pageSize,
   pageNumber,
-  search
+  search,
+  orderColumn,
+  orderDirection
 }: DataTableProps<TData, TValue>) {
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
 
+  // const [ascending, setAscending] = useState(orderDirection)
   const [query, setQuery] = useState(search)
 
   const pageCount = Math.ceil(totalRecCount / pageSize)
-
-  const nextDisabled = pageNumber + 1 >= pageCount
-  const previousDisabled = pageNumber == 0
-  const currentPage = `?n=${pageNumber}&s=${pageSize}&q=${query}`
-
-  const previousLink = previousDisabled ? currentPage :
-    `?n=${pageNumber - 1}&s=${pageSize}&q=${query}`
-  const nextLink = nextDisabled ? currentPage :
-    `?n=${pageNumber + 1}&s=${pageSize}&q=${query}`
-
-  const queryLink = `?n=${0}&s=${pageSize}&q=${query}`
-  const resetQueryLink = `?n=${0}&s=${pageSize}`
 
   return (
     <>
@@ -72,7 +67,7 @@ export function DataTable<TData, TValue>({
         {query?.trim() !== search &&
 
           <Link
-            href={queryLink}
+            href={createSearchQuery(pageSize, 0, query, orderColumn, orderDirection)}
             className={buttonVariants({ variant: 'default' })}
           >
             Ara
@@ -81,7 +76,7 @@ export function DataTable<TData, TValue>({
 
         {search &&
           <a
-            href={resetQueryLink}
+            href={createSearchQuery(pageSize, 0, "", orderColumn, orderDirection)}
             className={buttonVariants({ variant: 'outline' })}
           >
             Temizle
@@ -94,14 +89,26 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const currentCol = header.id === orderColumn
+                  const asc = orderDirection === 'a'
+                  let link = createSearchQuery(pageSize, pageNumber, search, header.id, 'a')
+                  if (currentCol) {
+                    link = createSearchQuery(pageSize, pageNumber, search, header.id, asc ? 'd' : 'a')
+                  }
+
                   return (
                     <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      <Link href={link} className=' underline underline-offset-2 flex space-x-1'>
+
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        {currentCol && asc && <ChevronDown size='1rem' />}
+                        {currentCol && !asc && <ChevronUp size='1rem' />}
+                      </Link>
                     </TableHead>
                   )
                 })}
@@ -133,11 +140,10 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        {!previousDisabled &&
+        {pageNumber > 0 &&
           <Link
             className={buttonVariants({ variant: 'outline', size: 'sm' })}
-            style={{}}
-            href={previousLink}
+            href={createSearchQuery(pageSize, pageNumber - 1, query, orderColumn, orderDirection)}
           >
             Onceki
           </Link>
@@ -145,10 +151,10 @@ export function DataTable<TData, TValue>({
         <div className="border-2 rounded px-2">
           <Label>{pageNumber + 1} / {pageCount}</Label>
         </div>
-        {!nextDisabled &&
+        {pageNumber < pageCount &&
           <Link
             className={`${buttonVariants({ variant: 'outline', size: 'sm' })} `}
-            href={nextLink}
+            href={createSearchQuery(pageSize, pageNumber + 1, query, orderColumn, orderDirection)}
           >
             Sonraki
           </Link>
@@ -156,4 +162,24 @@ export function DataTable<TData, TValue>({
       </div>
     </>
   )
+}
+
+
+
+function createSearchQuery(
+  pageSize?: number,
+  pageNumber?: number,
+  search?: string,
+  orderColumn?: string,
+  orderDirection?: string) {
+
+  const params = new URLSearchParams();
+
+  if (pageSize) { params.append("s", pageSize.toString()) }
+  if (pageNumber) { params.append("n", pageNumber.toString()) }
+  if (search) { params.append("q", search.toString()) }
+  if (orderColumn) { params.append("oc", orderColumn.toString()) }
+  if (orderDirection) { params.append("od", orderDirection.toString()) }
+
+  return '?' + params.toString()
 }

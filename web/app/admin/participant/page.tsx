@@ -10,10 +10,9 @@ export default async function Participants({
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const params = getParams(searchParams)
-  const { pageSize, pageNumber, search } = params;
+  const { pageSize, pageNumber, search, orderDirection, orderColumn } = params;
 
-  const data = await getParticipants(pageSize, pageNumber, search)
-
+  const data = await getParticipants(pageSize, pageNumber, search, orderColumn, orderDirection)
 
   return (
     <div className="w-full" >
@@ -22,7 +21,7 @@ export default async function Participants({
           Katılımcılar
         </h2>
         <Link href='/admin/participant/new'
-          className={buttonVariants({ variant: 'outline'})}
+          className={buttonVariants({ variant: 'outline' })}
         >
           Yeni katılımcı ekle
         </Link>
@@ -49,10 +48,15 @@ function getParams(searchParams: { [key: string]: string | string[] | undefined 
   const _pageSize = searchParams.s;
   const _pageNumber = searchParams.n;
   const _search = searchParams.q;
+  const _orderColumn = searchParams.oc
+  const _orderDirection = searchParams.od
 
   let pageSize = 5;
   let pageNumber = 0;
   let search = '';
+  let orderColumn = 'title';
+  let orderDirection = 'a';
+
 
   if (_pageSize && typeof _pageSize === 'string') {
     pageSize = parseInt(_pageSize)
@@ -70,10 +74,27 @@ function getParams(searchParams: { [key: string]: string | string[] | undefined 
   if (_search && typeof _search === 'string') {
     search = _search
   }
+  if (_orderColumn && typeof _orderColumn === 'string') {
+    orderColumn = _orderColumn
+  }
+  if (_orderDirection && typeof _orderDirection === 'string') {
+    orderDirection = _orderDirection
+    if (
+      orderDirection !== "d" &&
+      orderDirection !== "desc" &&
+      orderDirection !== "descending") {
+      orderDirection = "a"
+    }
+    else {
+      orderDirection = "d"
+    }
+  }
 
   return {
     pageNumber,
     pageSize,
-    search
+    search,
+    orderDirection,
+    orderColumn
   }
 }

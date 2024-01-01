@@ -39,7 +39,7 @@ function beforeReq() {
   }
 }
 
-async function updateSingleQuestionOnRunningSurvey(id:number,req:TUpdateOnRunningQuestionRequestSchema) {
+async function updateSingleQuestionOnRunningSurvey(id: number, req: TUpdateOnRunningQuestionRequestSchema) {
   beforeReq()
   const url = encodeURI(baseUrl + "/question/update-on-running/" + id)
 
@@ -54,7 +54,7 @@ async function updateSingleQuestionOnRunningSurvey(id:number,req:TUpdateOnRunnin
       cache: 'no-cache'
     })
     if (response.ok) {
-     return true
+      return true
     }
     console.log("updateSingleQuestionOnRunningSurvey", response.status, await response.text(), url)
 
@@ -66,7 +66,7 @@ async function updateSingleQuestionOnRunningSurvey(id:number,req:TUpdateOnRunnin
 }
 
 
-async function getSingleQuestion(id:number) {
+async function getSingleQuestion(id: number) {
   beforeReq()
   const url = encodeURI(baseUrl + "/question/single/" + id)
 
@@ -211,13 +211,21 @@ async function getSingleParticipant(id: number) {
   return undefined
 }
 
-async function getParticipants(pageSize?: number, pageNumber?: number, search?: string) {
+async function getParticipants(pageSize?: number, pageNumber?: number, search?: string, orderColumn?: string, orderDirection?: string) {
   beforeReq()
-  const _pageSize = pageSize ?? 10
+  const _pageSize = pageSize ?? 5
   const _pageNumber = pageNumber ?? 0
   const _search = search ?? ""
+  const _orderColumn = orderColumn ?? ""
+  const _orderDirection = orderDirection ?? ""
 
-  const url = encodeURI(baseUrl + "/participant/list?" + "pageSize=" + _pageSize + "&pageNumber=" + _pageNumber + "&search=" + _search)
+  const url = encodeURI(baseUrl + "/participant/list?" +
+    "pageSize=" + _pageSize +
+    "&pageNumber=" + _pageNumber +
+    "&search=" + _search +
+    "&orderColumn=" + _orderColumn +
+    "&orderDirection=" + _orderDirection)
+
   try {
     const response = await fetch(url, {
       method: "GET",

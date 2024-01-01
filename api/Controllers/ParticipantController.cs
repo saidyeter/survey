@@ -87,7 +87,7 @@ public class ParticipantController : ControllerBase
     }
 
     [HttpGet("list")]
-    public async Task<IActionResult> ParticipantList([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string search)
+    public async Task<IActionResult> ParticipantList([FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string search, [FromQuery] string orderColumn = "", [FromQuery] string orderDirection = "")
     {
         IQueryable<Participant> list;
         if (string.IsNullOrWhiteSpace(search))
@@ -100,6 +100,28 @@ public class ParticipantController : ControllerBase
             .Where(u => u.Email.Contains(search) || u.Title.Contains(search));
         }
 
+        var descending =
+            orderDirection.ToLower() == "d" ||
+            orderDirection.ToLower() == "desc" ||
+            orderDirection.ToLower() == "descending";
+
+        list = orderColumn.ToLower() switch
+        {
+            "email" => descending ?
+                                list.OrderByDescending(p => p.Email) :
+                                list.OrderBy(p => p.Email)
+                                ,
+            "city" => descending ?
+                                list.OrderByDescending(p => p.City) :
+                                list.OrderBy(p => p.City),
+            "subcity" => descending ?
+                                list.OrderByDescending(p => p.Subcity) :
+                                list.OrderBy(p => p.Subcity),
+            _ => descending ?
+                                list.OrderByDescending(p => p.Title) :
+                                list.OrderBy(p => p.Title),
+        };
+
         var res = await list
             .Skip(pageSize * pageNumber)
             .Take(pageSize)
@@ -110,14 +132,14 @@ public class ParticipantController : ControllerBase
             logger.LogInformation("No Participants found ({search})", search);
             return NotFound();
         }
-        
+
 
         return Ok(new
         {
             list = res,
             nextPage = pageNumber + 1,
             pageSize = pageSize,
-            totalCount= list.Count()
+            totalCount = list.Count()
         });
     }
 
