@@ -1,6 +1,6 @@
 "use client"
 
-import { edit } from "@/actions/partipiciant";
+import { edit } from "@/actions/participant";
 import { TNewParticipantSchema, participantSchema } from "@/lib/types"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

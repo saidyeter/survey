@@ -27,19 +27,12 @@ export default async function Participants({
         </Link>
       </div>
 
-      {!data?.list ?
-        (
-          <span>Katılımcı bulunamadi</span>
-        ) :
-        (
-          <DataTable
-            columns={columns}
-            data={data.list}
-            {...params}
-            totalRecCount={data.totalCount} />
-        )
+      <DataTable
+        columns={columns}
+        data={data?.list ?? []}
+        {...params}
+        totalRecCount={data?.totalCount ?? 0} />
 
-      }
     </div>
   )
 }
