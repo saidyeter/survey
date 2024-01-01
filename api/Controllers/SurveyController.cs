@@ -19,7 +19,6 @@ public class SurveyController : ControllerBase
         this.dbContext = dbContext;
     }
 
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSurvey(int id)
     {
@@ -108,7 +107,6 @@ public class SurveyController : ControllerBase
         });
     }
 
-
     [HttpGet("active-survey")]
     public async Task<IActionResult> GetActiveSurvey()
     {
@@ -127,7 +125,6 @@ public class SurveyController : ControllerBase
 
         return Ok(val.First());
     }
-
 
     [HttpGet("pre-survey")]
     public async Task<IActionResult> GetPreSurvey()
@@ -148,8 +145,6 @@ public class SurveyController : ControllerBase
         return Ok(val.First());
     }
 
-
-
     [HttpGet("all")]
     public async Task<IActionResult> GetSurveys()
     {
@@ -166,7 +161,6 @@ public class SurveyController : ControllerBase
         });
     }
 
-
     [HttpGet("details")]
     public async Task<IActionResult> GetSurveyDetails([FromQuery] int surveyId)
     {
@@ -177,7 +171,6 @@ public class SurveyController : ControllerBase
         {
             return NotFound();
         }
-
 
         var allParticipantCount = await dbContext.Participants.CountAsync();
         var partipicions = await dbContext.Participations
@@ -229,7 +222,6 @@ public class SurveyController : ControllerBase
             QuestionDetails = report
         });
     }
-
 
     [HttpGet("temp")]
     public async Task<IActionResult> Seed()
@@ -418,7 +410,6 @@ public class SurveyController : ControllerBase
         return Ok();
     }
 
-
     [HttpPost("start-survey")]
     public async Task<IActionResult> Start()
     {
@@ -462,7 +453,6 @@ public class SurveyController : ControllerBase
         return Ok();
     }
 
-
     [HttpPost("finish-survey")]
     public async Task<IActionResult> Finish()
     {
@@ -498,5 +488,45 @@ public class SurveyController : ControllerBase
 
         return Ok();
     }
+
+    [HttpPost("remove-pre-survey")]
+    public async Task<IActionResult> RemovePreSurvey()
+    {
+        var surveys = await dbContext.Surveys
+            .Where(s => s.Status == SurveyStatus.Pre)
+            .ToListAsync();
+
+        if (surveys.Count == 0)
+        {
+            logger.LogInformation("No pre survey found");
+            return BadRequest();
+        }
+
+        if (surveys.Count > 1)
+        {
+            throw new Exception("There must be single pre survey");
+        }
+
+        var survey = surveys.First();
+        var questions = await dbContext
+            .Questions
+            .Where(x => x.SurveyId == survey.Id)
+            .ToListAsync();
+        var questionIdList = questions
+            .Select(q => q.Id)
+            .ToList();
+        var answers = await dbContext
+            .Answers
+            .Where(a => questionIdList.Contains(a.QuestionId))
+            .ToListAsync();
+
+        dbContext.Remove(survey);
+        dbContext.RemoveRange(questions);
+        dbContext.RemoveRange(answers);
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
 }
 

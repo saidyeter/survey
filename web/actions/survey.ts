@@ -1,11 +1,26 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { finishSurvey, getQuestions, startSurvey, submitAnswers } from '@/lib/source-api'
+import { finishSurvey, getQuestions, removePreSurvey, startSurvey, submitAnswers } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
 import { TNewSurveyValidationSchema, TQuestionAnswersFormSchema, questionAnswersFormSchema, questionAnswersReqSchema, } from '@/lib/types'
 import { createNewSurvey } from '@/lib/source-api'
 import { cookies } from 'next/headers'
+
+
+export async function removePre() {
+    const result = await removePreSurvey()
+
+    if (result) {
+        revalidatePath('/admin/')
+        revalidatePath('/admin/survey/pre')
+
+        redirect('/admin/')
+    }
+    return {
+        success: false,
+    }
+}
 
 
 export async function submitAttendeeAnswers(data: TQuestionAnswersFormSchema) {

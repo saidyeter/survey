@@ -8,7 +8,7 @@ export default async function Pre() {
   const data = await getPreSurvey()
   if (!data) {
     return <GoBack
-      title="Anket bulunamadi"
+      title="Anket bulunamadı"
       desc=""
       link="/admin"
     />
@@ -17,12 +17,12 @@ export default async function Pre() {
   const pre = await getSurvey(data.id)
   if (!pre) {
     return <GoBack
-      title="Yanlis Anket"
+      title="Yanlış Anket"
       desc=""
       link="/admin"
     />
   }
-  
+
   const { survey, qnas } = pre
 
   return (

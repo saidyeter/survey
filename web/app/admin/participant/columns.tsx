@@ -68,7 +68,7 @@ export const columns: ColumnDef<z.infer<typeof participantSchema>>[] = [
               <DialogFooter className="md:justify-between sm:justify-start">
                 <DialogClose asChild>
                   <Button type="button" variant="secondary">
-                    Vazgec
+                    Vazgeç
                   </Button>
                 </DialogClose>
                 <DialogClose asChild>

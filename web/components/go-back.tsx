@@ -21,7 +21,7 @@ export default function GoBack(props: GoBackProps) {
         >
           Buraya
         </Link>
-        &nbsp;tiklayarak geri donebilirsiniz
+        &nbsp;tıklayarak geri dönebilirsiniz
       </AlertDescription>
     </Alert>
   )

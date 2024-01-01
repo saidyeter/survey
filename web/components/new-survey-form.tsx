@@ -48,12 +48,12 @@ export default function NewSurveyForm() {
             name="desc"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Anket Aciklamasi</FormLabel>
+                <FormLabel>Anket açıklaması</FormLabel>
                 <FormControl>
-                  <Input placeholder="Anket Aciklamasi" {...field} />
+                  <Input placeholder="Anket açıklaması" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Anket aciklamasi olarak goruntulenecektir.
+                  Anket açıklaması olarak goruntulenecektir.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

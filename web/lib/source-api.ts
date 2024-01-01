@@ -30,7 +30,8 @@ export {
   updatePartipiciant,
   deletePartipiciant,
   getSingleQuestion,
-  updateSingleQuestionOnRunningSurvey
+  updateSingleQuestionOnRunningSurvey,
+  removePreSurvey
 }
 
 function beforeReq() {
@@ -38,6 +39,34 @@ function beforeReq() {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
   }
 }
+
+async function removePreSurvey() {
+  beforeReq()
+  const url = encodeURI(baseUrl + "/survey/remove-pre-survey")
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': apiKey
+      },
+      body: JSON.stringify({}),
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      return true
+    }
+    console.log("deletePreSurvey", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("deletePreSurvey error", error);
+  }
+
+  return false
+}
+
+
 
 async function updateSingleQuestionOnRunningSurvey(id: number, req: TUpdateOnRunningQuestionRequestSchema) {
   beforeReq()
@@ -98,8 +127,6 @@ async function getSingleQuestion(id: number) {
 
   return undefined
 }
-
-
 
 async function deletePartipiciant(id: number) {
   beforeReq()
