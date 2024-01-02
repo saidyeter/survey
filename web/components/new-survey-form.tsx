@@ -18,23 +18,9 @@ export default function NewSurveyForm() {
     }
   });
 
-  const onSubmit = async (data: TNewSurveyValidationSchema) => {
-    console.log('2',data);
-
-
-    await create (data)
-    // const result = await create (data)
-
-    // console.log('NewSurveyForm', result);
-
-    // if (result) {
-    //     router.push('/admin/new-survey/' + result.id)
-    // }
-    // else {
-    //     setError('Anlık bir hata olustu!')
-    // }
-
-  };
+  async function onSubmit(data: TNewSurveyValidationSchema) {
+    await create(data);
+  }
 
 
   return (
@@ -51,7 +37,7 @@ export default function NewSurveyForm() {
                   <Input placeholder="Anket Ismi" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Anket ismi olarak goruntulenecektir.
+                  Anket ismi olarak görüntülenecektir.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -62,12 +48,12 @@ export default function NewSurveyForm() {
             name="desc"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Anket Aciklamasi</FormLabel>
+                <FormLabel>Anket açıklaması</FormLabel>
                 <FormControl>
-                  <Input placeholder="Anket Aciklamasi" {...field} />
+                  <Input placeholder="Anket açıklaması" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Anket aciklamasi olarak goruntulenecektir.
+                  Anket açıklaması olarak görüntülenecektir.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

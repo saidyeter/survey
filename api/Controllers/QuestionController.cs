@@ -185,6 +185,102 @@ public class QuestionController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("update/{id}")]
+    public async Task<IActionResult> UpdateQuestion(int id, AddQuestionReq val)
+    {
+        // validation
+        var currentSurvey = dbContext.Surveys
+          .Where(x => x.Status == SurveyStatus.Pre)
+          .FirstOrDefault();
+
+        if (currentSurvey is null)
+        {
+            logger.LogInformation("No pre survey found");
+            return BadRequest();
+        }
+
+        var question = await dbContext.Questions
+            .Where(x => x.Id == id)
+            .FirstOrDefaultAsync();
+        if (question is null)
+        {
+            logger.LogInformation("No question is found by {id} id", id);
+            return BadRequest();
+        }
+
+        question.Text = val.Text;
+        question.DescriptiveAnswer = val.DescriptiveAnswer;
+        question.Required = val.IsRequired;
+        question.AnswerType =
+            val.AnswerType == "single" ? AnswerType.Single :
+            val.AnswerType == "multiple" ? AnswerType.Multiple :
+            throw new Exception("Unexpected AnswerType: " + val.AnswerType);
+        dbContext.Update(question);
+
+        var answers = dbContext.Answers.Where(a => a.QuestionId == question.Id).ToList();
+        dbContext.RemoveRange(answers);
+        await dbContext.SaveChangesAsync();
+
+        await dbContext.Answers.AddRangeAsync(val.Answers.Select(a => a.ToDbModel(question.Id)));
+        await dbContext.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPost("update-on-running/{id}")]
+    public async Task<IActionResult> UpdateOnRunningQuestion(int id, UpdateOnRunningQuestionReq val)
+    {
+        var question = await dbContext.Questions
+            .Where(x => x.Id == id)
+            .SingleOrDefaultAsync();
+        if (question is null)
+        {
+            logger.LogInformation("No question found with {id} id", id);
+            return BadRequest();
+        }
+
+        var answers = await dbContext.Answers
+            .Where(a => a.QuestionId == id)
+            .ToListAsync();
+
+        if (answers.Count == 0)
+        {
+            logger.LogError("There is no answer for this question with {id} id", id);
+            throw new Exception($"There is no answer for this question with {id} id");
+        }
+
+        question.Text = val.Text;
+        foreach (var item in answers)
+        {
+            var fromReq = val.Answers.Where(a => a.Id == item.Id).SingleOrDefault();
+            if (fromReq is null)
+            {
+                logger.LogInformation("No answer found with {id} id in request", id);
+                return BadRequest();
+            }
+            item.Text = fromReq.Text;
+        }
+        dbContext.Update(question);
+        dbContext.UpdateRange(answers);
+        await dbContext.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    [HttpGet("single/{id}")]
+    public async Task<IActionResult> GetSingleQuestion(int id)
+    {
+        var qna = await dbContext.Questions
+            .Where(x => x.Id == id)
+            .Select(l => new
+            {
+                question = l,
+                answers = dbContext.Answers.Where(a => a.QuestionId == l.Id).ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        return Ok(qna);
+    }
+
     [HttpGet("{ticket}")]
     public async Task<IActionResult> GetQuestions(string ticket)
     {
@@ -214,8 +310,6 @@ public class QuestionController : ControllerBase
         participation.StartDate = DateTime.Now;
         await dbContext.SaveChangesAsync();
 
-        //var survey= from q in dbContext.Questions
-        //            join a in 
         var survey = dbContext.Questions
             .Where(x => x.SurveyId == requestedSurvey.Id)
             .Select(l => new
@@ -224,9 +318,12 @@ public class QuestionController : ControllerBase
                 answers = dbContext.Answers.Where(a => a.QuestionId == l.Id).ToList()
             });
 
+        var alreadyRespondedAnswers = dbContext.ParticipantAnswers.Where(x => x.ParticipationId == participation.Id).ToList();
+
         return Ok(new
         {
-            survey
+            survey,
+            alreadyRespondedAnswers
         });
     }
 

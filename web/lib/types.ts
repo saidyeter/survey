@@ -56,7 +56,7 @@ export type TGetSurveysResponseSchema = z.infer<typeof getSurveysResponseSchema>
 export const partipiciantValidationSchema = z
   .object({
     email: z.string().email("Hatalı E-Posta"),
-    code: z.string().length(6, "6 hane girin"),
+    code: z.string().min(10, "10 haneden az olamaz"),
   })
 
 export type TPartipiciantValidationSchema = z.infer<typeof partipiciantValidationSchema>;
@@ -107,10 +107,17 @@ export const qnaSchema = z.object({
 })
 export type TQnASchema = z.infer<typeof qnaSchema>;
 
-export const questionsResponseSchema = z.object({
-  survey: qnaSchema.array()
-
+export const participantAnswer = z.object({
+  participationId: z.number(),
+  questionId: z.number(),
+  answerId: z.number(),
 })
+export const questionsResponseSchema = z.object({
+  survey: qnaSchema.array(),
+  alreadyRespondedAnswers: participantAnswer.array()
+})
+
+
 
 export type TQuestionsResponseSchema = z.infer<typeof questionsResponseSchema>;
 
@@ -176,7 +183,7 @@ export type TCheckNewSurveyIsAllowed = z.infer<typeof checkNewSurveyIsAllowedRes
 export const newSurveyValidationSchema = z
   .object({
     name: z.string().min(5, 'En az 5 karakter giriniz'),
-    desc: z.string().min(5, 'En az 5 karakter giriniz'),
+    desc: z.string().optional(),
   })
 
 export type TNewSurveyValidationSchema = z.infer<typeof newSurveyValidationSchema>;
@@ -221,3 +228,49 @@ export const newQuestionSchema = z
     path: ['descriptiveAnswer']
   })
 export type TNewQuestionSchema = z.infer<typeof newQuestionSchema>;
+
+export const newParticipantSchema = z.object({
+  title: z.string(),
+  email: z.string(),
+  pType: z.string(),
+  status: z.string(),
+  code: z.string(),
+  city: z.string(),
+  subcity: z.string(),
+})
+export type TNewParticipantSchema = z.infer<typeof newParticipantSchema>;
+
+
+
+export const participantSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  email: z.string(),
+  pType: z.string(),
+  status: z.string(),
+  code: z.string(),
+  city: z.string(),
+  subcity: z.string(),
+})
+export type TParticipantSchema = z.infer<typeof participantSchema>;
+
+export const getParticipantsResponseSchema = z.object({
+  list: participantSchema.array(),
+  nextPage: z.number(),
+  pageSize: z.number(),
+  totalCount: z.number()
+})
+
+export type TGetParticipantsResponseSchema = z.infer<typeof getParticipantsResponseSchema>;
+
+const updateOnRunningQuestionAnswerSchema = z.object({
+  id: z.number(),
+  text: z.string(),
+  label: z.string()
+})
+
+export const updateOnRunningQuestionRequestSchema = z.object({
+  text: z.string(),
+  answers: updateOnRunningQuestionAnswerSchema.array()
+})
+export type TUpdateOnRunningQuestionRequestSchema = z.infer<typeof updateOnRunningQuestionRequestSchema>;

@@ -11,7 +11,8 @@ import {
 
 interface QuestionsAccordionProps {
   QnAs: TQnASchema[],
-  showButtons?: boolean
+  showButtons?: boolean,
+  editable?: boolean
 }
 
 export default function QuestionsAccordion(params: QuestionsAccordionProps) {
@@ -23,7 +24,7 @@ export default function QuestionsAccordion(params: QuestionsAccordionProps) {
             <AccordionItem key={q.question.id} value={q.question.id.toString()}>
               <AccordionTrigger>Soru {q.question.orderNumber}: {q.question.text}</AccordionTrigger>
               <AccordionContent>
-                <QuestionCard qna={q} showButtons={params.showButtons} />
+                <QuestionCard qna={q} showButtons={params.showButtons} editable={params.editable} />
               </AccordionContent>
             </AccordionItem>
           )

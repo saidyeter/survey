@@ -59,3 +59,26 @@ public class AddQuestionReqSingleAnswer
     }
     #endregion
 }
+
+
+
+
+public class UpdateOnRunningQuestionReq
+{
+    #region Properties
+
+    public string Text { get; set; }
+
+    public UpdateOnRunningQuestionReqSingleAnswer[] Answers { get; set; }
+    #endregion
+
+}
+
+public class UpdateOnRunningQuestionReqSingleAnswer
+{
+    #region Properties
+    public int Id { get; set; }
+
+    public string Text { get; set; }
+    #endregion
+}

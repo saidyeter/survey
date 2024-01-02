@@ -1,12 +1,26 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { finishSurvey, getQuestions, startSurvey, submitAnswers } from '@/lib/source-api'
+import { finishSurvey, getQuestions, removePreSurvey, startSurvey, submitAnswers, updateSurveyInfo } from '@/lib/source-api'
 import { redirect } from 'next/navigation'
 import { TNewSurveyValidationSchema, TQuestionAnswersFormSchema, questionAnswersFormSchema, questionAnswersReqSchema, } from '@/lib/types'
 import { createNewSurvey } from '@/lib/source-api'
 import { cookies } from 'next/headers'
 
+
+export async function removePre() {
+    const result = await removePreSurvey()
+
+    if (result) {
+        revalidatePath('/admin/')
+        revalidatePath('/admin/survey/pre')
+
+        redirect('/admin/')
+    }
+    return {
+        success: false,
+    }
+}
 
 export async function submitAttendeeAnswers(data: TQuestionAnswersFormSchema) {
     const cookieStore = cookies()
@@ -61,8 +75,6 @@ export async function getSurveyQuestions() {
     }
 }
 
-
-
 export async function create(data: TNewSurveyValidationSchema) {
     const result = await createNewSurvey(data)
     if (result) {
@@ -91,4 +103,15 @@ export async function finish() {
         redirect('/admin/')
     }
 
+}
+
+export async function updatePre(id: number, data: TNewSurveyValidationSchema) {
+    if (await updateSurveyInfo(id, data)) {
+        revalidatePath('/admin/survey/pre')
+        revalidatePath('/admin/survey/running')
+        redirect('/admin')
+    }
+    return {
+        success: false,
+    }
 }

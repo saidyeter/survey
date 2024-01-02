@@ -1,13 +1,14 @@
 "use client"
 
 import { TSurveySchema } from "@/lib/types";
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Terminal } from "lucide-react";
+import { Button, buttonVariants } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
-import { start } from "@/actions/survey";
+import { removePre, start } from "@/actions/survey";
 import { Label } from "@radix-ui/react-label";
+import GoBack from "./go-back";
+import { Play, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "./ui/alert-dialog";
+import UpdateSurveyInfo from "./update-survey-info";
 
 
 interface PreSurveyShowcaseProps {
@@ -19,28 +20,16 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
   const { survey, showStart } = params
 
   if (!survey || survey.status != 'pre') {
-    return (
-      <Alert>
-        <Terminal className="h-4 w-4" />
-        <AlertTitle>Aktif anket yok!</AlertTitle>
-        <AlertDescription>
-          <Link
-            href={`/admin/`}
-            className="underline"
-          >
-            Buraya
-          </Link>
-          &nbsp;tiklayarak geri donebilirsiniz
-        </AlertDescription>
-      </Alert>
-    )
+    return <GoBack
+      title="Aktif anket yok"
+      desc=""
+      link="/admin"
+    />
   }
   const { id, startDate, status, description, endDate, name } = survey
-  const statusDesc = status == "pre" ? "Henuz yayinlanmadi" : "Aktif"
-
+  const statusDesc = status == "pre" ? "Henüz yayınlanmadı" : "Aktif"
 
   return (
-
     <div className="w-full pt-4 border-t-foreground border-b-2">
       <Card>
         <CardHeader>
@@ -56,38 +45,53 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
         </CardContent>
         <CardFooter>
           <div className="flex flex-col space-y-4 w-full">
-
-            <div >
-              {showStart ?
-
-                <Button onClick={async () => {
-                  const r = await start()
-                  console.log('r', r);
-                }}
-                  size={'lg'}
-                  className="text-lg"
-                >
-                  Baslat
-                </Button>
-                :
-                <Label>
-                  Baslatmak icin Soru eklemeniz gereklidir
-                </Label>
-              }
-            </div>
             <div className="flex justify-between">
-              <Button variant={'outline'}>
-                Isim/Aciklama Duzenle
-              </Button>
-              <Button variant={'destructive'}>
-                Sil
-              </Button>
+              <div className="flex space-x-2 items-center">
+                <UpdateSurveyInfo
+                  id={id}
+                  name={name}
+                  description={description}
+                />
+                {showStart ?
+                  <Button onClick={() => start()}>
+                    <Play size='1rem' />
+                    Başlat
+                  </Button>
+                  :
+                  <Label>
+                    Başlatmak icin soru eklemeniz gereklidir
+                  </Label>
+                }
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size='icon'>
+                    <Trash2 />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Onay Gerekli</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Henüz oylamaya sunulmamış bu anketi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => { removePre() }}
+                      className={buttonVariants({ variant: 'destructive' })}
+                    >
+                      Onayla
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
-        </CardFooter>
-      </Card>
-
-    </div>
+        </CardFooter >
+      </Card >
+    </div >
 
   )
 }

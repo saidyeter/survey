@@ -34,18 +34,15 @@ export default function ActiveSurveyShowcase(params: ActiveSurveyShowcaseProps) 
           >
             Buraya
           </Link>
-          &nbsp;tiklayarak yeni anket olusturabilirsiniz
+          &nbsp;tıklayarak yeni anket oluşturabilirsiniz
         </AlertDescription>
       </Alert>
 
     )
   }
   const { id, startDate, status, description, endDate, name } = survey
-  const statusDesc = status == "pre" ? "Henuz yayinlanmadi" : "Aktif"
-
-
+  const statusDesc = status == "pre" ? "Henüz yayınlanmadı" : "Aktif"
   return (
-
     <div className="w-full pt-4 border-t-foreground border-b-2">
       <Link
         href={`/admin/survey/${status}`}

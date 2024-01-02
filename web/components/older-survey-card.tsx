@@ -17,7 +17,7 @@ export default function OlderSurveyCard(params: TSurveySchema) {
   return (
     <div className="w-full pt-4 border-t-foreground border-b-2">
       <Link
-        href={`/admin/survey/ended/${id}`}
+        href={`/admin/report/survey?id=${id}`}
         className="flex flex-col space-y-1"
       >
         <Card>

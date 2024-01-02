@@ -18,7 +18,7 @@ export default function ParticipantValidation() {
   const form = useForm<TPartipiciantValidationSchema>({
     resolver: zodResolver(partipiciantValidationSchema),
     defaultValues: {
-      code: '',
+      code: '8680001',
       email: ''
     }
   });
@@ -79,9 +79,9 @@ export default function ParticipantValidation() {
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Eczane kodunun son 6 hanesi</FormLabel>
+                <FormLabel>GLN Numarası</FormLabel>
                 <FormControl>
-                  <Input placeholder="Eczane kodunun son 6 hanesini girin" {...field} />
+                  <Input placeholder="GLN Numarası girin" {...field} />
                 </FormControl>
                 <FormDescription />
                 <FormMessage />

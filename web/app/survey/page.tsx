@@ -3,6 +3,7 @@ import Link from "next/link"
 import { siteConfig } from "@/config/site"
 import { buttonVariants } from "@/components/ui/button"
 import { getRunningSurvey } from "@/lib/source-api"
+import Constants from "@/lib/constants"
 
 export default async function Survey() {
   const survey = await getRunningSurvey()
@@ -37,12 +38,22 @@ export default async function Survey() {
       </div>
       <div className="flex gap-4">
         {survey ? (
-          <Link
-            href='/survey/start'
-            className={buttonVariants()}
-          >
-            Ankete Başla
-          </Link>
+          <div className="flex flex-col space-y-4">
+
+            <Link
+              href='/survey/start'
+              className={buttonVariants()}
+            >
+              Oylamaya katılmak için tıklayınız.
+            </Link>
+            <Link
+              href={Constants.SurveyInfoUrl}
+              className={buttonVariants({ variant: 'secondary' })}
+              target="_blank"
+            >
+              Başvuruları izlemek için tıklayınız.
+            </Link>
+          </div>
         ) : (
           <>
 

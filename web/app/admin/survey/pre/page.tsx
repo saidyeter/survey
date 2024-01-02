@@ -1,37 +1,28 @@
-import RunningSurveyManagement from "@/components/active-survey-mgm"
+import GoBack from "@/components/go-back"
 import NewQuestionForm from "@/components/new-question-form"
 import PreSurveyManagement from "@/components/pre-survey-mgm"
 import QuestionsAccordion from "@/components/questions-accordion"
-import { buttonVariants } from "@/components/ui/button"
 import { getPreSurvey, getSurvey } from "@/lib/source-api"
-import Link from "next/link"
 
 export default async function Pre() {
   const data = await getPreSurvey()
   if (!data) {
-    return (<div>
-      Yanlis Anket
-      <Link
-        href={`/admin`}
-        className={buttonVariants({ variant: "secondary" })}
-      >
-        Geri donmek icin tiklayiniz
-      </Link>
-    </div>)
+    return <GoBack
+      title="Anket bulunamadı"
+      desc=""
+      link="/admin"
+    />
   }
 
   const pre = await getSurvey(data.id)
   if (!pre) {
-    return (<div>
-      Yanlis Anket
-      <Link
-        href={`/admin`}
-        className={buttonVariants({ variant: "secondary" })}
-      >
-        Geri donmek icin tiklayiniz
-      </Link>
-    </div>)
+    return <GoBack
+      title="Yanlış Anket"
+      desc=""
+      link="/admin"
+    />
   }
+
   const { survey, qnas } = pre
 
   return (

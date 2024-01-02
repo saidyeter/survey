@@ -9,12 +9,13 @@ public class SurveyDbContext : DbContext
         base(options)
     { }
 
-    public DbSet<Question> Questions{ get; set; }
+    public DbSet<Question> Questions { get; set; }
     public DbSet<Survey> Surveys { get; set; }
     public DbSet<Participant> Participants { get; set; }
     public DbSet<ParticipantAnswer> ParticipantAnswers { get; set; }
     public DbSet<Participation> Participations { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Answer> Answers { get; set; }
+    public DbSet<Report> Reports { get; set; }
 
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
+import { User, HelpCircle, Users, Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement } from 'react'
@@ -20,14 +20,44 @@ const nthSurvey = {
   path: '/admin/survey/ended/',
   parent: ['G0ic', '1jvg', 'SkDk',]
 }
+const nthPartipiciant = {
+  id: '60Mj',
+  label: '. Katılımcı',
+  icon: <User size='1rem' />,
+  path: '/admin/participant/',
+  parent: ['G0ic', 'g8Dk']
+}
+const nthQuestion = {
+  id: 'Rkow',
+  label: " id'li Soru",
+  icon: <HelpCircle size='1rem' />,
+  path: '/admin/survey/running/',
+  parent: ['G0ic', '1jvg', 'RwiS']
+}
 const routes = [
+  nthPartipiciant,
   nthSurvey,
+  nthQuestion,
   {
     id: 'SkDk',
     label: 'Tamamlanmis Anketler',
     icon: <CheckCheck size='1rem' />,
     path: '/admin/survey/ended',
     parent: ['G0ic', '1jvg',]
+  },
+  {
+    id: 'g8Dk',
+    label: 'Katılımcılar',
+    icon: <Users size='1rem' />,
+    path: '/admin/participant',
+    parent: ['G0ic',]
+  },
+  {
+    id: '458k',
+    label: 'Yeni Katılımcı',
+    icon: <User size='1rem' />,
+    path: '/admin/participant/new',
+    parent: ['G0ic', 'g8Dk']
   },
   {
     id: 'D9nt',
@@ -85,6 +115,27 @@ const routes = [
     path: '/survey',
     parent: ['G0ic']
   },
+  {
+    id: '0Qtf',
+    label: 'Anket Raporu',
+    icon: <Play size='1rem' />,
+    path: '/admin/report/survey',
+    parent: ['G0ic']
+  },
+  {
+    id: '1Qtf',
+    label: 'Soru Raporu',
+    icon: <Play size='1rem' />,
+    path: '/admin/report/question',
+    parent: ['G0ic']
+  },
+  {
+    id: '2Qtf',
+    label: 'Cevap Raporu',
+    icon: <Play size='1rem' />,
+    path: '/admin/report/answer',
+    parent: ['G0ic']
+  },
   HomeItem
 ]
 
@@ -98,18 +149,32 @@ export function BreadCrumb() {
     parent: string[];
   }[]
   if (/\d/.test(path)) {
+
+    let arr;
+
+    if (path.includes('participant')) {
+      arr = nthPartipiciant
+    }
+    else if (path.includes('running')) {
+      arr = nthQuestion
+    }
+    else {
+      arr = nthSurvey
+    }
+
     const surveyId = path.replace(/^\D+/g, '');
 
-    nthSurvey.parent.forEach(p => {
+    arr.parent.forEach(p => {
       const parent = routes.find(r => r.id == p)!
       parents.push(parent)
     });
+
     parents.push({
-      id: nthSurvey.id,
-      icon: nthSurvey.icon,
+      id: arr.id,
+      icon: arr.icon,
       parent: [],
-      path: nthSurvey.path + surveyId,
-      label: surveyId + nthSurvey.label
+      path: arr.path + surveyId,
+      label: surveyId + arr.label
     })
   }
   else {
