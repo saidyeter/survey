@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SurveyApi.DataAccess;
 using SurveyApi.DataAccess.Entities;
 using SurveyApi.Models.DTOs;
-using System.Net;
-using System.Net.Sockets;
 
 namespace SurveyApi.Controllers;
 
@@ -109,14 +107,16 @@ public class ParticipantController : ControllerBase
         {
             "email" => descending ?
                                 list.OrderByDescending(p => p.Email) :
-                                list.OrderBy(p => p.Email)
-                                ,
+                                list.OrderBy(p => p.Email),
+
             "city" => descending ?
                                 list.OrderByDescending(p => p.City) :
                                 list.OrderBy(p => p.City),
+
             "subcity" => descending ?
                                 list.OrderByDescending(p => p.Subcity) :
                                 list.OrderBy(p => p.Subcity),
+
             _ => descending ?
                                 list.OrderByDescending(p => p.Title) :
                                 list.OrderBy(p => p.Title),
@@ -143,6 +143,79 @@ public class ParticipantController : ControllerBase
         });
     }
 
+
+    [HttpGet("download")]
+    public async Task<IActionResult> Download([FromQuery] string search, [FromQuery] string orderColumn = "", [FromQuery] string orderDirection = "")
+    {
+        IQueryable<Participant> list;
+        if (string.IsNullOrWhiteSpace(search))
+        {
+            list = dbContext.Participants;
+        }
+        else
+        {
+            list = dbContext.Participants
+            .Where(u => u.Email.Contains(search) || u.Title.Contains(search));
+        }
+
+        var descending =
+            orderDirection.ToLower() == "d" ||
+            orderDirection.ToLower() == "desc" ||
+            orderDirection.ToLower() == "descending";
+
+        list = orderColumn.ToLower() switch
+        {
+            "email" => descending ?
+                                list.OrderByDescending(p => p.Email) :
+                                list.OrderBy(p => p.Email),
+
+            "city" => descending ?
+                                list.OrderByDescending(p => p.City) :
+                                list.OrderBy(p => p.City),
+
+            "subcity" => descending ?
+                                list.OrderByDescending(p => p.Subcity) :
+                                list.OrderBy(p => p.Subcity),
+
+            _ => descending ?
+                                list.OrderByDescending(p => p.Title) :
+                                list.OrderBy(p => p.Title),
+        };
+
+        var res = await list
+            //.Skip(pageSize * pageNumber)
+            //.Take(pageSize)
+            .ToListAsync();
+
+        if (res.Count == 0)
+        {
+            logger.LogInformation("No Participants found ({search})", search);
+            return NotFound();
+        }
+
+        // Create a new workbook and worksheet
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Sheet1");
+
+        // Set the header row
+        worksheet.Cell(1, 1).Value = "Unvan";
+        worksheet.Cell(1, 2).Value = "GLN Kodu";
+        worksheet.Cell(1, 3).Value = "Şehir";
+
+        // Populate the data
+        int row = 2;
+        foreach (var obj in res)
+        {
+            worksheet.Cell(row, 1).Value = obj.Title;
+            worksheet.Cell(row, 2).Value = obj.Code;
+            worksheet.Cell(row, 3).Value = obj.City;
+            row++;
+        }
+        using var memoryStream = new MemoryStream();
+        workbook.SaveAs(memoryStream);
+
+        return Ok(memoryStream.ToArray());
+    }
 
     [HttpGet("single/{id}")]
     public async Task<IActionResult> Participant(int id)

@@ -29,11 +29,11 @@ export const columns: ColumnDef<z.infer<typeof participantSchema>>[] = [
   },
   {
     accessorKey: "city",
-    header: "Sehir",
+    header: "Şehir",
   },
   {
     accessorKey: "subcity",
-    header: "Ilce",
+    header: "İlçe",
   },
   {
     accessorKey: "code",

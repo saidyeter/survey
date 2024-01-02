@@ -139,26 +139,30 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        {pageNumber > 0 &&
-          <Link
-            className={buttonVariants({ variant: 'outline', size: 'sm' })}
-            href={createSearchQuery(pageSize, pageNumber - 1, query, orderColumn, orderDirection)}
-          >
-            Onceki
-          </Link>
-        }
-        <div className="border-2 rounded px-2">
-          <Label>{pageNumber + 1} / {pageCount}</Label>
+      <div className="flex items-center justify-between">
+        <Label>Toplam {totalRecCount} kayıt var. Tamamını&nbsp;
+          <Link href={"/api/file" + createSearchQuery(undefined, undefined, query, orderColumn, orderDirection)} target="_blank" className="underline">buradan</Link>&nbsp;indirebilirsiniz</Label>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          {pageNumber > 0 &&
+            <Link
+              className={buttonVariants({ variant: 'outline', size: 'sm' })}
+              href={createSearchQuery(pageSize, pageNumber - 1, query, orderColumn, orderDirection)}
+            >
+              Onceki
+            </Link>
+          }
+          <div className="border-2 rounded px-2">
+            <Label>{pageNumber + 1} / {pageCount}</Label>
+          </div>
+          {pageNumber < pageCount &&
+            <Link
+              className={`${buttonVariants({ variant: 'outline', size: 'sm' })} `}
+              href={createSearchQuery(pageSize, pageNumber + 1, query, orderColumn, orderDirection)}
+            >
+              Sonraki
+            </Link>
+          }
         </div>
-        {pageNumber < pageCount &&
-          <Link
-            className={`${buttonVariants({ variant: 'outline', size: 'sm' })} `}
-            href={createSearchQuery(pageSize, pageNumber + 1, query, orderColumn, orderDirection)}
-          >
-            Sonraki
-          </Link>
-        }
       </div>
     </>
   )
