@@ -173,10 +173,10 @@ public class SurveyController : ControllerBase
         }
 
         var allParticipantCount = await dbContext.Participants.CountAsync();
-        var partipicions = await dbContext.Participations
+        var participations = await dbContext.Participations
             .Where(p => p.SurveyId == surveyId)
             .ToListAsync();
-        var partipicionIdList = partipicions.Select(p => p.Id).ToList();
+        var participationIdList = participations.Select(p => p.Id).ToList();
 
         var questions = await dbContext.Questions
             .Where(q => q.SurveyId == surveyId)
@@ -187,7 +187,7 @@ public class SurveyController : ControllerBase
             .Where(a => questionIdList.Contains(a.QuestionId))
             .ToListAsync();
 
-        var participantAnswers = dbContext.ParticipantAnswers.Where(pa => partipicionIdList.Contains(pa.ParticipationId)).ToList();
+        var participantAnswers = dbContext.ParticipantAnswers.Where(pa => participationIdList.Contains(pa.ParticipationId)).ToList();
 
         var report = participantAnswers
             .GroupBy(gp => gp.QuestionId)
@@ -209,16 +209,42 @@ public class SurveyController : ControllerBase
                         };
                     })
                     .OrderBy(a => a.Label)
-                    .ToArray()
+                    .ToList()
 
             }).ToArray();
+
+        foreach (var item in report)
+        {
+            var allAnswers = dbContext.Answers
+                .Where(x => x.QuestionId == item.Question.Id)
+                .ToList();
+
+            if (allAnswers.Count > item.AnswerDetails.Count)
+            {
+                var exc = allAnswers
+                    .Where(x => !item.AnswerDetails.Any(i => i.Id == x.Id))
+                    .ToList();
+                item.AnswerDetails
+                    .AddRange(exc
+                    .Select(x => new AnswerDetail
+                    {
+                        Id = x.Id,
+                        Label = x.Label,
+                        ChoosenCount = 0,
+                        Text = x.Text,
+                    })
+                    .ToList());
+
+                item.AnswerDetails = item.AnswerDetails.OrderBy(a => a.Label).ToList();
+            }
+        }
 
         return Ok(new
         {
             Survey = survey,
             SurveyId = surveyId,
             AllParticipantCount = allParticipantCount,
-            ParticipationCount = partipicions.Count,
+            ParticipationCount = participations.Count,
             QuestionDetails = report
         });
     }

@@ -44,7 +44,7 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
             <PieChart >
               <Pie
                 label={(d) => d.name + ': ' + d.value}
-                data={data}
+                data={data.filter(d => d.total > 0)}
                 dataKey="total"
                 nameKey="name"
                 cx="50%"
