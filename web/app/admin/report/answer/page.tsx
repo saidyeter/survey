@@ -29,7 +29,7 @@ export default async function AnswerReport({
     <div className="w-full" >
       <div className="flex justify-between">
         <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
-         {id} Id'li cevabı veren katılımcılar
+         {id} Id&apos;li cevabı veren katılımcılar
         </h2>
       </div>
       <PageInfoAndDownloadLink totalRecCount={data?.totalCount ?? -1} url={downloadLink} />
