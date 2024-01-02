@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { createPagingSearchQuery } from "@/lib/utils"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -30,7 +31,8 @@ interface DataTableProps<TData, TValue> {
   pageNumber: number,
   search: string,
   orderDirection: string,
-  orderColumn: string
+  orderColumn: string,
+  id?: number
 }
 
 export function DataTable<TData, TValue>({
@@ -41,7 +43,8 @@ export function DataTable<TData, TValue>({
   pageNumber,
   search,
   orderColumn,
-  orderDirection
+  orderDirection,
+  id
 }: DataTableProps<TData, TValue>) {
 
   const table = useReactTable({
@@ -50,10 +53,10 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
   })
 
-  // const [ascending, setAscending] = useState(orderDirection)
   const [query, setQuery] = useState(search)
 
   const pageCount = Math.ceil(totalRecCount / pageSize)
+  // console.log('pageNumber, pageCount', pageNumber, pageCount);
 
   return (
     <>
@@ -67,7 +70,7 @@ export function DataTable<TData, TValue>({
         {query?.trim() !== search &&
 
           <Link
-            href={createSearchQuery(pageSize, 0, query, orderColumn, orderDirection)}
+            href={createPagingSearchQuery(pageSize, 0, query, orderColumn, orderDirection, id)}
             className={buttonVariants({ variant: 'default' })}
           >
             Ara
@@ -76,7 +79,7 @@ export function DataTable<TData, TValue>({
 
         {search &&
           <a
-            href={createSearchQuery(pageSize, 0, "", orderColumn, orderDirection)}
+            href={createPagingSearchQuery(pageSize, 0, "", orderColumn, orderDirection, id)}
             className={buttonVariants({ variant: 'outline' })}
           >
             Temizle
@@ -91,9 +94,9 @@ export function DataTable<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   const currentCol = header.id === orderColumn
                   const asc = orderDirection === 'a'
-                  let link = createSearchQuery(pageSize, pageNumber, search, header.id, 'a')
+                  let link = createPagingSearchQuery(pageSize, pageNumber, search, header.id, 'a',id)
                   if (currentCol) {
-                    link = createSearchQuery(pageSize, pageNumber, search, header.id, asc ? 'd' : 'a')
+                    link = createPagingSearchQuery(pageSize, pageNumber, search, header.id, asc ? 'd' : 'a',id)
                   }
 
                   return (
@@ -139,51 +142,29 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between">
-        <Label>Toplam {totalRecCount} kayıt var. Tamamını&nbsp;
-          <Link href={"/api/file" + createSearchQuery(undefined, undefined, query, orderColumn, orderDirection)} target="_blank" className="underline">buradan</Link>&nbsp;indirebilirsiniz</Label>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          {pageNumber > 0 &&
-            <Link
-              className={buttonVariants({ variant: 'outline', size: 'sm' })}
-              href={createSearchQuery(pageSize, pageNumber - 1, query, orderColumn, orderDirection)}
-            >
-              Onceki
-            </Link>
-          }
-          <div className="border-2 rounded px-2">
-            <Label>{pageNumber + 1} / {pageCount}</Label>
-          </div>
-          {pageNumber < pageCount &&
-            <Link
-              className={`${buttonVariants({ variant: 'outline', size: 'sm' })} `}
-              href={createSearchQuery(pageSize, pageNumber + 1, query, orderColumn, orderDirection)}
-            >
-              Sonraki
-            </Link>
-          }
+      <div className="flex items-center justify-end space-x-2 py-4">
+        {pageNumber > 0 &&
+          <Link
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+            href={createPagingSearchQuery(pageSize, pageNumber - 1, query, orderColumn, orderDirection, id)}
+          >
+            Onceki
+          </Link>
+        }
+        <div className="border-2 rounded px-2">
+          <Label>{pageNumber + 1} / {pageCount}</Label>
         </div>
+        {pageNumber < pageCount - 1 &&
+          <Link
+            className={`${buttonVariants({ variant: 'outline', size: 'sm' })} `}
+            href={createPagingSearchQuery(pageSize, pageNumber + 1, query, orderColumn, orderDirection, id)}
+          >
+            Sonraki
+          </Link>
+        }
       </div>
     </>
   )
 }
 
 
-
-function createSearchQuery(
-  pageSize?: number,
-  pageNumber?: number,
-  search?: string,
-  orderColumn?: string,
-  orderDirection?: string) {
-
-  const params = new URLSearchParams();
-
-  if (pageSize) { params.append("s", pageSize.toString()) }
-  if (pageNumber) { params.append("n", pageNumber.toString()) }
-  if (search) { params.append("q", search.toString()) }
-  if (orderColumn) { params.append("oc", orderColumn.toString()) }
-  if (orderDirection) { params.append("od", orderDirection.toString()) }
-
-  return '?' + params.toString()
-}

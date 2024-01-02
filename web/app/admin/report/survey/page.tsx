@@ -1,4 +1,3 @@
-import { finish } from "@/actions/survey"
 import GoBack from "@/components/go-back"
 import { PartipicationProgress } from "@/components/partipication-progress"
 import QuestionDetailCard from "@/components/question-detail-card"
@@ -6,19 +5,27 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { checkPreSurveyExists, getSurveyDetails } from "@/lib/source-api"
 import { getLocaleDate } from "@/lib/utils"
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-export default async function SurveyDetails({ params }: { params: { id: string } }) {
 
+export default async function SurveyReport({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
 
-  const surveyId = parseInt(params.id)
-
-  if (surveyId.toString() != params.id) {
-    return <GoBack
-      title="Yanlış Anket"
-      desc=""
-      link="/admin"
-    />
+  let surveyId = 0
+  const _s = searchParams.id;
+  if (_s && typeof _s === 'string') {
+    surveyId = parseInt(_s)
+    if (surveyId.toString() != _s) {
+      return <GoBack
+        title="Yanlış Anket"
+        desc=""
+        link="/admin"
+      />
+    }
   }
-  const delayTask = delay(2000);
+
+  const delayTask = delay(1000);
   const fetchTask = getSurveyDetails(surveyId)
   const [_, b] = await Promise.allSettled([delayTask, fetchTask])
 

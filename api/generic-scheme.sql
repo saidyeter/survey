@@ -86,6 +86,16 @@ CREATE TABLE [Survey].[dbo].[Users](
 (
 	[Id] ASC
 ))
+
+CREATE TABLE [dbo].[Reports](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SurveyId] [int] NOT NULL,
+	[CalculatedContent] [text] NOT NULL,
+ CONSTRAINT [PK_Report] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+))
+
 ALTER TABLE [Survey].[dbo].[Answers] ADD  CONSTRAINT [DF_Answers_CreatedAt]  DEFAULT (getdate()) FOR [CreatedAt]
 
 

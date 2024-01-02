@@ -1,5 +1,6 @@
 interface AnswerTextProps {
-  content: string
+  content: string,
+  noNewLine?: boolean
 }
 
 export default function AnswerContent(props: AnswerTextProps) {
@@ -10,6 +11,7 @@ export default function AnswerContent(props: AnswerTextProps) {
     <>
       {p?.text}
       {(p?.video.name && p.video.url || p?.img.name && p.img.url) &&
+        !props.noNewLine &&
         <br />
       }
 

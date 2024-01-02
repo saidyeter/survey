@@ -1,38 +1,44 @@
-import { getParticipants } from "@/lib/source-api"
+import { getParticipantsWhoVotedQuestion } from "@/lib/source-api"
 import { columns } from "./columns"
+
+import { createPagingSearchQuery, getIdParams, getPagingParams } from "@/lib/utils"
+import GoBack from "@/components/go-back"
 import { DataTable } from "@/components/partipicant-data-table"
-import Link from "next/link"
-import { buttonVariants } from "@/components/ui/button"
-import { createPagingSearchQuery, getPagingParams } from "@/lib/utils"
 import PageInfoAndDownloadLink from "@/components/info-and-download-link"
 
-export default async function Participants({
+export default async function QuestionReport({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const params = getPagingParams(searchParams)
   const { pageSize, pageNumber, search, orderDirection, orderColumn } = params;
+  const id = getIdParams(searchParams)
+  if (!id) {
+    return <GoBack
+      title="Bulunamadi"
+      desc=""
+      link="/admin/participant"
+    />
+  }
 
-  const data = await getParticipants(pageSize, pageNumber, search, orderColumn, orderDirection)
-  const downloadLink = "/api/file/all" + createPagingSearchQuery(undefined, undefined, search, orderColumn, orderDirection)
+  const data = await getParticipantsWhoVotedQuestion(id, pageSize, pageNumber, search, orderColumn, orderDirection)
+  const downloadLink = "/api/file/q" + createPagingSearchQuery(undefined, undefined, search, orderColumn, orderDirection,id)
+
   return (
     <div className="w-full" >
       <div className="flex justify-between">
         <h2 className="pt-4 text-2xl font-bold leading-tight tracking-tighter md:text-xl">
-          Tüm Katılımcılar
+         {id} Id'li soruya cevap veren katılımcılar
         </h2>
-        <Link href='/admin/participant/new'
-          className={buttonVariants({ variant: 'outline' })}
-        >
-          Yeni katılımcı ekle
-        </Link>
       </div>
       <PageInfoAndDownloadLink totalRecCount={data?.totalCount ?? -1} url={downloadLink} />
+     
       <DataTable
         columns={columns}
         data={data?.list ?? []}
         {...params}
+        id={id}
         totalRecCount={data?.totalCount ?? 0} />
 
     </div>

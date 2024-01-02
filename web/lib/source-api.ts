@@ -33,7 +33,9 @@ export {
   updateSingleQuestionOnRunningSurvey,
   removePreSurvey,
   updateSingleQuestionOnPreSurvey,
-  updateSurveyInfo
+  updateSurveyInfo,
+  getParticipantsWhoVotedQuestion,
+  getParticipantsWhoVotedAnswer,
 }
 
 function beforeReq() {
@@ -42,6 +44,93 @@ function beforeReq() {
   }
 }
 
+async function getParticipantsWhoVotedAnswer(id: number, pageSize?: number, pageNumber?: number, search?: string, orderColumn?: string, orderDirection?: string) {
+  beforeReq()
+  const _pageSize = pageSize ?? 5
+  const _pageNumber = pageNumber ?? 0
+  const _search = search ?? ""
+  const _orderColumn = orderColumn ?? ""
+  const _orderDirection = orderDirection ?? ""
+
+  const url = encodeURI(baseUrl + "/participant/list-who-voted-answer?" +
+    "id=" + id +
+    "&pageSize=" + _pageSize +
+    "&pageNumber=" + _pageNumber +
+    "&search=" + _search +
+    "&orderColumn=" + _orderColumn +
+    "&orderDirection=" + _orderDirection)
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        'Authorization': apiKey
+      },
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      const data = await response.json()
+      const result = getParticipantsResponseSchema.safeParse(data)
+      if (!result.success) {
+
+        console.log('unsuccesfull parse', result.error);
+
+        return undefined
+      }
+      return result.data
+    }
+    console.log("getParticipants", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("getParticipants error", error);
+  }
+
+  return undefined
+}
+
+async function getParticipantsWhoVotedQuestion(id: number, pageSize?: number, pageNumber?: number, search?: string, orderColumn?: string, orderDirection?: string) {
+  beforeReq()
+  const _pageSize = pageSize ?? 5
+  const _pageNumber = pageNumber ?? 0
+  const _search = search ?? ""
+  const _orderColumn = orderColumn ?? ""
+  const _orderDirection = orderDirection ?? ""
+
+  const url = encodeURI(baseUrl + "/participant/list-who-voted-question?" +
+    "id=" + id +
+    "&pageSize=" + _pageSize +
+    "&pageNumber=" + _pageNumber +
+    "&search=" + _search +
+    "&orderColumn=" + _orderColumn +
+    "&orderDirection=" + _orderDirection)
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        'Authorization': apiKey
+      },
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      const data = await response.json()
+      const result = getParticipantsResponseSchema.safeParse(data)
+      if (!result.success) {
+
+        console.log('unsuccesfull parse', result.error);
+
+        return undefined
+      }
+      return result.data
+    }
+    console.log("getParticipants", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("getParticipants error", error);
+  }
+
+  return undefined
+}
 
 async function updateSurveyInfo(id: number, req: TNewSurveyValidationSchema) {
   beforeReq()

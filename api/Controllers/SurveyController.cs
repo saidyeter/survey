@@ -172,6 +172,43 @@ public class SurveyController : ControllerBase
             return NotFound();
         }
 
+        var calculatedReportContent = dbContext.Reports.Where(x => x.SurveyId == surveyId).FirstOrDefault();
+        ReportResult result;
+        if (calculatedReportContent is null)
+        {
+            result = await Calculate(survey);
+            dbContext.Add(new Report
+            {
+                SurveyId = surveyId,
+                CalculatedContent = System.Text.Json.JsonSerializer.Serialize(result)
+            });
+            await dbContext.SaveChangesAsync();
+        }
+        else
+        {
+            try
+            {
+                result = System.Text.Json.JsonSerializer.Deserialize<ReportResult>(calculatedReportContent.CalculatedContent);
+            }
+            catch (Exception)
+            {
+                result = await Calculate(survey);
+                dbContext.Remove(calculatedReportContent);
+                dbContext.Add(new Report
+                {
+                    SurveyId = surveyId,
+                    CalculatedContent = System.Text.Json.JsonSerializer.Serialize(result)
+                });
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        return Ok(result);
+    }
+
+    private async Task<ReportResult> Calculate(Survey survey)
+    {
+        int surveyId = survey.Id;
         var allParticipantCount = await dbContext.Participants.CountAsync();
         var participations = await dbContext.Participations
             .Where(p => p.SurveyId == surveyId)
@@ -239,14 +276,16 @@ public class SurveyController : ControllerBase
             }
         }
 
-        return Ok(new
+        var result = new ReportResult
         {
             Survey = survey,
             SurveyId = surveyId,
             AllParticipantCount = allParticipantCount,
             ParticipationCount = participations.Count,
             QuestionDetails = report
-        });
+        };
+
+        return result;
     }
 
     [HttpGet("temp")]

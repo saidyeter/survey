@@ -115,6 +115,27 @@ const routes = [
     path: '/survey',
     parent: ['G0ic']
   },
+  {
+    id: '0Qtf',
+    label: 'Anket Raporu',
+    icon: <Play size='1rem' />,
+    path: '/admin/report/survey',
+    parent: ['G0ic']
+  },
+  {
+    id: '1Qtf',
+    label: 'Soru Raporu',
+    icon: <Play size='1rem' />,
+    path: '/admin/report/question',
+    parent: ['G0ic']
+  },
+  {
+    id: '2Qtf',
+    label: 'Cevap Raporu',
+    icon: <Play size='1rem' />,
+    path: '/admin/report/answer',
+    parent: ['G0ic']
+  },
   HomeItem
 ]
 

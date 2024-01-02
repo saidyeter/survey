@@ -1,8 +1,12 @@
 "use client"
 import { TQuestionDetailSchema } from "@/lib/types"
-import { Button } from "./ui/button"
+import { Button, buttonVariants } from "./ui/button"
 import { copySingle } from "@/actions/question"
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts"
+import AnswerContent from "./answer-content"
+import Link from "next/link"
+import { Label } from "./ui/label"
+import { useRouter } from "next/navigation"
 
 interface QuestionDetailCardProps {
   questionDetail: TQuestionDetailSchema,
@@ -14,10 +18,12 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
 
   const data = answerDetails.map(a => {
     return {
+      id: a.id,
       name: a.label,
       total: a.choosenCount
     }
   })
+  const router = useRouter()
 
   return (
     <div className="w-full rounded border p-2 mb-4">
@@ -29,10 +35,17 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
           <span>
             {question.text}
           </span>
-          <br />
-          <span className="text-muted-foreground font-normal pr-2">
-            Cevaplama sayisi : {answeredCount}
-          </span>
+
+          <div className="flex flex-col mt-2 space-y-2">
+
+            <Label>
+              Cevaplama sayısı : {answeredCount}
+            </Label>
+            <Label>
+              Bu soruya cevap verenleri görmek için&nbsp;<Link href={`/admin/report/question?id=${question.id}`} className='underline'>tıklayınız</Link>
+            </Label>
+          </div>
+
         </div>
         {params.showCopy &&
           <Button variant='outline' onClick={() => { copySingle(question.id) }}>Aktif Ankete Kopyala</Button>
@@ -50,14 +63,15 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
-                onClick={(d) => {
-                  console.log(d);
-
-                }}
               >
                 {
                   data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={`#${colors[index]}`} />
+                    <Cell key={`cell-${index}`}
+                      onClick={() => {
+                        router.push(`/admin/report/answer?id=${entry.id}`)
+                      }}
+                      className="cursor-pointer"
+                      fill={`#${colors[index]}`} />
                   ))
                 }
               </Pie>
@@ -68,10 +82,10 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
         <div className="w-3/5 p-2 border-t-muted-foreground space-y-2 m-auto">
           {answerDetails.map((ad, i) => {
             return (
-              <div key={i} className="flex items-center">
+              <Link key={i} className="flex items-center hover:bg-muted" href={`/admin/report/answer?id=${ad.id}`}>
                 <p className="text-sm text-muted-foreground">{ad.label}:&nbsp;</p>
-                <p className="text-sm font-medium leading-none"> {ad.text}</p>
-              </div>
+                <p className="text-sm font-medium leading-none"> <AnswerContent noNewLine content={ad.text} /></p>
+              </Link>
             )
           })}
         </div>
