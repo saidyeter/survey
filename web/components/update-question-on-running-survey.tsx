@@ -35,13 +35,9 @@ export default function UpdateQuestionOnRunningSurvey(params: UpdateQuestionOnRu
     name: 'answers',
     control: form.control
   })
+
   async function onSubmit(data: TUpdateOnRunningQuestionRequestSchema) {
-    //
-    // console.log(form.getValues())
-    // console.log(data);
-
     updateRunning(question.id, data)
-
   }
 
   return (
@@ -72,7 +68,7 @@ export default function UpdateQuestionOnRunningSurvey(params: UpdateQuestionOnRu
 
                 return (
                   <FormItem>
-                    <FormLabel> {a.label} şıkkı </FormLabel>
+                    <FormLabel>{a.label} şıkkı</FormLabel>
                     <FormControl>
                       <Input placeholder="Soru metni" {...field} />
                     </FormControl>
@@ -92,7 +88,7 @@ export default function UpdateQuestionOnRunningSurvey(params: UpdateQuestionOnRu
             />
 
           ))}
-          <Button>yo</Button>
+          <Button>Kaydet</Button>
         </form>
       </Form>
     </div>
