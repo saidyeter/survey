@@ -393,6 +393,8 @@ async function getParticipants(pageSize?: number, pageNumber?: number, search?: 
     "&search=" + _search +
     "&orderColumn=" + _orderColumn +
     "&orderDirection=" + _orderDirection)
+  console.time('getParticipants api')
+  console.log(url);
 
   try {
     const response = await fetch(url, {
@@ -411,6 +413,8 @@ async function getParticipants(pageSize?: number, pageNumber?: number, search?: 
 
         return undefined
       }
+
+      console.timeEnd('getParticipants api')
       return result.data
     }
     console.log("getParticipants", response.status, await response.text(), url)
@@ -419,6 +423,7 @@ async function getParticipants(pageSize?: number, pageNumber?: number, search?: 
     console.log("getParticipants error", error);
   }
 
+  console.timeEnd('getParticipants api')
   return undefined
 }
 

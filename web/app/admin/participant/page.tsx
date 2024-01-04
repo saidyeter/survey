@@ -11,11 +11,14 @@ export default async function Participants({
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
+
+  console.time('Participants page')
   const params = getPagingParams(searchParams)
   const { pageSize, pageNumber, search, orderDirection, orderColumn } = params;
 
   const data = await getParticipants(pageSize, pageNumber, search, orderColumn, orderDirection)
   const downloadLink = "/api/file/all" + createPagingSearchQuery(undefined, undefined, search, orderColumn, orderDirection)
+  console.timeEnd('Participants page')
   return (
     <div className="w-full" >
       <div className="flex justify-between">
