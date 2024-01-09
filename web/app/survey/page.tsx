@@ -25,21 +25,14 @@ export default async function Survey() {
         ) : (
           <>
             <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-              Eczacı anketine hoşgeldiniz.
+              Eczacının Sesi Ödül Töreni
             </h1>
-            <p className="max-w-[700px] text-lg text-muted-foreground">
-              Şu an aktif bir anket bulunmamaktadır.<br className="hidden sm:inline" />
-              Anket açıldığı zaman size bildirilecektir.
-            </p>
-
           </>
-
         )}
       </div>
       <div className="flex gap-4">
         {survey ? (
           <div className="flex flex-col space-y-4">
-
             <Link
               href='/survey/start'
               className={buttonVariants()}
@@ -55,24 +48,8 @@ export default async function Survey() {
             </Link>
           </div>
         ) : (
-          <>
-
-            <Link
-              href={siteConfig.links.mail}
-              className={buttonVariants()}
-            >
-              E-Posta ile Ulaş
-            </Link>
-            <Link
-              href={siteConfig.links.phone}
-              className={buttonVariants({ variant: "outline" })}
-            >
-              Telefon ile Ulaş
-            </Link></>
-
+          <></>
         )}
-
-
       </div>
     </section>
   )
