@@ -116,7 +116,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(formSubmit)} >
 
-          {survey.map(({ question, answers }, i, arr) => {
+          {survey.sort((a,b)=>  a.question.orderNumber > b.question.orderNumber ? 1 : -1).map(({ question, answers }, i, arr) => {
             const answered = findId(question.id) != undefined
             const disabled = answered
             const defaultVal = answered ? findId(question.id)?.toString() : undefined
