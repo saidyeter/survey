@@ -14,7 +14,7 @@ export default async function SurveyLayout({ children }: RootLayoutProps) {
         </div>
 
         <div className="flex items-center justify-center w-full p-4 md:w-1/2 md:p-12 bg-[url('/afis.webp')] bg-cover md:bg-none">
-          <div className="bg-muted rounded-lg w-2/3 p-4 md:p-0 md:h-full md:w-full md:flex md:items-center md:justify-center md:bg-inherit" >
+          <div className="bg-muted rounded-lg w-full p-4 md:p-0 md:h-full md:w-full md:flex md:items-center md:justify-center md:bg-inherit" >
             {children}
           </div>
         </div>
