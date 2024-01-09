@@ -50,17 +50,9 @@ export async function submitAttendeeAnswers(data: TQuestionAnswersFormSchema) {
     redirect('/survey/completed')
 }
 
-export async function getSurveyQuestions() {
-    const cookieStore = cookies()
-    const ticket = cookieStore.get('ticket')
-    if (!ticket?.value) {
-        return {
-            success: false,
-            reason: 'no ticket acquired'
-        }
-    }
-
-    const res = await getQuestions(ticket?.value)
+export async function getSurveyQuestions(ticket:string) {
+   
+    const res = await getQuestions(ticket)
 
     if (!res) {
         return {

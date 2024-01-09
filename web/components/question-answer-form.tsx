@@ -145,7 +145,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
                           defaultValue={defaultVal}
                           disabled={disabled}
                         >
-                          {answers.map(ans => {
+                          {answers.sort((a, b) => a.label > b.label ? 1 : -1).map(ans => {
                             return (
                               <FormItem
                                 key={ans.id}
