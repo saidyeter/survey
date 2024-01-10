@@ -617,4 +617,174 @@ public class ParticipantController : ControllerBase
 
         return Ok(memoryStream.ToArray());
     }
+
+    [HttpGet("list-who-voted-survey")]
+    public async Task<IActionResult> ParticipantListWhoVotedSurvey([FromQuery] int id, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string search, [FromQuery] string orderColumn = "", [FromQuery] string orderDirection = "")
+    {
+        var val = await dbContext.Surveys
+           .Where(u => u.Id == id)
+           .ToListAsync();
+
+        if (val is null || val.Count == 0)
+        {
+            return NotFound();
+        }
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single survey");
+        }
+        var survey = val.First();
+
+        var participantIdList = await dbContext
+            .Participations
+            .Where(x => x.SurveyId == survey.Id)
+            .Select(x => x.PartipiciantId)
+            .ToListAsync();
+
+        IQueryable<Participant> list = dbContext
+            .Participants
+            .Where(x => participantIdList.Contains(x.Id));
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            list = list
+            .Where(u => u.Email.Contains(search) ||
+            u.Title.Contains(search) ||
+            u.City.Contains(search) ||
+            u.Code.Contains(search));
+        }
+
+        var descending =
+            orderDirection.ToLower() == "d" ||
+            orderDirection.ToLower() == "desc" ||
+            orderDirection.ToLower() == "descending";
+
+        list = orderColumn.ToLower() switch
+        {
+            "email" => descending ?
+                                list.OrderByDescending(p => p.Email) :
+                                list.OrderBy(p => p.Email),
+
+            "city" => descending ?
+                                list.OrderByDescending(p => p.City) :
+                                list.OrderBy(p => p.City),
+
+            "subcity" => descending ?
+                                list.OrderByDescending(p => p.Subcity) :
+                                list.OrderBy(p => p.Subcity),
+
+            _ => descending ?
+                                list.OrderByDescending(p => p.Title) :
+                                list.OrderBy(p => p.Title),
+        };
+
+        var res = list
+            .Skip(pageSize * pageNumber)
+            .Take(pageSize);
+
+        if (!res.Any())
+        {
+            logger.LogInformation("No Participants found ({search})", search);
+            return NotFound();
+        }
+
+        return Ok(new
+        {
+            list = res,
+            nextPage = pageNumber + 1,
+            pageSize = pageSize,
+            totalCount = list.Count()
+        });
+    }
+
+    [HttpGet("download-who-voted-survey")]
+    public async Task<IActionResult> DownloadParticipantListWhoVotedSurvey([FromQuery] int id, [FromQuery] string search, [FromQuery] string orderColumn = "", [FromQuery] string orderDirection = "")
+    {
+
+        var val = await dbContext.Surveys
+        .Where(u => u.Id == id)
+        .ToListAsync();
+
+        if (val is null || val.Count == 0)
+        {
+            return NotFound();
+        }
+        if (val.Count > 1)
+        {
+            throw new Exception("There must be single  survey");
+        }
+        var survey = val.First();
+
+        var participantIdList = await dbContext
+            .Participations
+            .Where(x => x.SurveyId == survey.Id)
+            .Select(x => x.PartipiciantId)
+            .ToListAsync();
+
+        IQueryable<Participant> list = dbContext
+            .Participants
+            .Where(x => participantIdList.Contains(x.Id));
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            list = list
+            .Where(u => u.Email.Contains(search) ||
+            u.Title.Contains(search) ||
+            u.City.Contains(search) ||
+            u.Code.Contains(search));
+        }
+
+        var descending =
+            orderDirection.ToLower() == "d" ||
+            orderDirection.ToLower() == "desc" ||
+            orderDirection.ToLower() == "descending";
+
+        list = orderColumn.ToLower() switch
+        {
+            "email" => descending ?
+                                list.OrderByDescending(p => p.Email) :
+                                list.OrderBy(p => p.Email),
+
+            "city" => descending ?
+                                list.OrderByDescending(p => p.City) :
+                                list.OrderBy(p => p.City),
+
+            "subcity" => descending ?
+                                list.OrderByDescending(p => p.Subcity) :
+                                list.OrderBy(p => p.Subcity),
+
+            _ => descending ?
+                                list.OrderByDescending(p => p.Title) :
+                                list.OrderBy(p => p.Title),
+        };
+
+        if (!list.Any())
+        {
+            logger.LogInformation("No Participants found ({search})", search);
+            return NotFound();
+        }
+
+        // Create a new workbook and worksheet
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("Sheet1");
+
+        // Set the header row
+        worksheet.Cell(1, 1).Value = "Unvan";
+        worksheet.Cell(1, 2).Value = "GLN Kodu";
+        worksheet.Cell(1, 3).Value = "Şehir";
+
+        // Populate the data
+        int row = 2;
+        foreach (var obj in list)
+        {
+            worksheet.Cell(row, 1).Value = obj.Title;
+            worksheet.Cell(row, 2).Value = obj.Code;
+            worksheet.Cell(row, 3).Value = obj.City;
+            row++;
+        }
+        using var memoryStream = new MemoryStream();
+        workbook.SaveAs(memoryStream);
+
+        return Ok(memoryStream.ToArray());
+    }
 }

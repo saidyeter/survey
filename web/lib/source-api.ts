@@ -1,4 +1,4 @@
-import { TNewParticipantSchema, TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, TUpdateOnRunningQuestionRequestSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getParticipantsResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, participantSchema, partipiciantValidationResponseSchema, qnaSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
+import { TNewParticipantSchema, TNewQuestionSchema, TNewSurveyValidationSchema, TQuestionAnswersFormSchema, TQuestionAnswersReqSchema, TUpdateOnRunningQuestionRequestSchema, checkNewSurveyIsAllowedResponse, checkPreSurveyExistsScheme, getActiveSurveyResponseSchema, getParticipantsResponseSchema, getPreSurveyResponseSchema, getSurveySchema, getSurveysResponseSchema, getUserSchema, participantSchema, partipiciantValidationResponseSchema, qnaSchema, questionsResponseSchema, surveyDetailSchema, surveySchema } from "./types"
 
 const { env } = process
 const baseUrl = env.DB_API_URL
@@ -36,13 +36,61 @@ export {
   updateSurveyInfo,
   getParticipantsWhoVotedQuestion,
   getParticipantsWhoVotedAnswer,
+  getParticipantsWhoVotedSurvey,
 }
 
 function beforeReq() {
   if (process.env.NODE_ENV == 'development') {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
   }
+} 
+async function getParticipantsWhoVotedSurvey(id: number,pageSize?: number, pageNumber?: number, search?: string, orderColumn?: string, orderDirection?: string) {
+  beforeReq()
+  const _pageSize = pageSize ?? 5
+  const _pageNumber = pageNumber ?? 0
+  const _search = search ?? ""
+  const _orderColumn = orderColumn ?? ""
+  const _orderDirection = orderDirection ?? ""
+
+  const url = encodeURI(baseUrl + "/participant/list-who-voted-survey?" +
+    "id=" + id +
+    "&pageSize=" + _pageSize +
+    "&pageNumber=" + _pageNumber +
+    "&search=" + _search +
+    "&orderColumn=" + _orderColumn +
+    "&orderDirection=" + _orderDirection)
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        'Authorization': apiKey
+      },
+      cache: 'no-cache'
+    })
+    if (response.ok) {
+      const data = await response.json()
+      const result = getParticipantsResponseSchema.safeParse(data)
+      if (!result.success) {
+
+        console.log('unsuccesfull parse', result.error);
+
+        return undefined
+      }
+      return result.data
+    }
+    console.log("getParticipants", response.status, await response.text(), url)
+
+  } catch (error) {
+    console.log("getParticipants error", error);
+  }
+
+  return undefined
 }
+
+
+
+
 
 async function getParticipantsWhoVotedAnswer(id: number, pageSize?: number, pageNumber?: number, search?: string, orderColumn?: string, orderDirection?: string) {
   beforeReq()
@@ -440,7 +488,7 @@ async function getPreSurvey() {
     })
     if (response.ok) {
       const data = await response.json()
-      const result = getActiveSurveyResponseSchema.safeParse(data)
+      const result = getPreSurveyResponseSchema.safeParse(data)
       if (!result.success) {
 
         console.log('unsuccesfull parse', result.error);

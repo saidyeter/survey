@@ -123,7 +123,56 @@ public class SurveyController : ControllerBase
             throw new Exception("There must be single active survey");
         }
 
-        return Ok(val.First());
+        var survey = val.First();
+        var totalParticipants = dbContext.Participants.Count();
+        var participations = await dbContext.Participations.Where(p => p.SurveyId == survey.Id).ToListAsync();
+        // burasi silinecek
+        {
+            try
+            {
+                var questionIdList = dbContext.Answers.Where(a => a.Text.Contains("Bu kategoride oy kullanmak istemiyorum")).Select(a => a.QuestionId).ToList();
+                if (questionIdList.Count > 0)
+                {
+                    var questions = dbContext.Questions.Where(a => questionIdList.Contains(a.Id)).ToList();
+                    foreach (var _question in questions)
+                    {
+                        _question.Required = true;
+                    }
+                    dbContext.UpdateRange(questions);
+                }
+                var lastQuestion = dbContext.Questions.Where(q => q.SurveyId == survey.Id).OrderByDescending(q => q.OrderNumber).FirstOrDefault();
+
+                foreach (var _participation in participations)
+                {
+                    if (_participation.EndDate is null)
+                    {
+                        var pa = dbContext.ParticipantAnswers.Where(x => x.ParticipationId == _participation.Id && x.QuestionId == lastQuestion.Id).FirstOrDefault();
+                        if (pa != null)
+                        {
+                            _participation.EndDate = DateTime.Now;
+
+                            dbContext.Update(_participation);
+                        }
+                    }
+                }
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                //
+            }
+        }
+        // burasi silinecek
+        var startedCount = participations.Count;
+        var finishedCount = participations.Where(x => x.EndDate != null).Count();
+
+        return Ok(new
+        {
+            survey,
+            startedCount,
+            finishedCount,
+            totalParticipants,
+        });
     }
 
     [HttpGet("pre-survey")]
@@ -172,28 +221,19 @@ public class SurveyController : ControllerBase
             return NotFound();
         }
 
-        var calculatedReportContent = dbContext.Reports.Where(x => x.SurveyId == surveyId).FirstOrDefault();
-        ReportResult result;
-        if (calculatedReportContent is null)
+        if (survey.Status == SurveyStatus.Running)
         {
-            result = await Calculate(survey);
-            dbContext.Add(new Report
-            {
-                SurveyId = surveyId,
-                CalculatedContent = System.Text.Json.JsonSerializer.Serialize(result)
-            });
-            await dbContext.SaveChangesAsync();
+            ReportResult result = await Calculate(survey);
+            return Ok(result);
         }
         else
         {
-            try
-            {
-                result = System.Text.Json.JsonSerializer.Deserialize<ReportResult>(calculatedReportContent.CalculatedContent);
-            }
-            catch (Exception)
+
+            var calculatedReportContent = dbContext.Reports.Where(x => x.SurveyId == surveyId).FirstOrDefault();
+            ReportResult result;
+            if (calculatedReportContent is null)
             {
                 result = await Calculate(survey);
-                dbContext.Remove(calculatedReportContent);
                 dbContext.Add(new Report
                 {
                     SurveyId = surveyId,
@@ -201,9 +241,27 @@ public class SurveyController : ControllerBase
                 });
                 await dbContext.SaveChangesAsync();
             }
-        }
+            else
+            {
+                try
+                {
+                    result = System.Text.Json.JsonSerializer.Deserialize<ReportResult>(calculatedReportContent.CalculatedContent);
+                }
+                catch (Exception)
+                {
+                    result = await Calculate(survey);
+                    dbContext.Remove(calculatedReportContent);
+                    dbContext.Add(new Report
+                    {
+                        SurveyId = surveyId,
+                        CalculatedContent = System.Text.Json.JsonSerializer.Serialize(result)
+                    });
+                    await dbContext.SaveChangesAsync();
+                }
+            }
 
-        return Ok(result);
+            return Ok(result);
+        }
     }
 
     private async Task<ReportResult> Calculate(Survey survey)

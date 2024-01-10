@@ -1,6 +1,6 @@
 "use client"
 
-import { User, HelpCircle, Users, Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check } from 'lucide-react'
+import { User, HelpCircle, Users, Home, Shield, Activity, ChevronRight, Play, FileQuestion, CheckCircle, LogIn, Cog, PlusCircle, CheckCheck, Check, UsersIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement } from 'react'
@@ -33,14 +33,14 @@ const nthQuestion = {
   icon: <HelpCircle size='1rem' />,
   path: '/admin/survey/running/',
   parent: ['G0ic', '1jvg', 'RwiS']
-}
+} 
 const routes = [
   nthPartipiciant,
   nthSurvey,
-  nthQuestion,
+  nthQuestion, 
   {
     id: 'SkDk',
-    label: 'Tamamlanmis Anketler',
+    label: 'Tamamlanmış Anketler',
     icon: <CheckCheck size='1rem' />,
     path: '/admin/survey/ended',
     parent: ['G0ic', '1jvg',]
@@ -68,7 +68,7 @@ const routes = [
   },
   {
     id: '04Cq',
-    label: 'Yayinlanmamis Anket',
+    label: 'Yayınlanmamış Anket',
     icon: <Cog size='1rem' />,
     path: '/admin/survey/pre',
     parent: ['G0ic', '1jvg',]
@@ -89,28 +89,28 @@ const routes = [
   },
   {
     id: 'ZNI1',
-    label: 'Giris yap',
+    label: 'Giriş yap',
     path: '/login',
     icon: <LogIn size='1rem' />,
     parent: ['G0ic']
   },
   {
     id: 'sE9s',
-    label: 'Anket tamamlandi',
+    label: 'Anket tamamlandı',
     path: '/survey/completed',
     icon: <CheckCircle size='1rem' />,
     parent: ['G0ic']
   },
   {
     id: '0jmc',
-    label: 'Anket sorular',
+    label: 'Anket soruları',
     icon: <FileQuestion size='1rem' />,
     path: '/survey/questions',
     parent: ['G0ic']
   },
   {
     id: 'uQ0f',
-    label: 'Ankete Basla',
+    label: 'Ankete Başla',
     icon: <Play size='1rem' />,
     path: '/survey',
     parent: ['G0ic']
@@ -118,22 +118,29 @@ const routes = [
   {
     id: '0Qtf',
     label: 'Anket Raporu',
-    icon: <Play size='1rem' />,
+    icon: <UsersIcon size='1rem' />,
     path: '/admin/report/survey',
     parent: ['G0ic']
   },
   {
     id: '1Qtf',
     label: 'Soru Raporu',
-    icon: <Play size='1rem' />,
+    icon: <UsersIcon size='1rem' />,
     path: '/admin/report/question',
     parent: ['G0ic']
   },
   {
     id: '2Qtf',
     label: 'Cevap Raporu',
-    icon: <Play size='1rem' />,
+    icon: <UsersIcon size='1rem' />,
     path: '/admin/report/answer',
+    parent: ['G0ic']
+  },
+  {
+    id: '2Qtf',
+    label: "Anket Katılım Raporu",
+    icon: <UsersIcon size='1rem' />,
+    path: '/admin/report/survey-voters',
     parent: ['G0ic']
   },
   HomeItem
@@ -148,6 +155,7 @@ export function BreadCrumb() {
     path: string;
     parent: string[];
   }[]
+  
   if (/\d/.test(path)) {
 
     let arr;
@@ -157,7 +165,7 @@ export function BreadCrumb() {
     }
     else if (path.includes('running')) {
       arr = nthQuestion
-    }
+    } 
     else {
       arr = nthSurvey
     }

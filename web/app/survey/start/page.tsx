@@ -16,10 +16,10 @@ export default async function SurveyStart() {
     <div className="w-full h-full flex flex-col items-center justify-center">
       <div className="w-full">
         <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
-          {survey.name}
+          {survey.survey.name}
         </h1>
         <p className="max-w-[700px] text-lg text-muted-foreground">
-          {survey.description}
+          {survey.survey.description}
         </p>
       </div>
       <div className="w-full">

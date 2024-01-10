@@ -64,7 +64,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
     if (survey.length > s + 1) {
       params.answers =
         params.answers
-          .filter(a => a.questionId < survey[s].question.id)
+          .filter(a => a.questionId < survey[s+1].question.id)
     }
     params.answers.forEach((v, i) => {
       const q = survey.find(x => x.question.id == v.questionId)
@@ -79,7 +79,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
       // console.log(params);
     }
     else {
-      setError(overallError.substring(0, overallError.length - 1) + `. soru` + (overallError.length == 2 ? '' : 'lar') + ` zorunludur. Cevapladiktan sonra bitirebilirsiniz.`)
+      setError(overallError.substring(0, overallError.length - 1) + `. soru` + (overallError.length == 2 ? '' : 'lar') + ` zorunludur. Cevapladiktan sonra bitirebilir/yarıda bırakabilirsiniz.`)
     }
 
   }
@@ -116,7 +116,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(formSubmit)} >
 
-          {survey.sort((a,b)=>  a.question.orderNumber > b.question.orderNumber ? 1 : -1).map(({ question, answers }, i, arr) => {
+          {survey.sort((a, b) => a.question.orderNumber > b.question.orderNumber ? 1 : -1).map(({ question, answers }, i, arr) => {
             const answered = findId(question.id) != undefined
             const disabled = answered
             const defaultVal = answered ? findId(question.id)?.toString() : undefined
@@ -181,7 +181,7 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
             <Button
               className={`${s == 0 && 'hidden'}`}
               type="button"
-              onClick={prevQuestion}>Onceki</Button>
+              onClick={prevQuestion}>Önceki</Button>
             <Button
               className={`${s == survey.length - 1 && 'hidden'}`}
               type="button"
@@ -191,10 +191,12 @@ export default function QuestionAnswerForm({ survey, alreadyRespondedAnswers }: 
           {error && <p className="text-destructive">{error}</p>}
 
 
-          {s < survey.length - 1 ?
-            <Button variant='outline'>Sonra devam etmek üzere yarıda bırak</Button>
-            :
-            <Button>Bitir</Button>
+          {s == 0 ?
+            <> </> :
+            s < survey.length - 1 ?
+              <Button variant='outline'>Sonra devam etmek üzere yarıda bırak</Button>
+              :
+              <Button>Bitir</Button>
           }
         </form>
       </Form>

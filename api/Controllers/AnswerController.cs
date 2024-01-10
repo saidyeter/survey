@@ -70,10 +70,13 @@ public class AnswerController : ControllerBase
             logger.LogInformation("These questions are already answered");
             return Ok();
         }
+        var lastQuestion = dbContext.Questions
+            .Where(q => q.SurveyId == survey.Id)
+            .OrderByDescending(x => x.OrderNumber)
+            .FirstOrDefault();
 
-        var allQuestionCount = dbContext.Questions.Where(q => q.SurveyId == survey.Id).Count();
-
-        if (allQuestionCount == respondedQuestionIdList.Count + filteredAnswers.Count)
+        if (respondedQuestionIdList.Contains(lastQuestion?.Id ?? -1) ||
+            filteredAnswers.Any(x => x.QuestionId == (lastQuestion?.Id ?? -1)))
         {
             participation.EndDate = DateTime.Now;
             dbContext.Update(participation);

@@ -43,7 +43,14 @@ export const surveySchema = survey
 export type TSurveySchema = z.infer<typeof surveySchema>;
 
 
-export const getActiveSurveyResponseSchema = survey
+export const getPreSurveyResponseSchema = survey
+
+export const getActiveSurveyResponseSchema = z.object({
+  survey: survey,
+  startedCount: z.number().optional().nullable(),
+  finishedCount: z.number().optional().nullable(),
+  totalParticipants: z.number().optional().nullable(),
+})
 export type TGetActiveSurveyResponseSchema = z.infer<typeof getActiveSurveyResponseSchema>;
 
 
