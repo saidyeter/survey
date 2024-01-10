@@ -4,6 +4,6 @@ export default function Completed() {
   return <GoBack
     title="Katılımınız için teşekkürler"
     desc=""
-    link="/"
+    link="/survey"
   />
 }

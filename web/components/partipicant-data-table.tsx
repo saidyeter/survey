@@ -148,7 +148,7 @@ export function DataTable<TData, TValue>({
             className={buttonVariants({ variant: 'outline', size: 'sm' })}
             href={createPagingSearchQuery(pageSize, pageNumber - 1, query, orderColumn, orderDirection, id)}
           >
-            Onceki
+            Önceki
           </Link>
         }
         <div className="border-2 rounded px-2">

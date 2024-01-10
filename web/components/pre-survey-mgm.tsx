@@ -53,10 +53,30 @@ export default function PreSurveyManagement(params: PreSurveyShowcaseProps) {
                   description={description}
                 />
                 {showStart ?
-                  <Button onClick={() => start()}>
-                    <Play size='1rem' />
-                    Başlat
-                  </Button>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button >
+                        <Play size='1rem' />
+                        Başlat
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Onay Gerekli</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Oylamaya başlamak istediğinizden emin misiniz?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Vazgeç</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => { start() }}    >
+                          Onayla
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                   :
                   <Label>
                     Başlatmak icin soru eklemeniz gereklidir

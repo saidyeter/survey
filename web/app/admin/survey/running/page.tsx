@@ -12,7 +12,7 @@ export default async function Running() {
       link="/admin"
     />
   }
-  const pre = await getSurvey(data.id)
+  const pre = await getSurvey(data.survey.id)
   if (!pre) {
     return <GoBack
       title="Yanlış Anket"
@@ -24,7 +24,7 @@ export default async function Running() {
 
   return (
     <div className="w-full">
-      <RunningSurveyManagement survey={survey} />
+      <RunningSurveyManagement survey={survey} startedCount={data.startedCount ?? -1} finishedCount={data.finishedCount ?? -1} totalParticipants={data.totalParticipants ?? -1} />
       <QuestionsAccordion QnAs={qnas} editable />
     </div>
   )

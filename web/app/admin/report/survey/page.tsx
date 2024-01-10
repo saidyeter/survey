@@ -4,6 +4,7 @@ import QuestionDetailCard from "@/components/question-detail-card"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { checkPreSurveyExists, getSurveyDetails } from "@/lib/source-api"
 import { getLocaleDate } from "@/lib/utils"
+import Link from "next/link"
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export default async function SurveyReport({
@@ -50,6 +51,11 @@ export default async function SurveyReport({
 
   const preSurvey = await checkPreSurveyExists()
 
+  const startDate= getLocaleDate(survey.startDate!)
+  let endDate= ''
+  if (survey.endDate) {
+    endDate=' - '+ getLocaleDate(survey.endDate)
+  }
   return (
     <div className="w-full">
 
@@ -60,13 +66,22 @@ export default async function SurveyReport({
               {survey.name}
             </CardTitle>
             <CardDescription>
-              {`${getLocaleDate(survey.startDate!)} - ${getLocaleDate(survey.endDate!)}`}
+              {startDate}{endDate}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {survey.description &&
               <p>{survey.description}</p>
             }
+            <p>
+              <Link
+                className='underline underline-offset-2'
+                href={`/admin/report/survey-voters?id=${survey.id}`}
+              >
+                Buraya
+              </Link>
+              &nbsp;tıklayarak ankete katılanlara bakabilirsiniz.
+            </p>
           </CardContent>
           <CardFooter>
           </CardFooter>

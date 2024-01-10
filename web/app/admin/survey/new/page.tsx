@@ -8,7 +8,7 @@ export default async function NewSurvey() {
   if (!allowed) {
     return <GoBack
       title="Aktif anket var"
-      desc="Yeni anket olusturmak icin tum anketlerin tamamlanmis olmasi gerekir."
+      desc="Yeni anket oluşturmak icin tum anketlerin tamamlanmis olmasi gerekir."
       link="/admin"
     />
   }

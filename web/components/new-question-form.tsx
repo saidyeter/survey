@@ -49,13 +49,16 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
     resolver: zodResolver(newQuestionSchema),
     defaultValues: {
       text: '',
-      isrequired: false,
+      isrequired: true,
       answers: [{
         label: 'A',
         text: "Evet"
       }, {
         label: 'B',
         text: "Hayir"
+      }, {
+        label: 'C',
+        text: "Bu kategoride oy kullanmak istemiyorum."
       }],
       answerType: 'single',
       descriptiveAnswer: null,
@@ -80,7 +83,7 @@ export default function NewQuestionForm(props: NewQuestionFormProps) {
       reset()
       window.scrollTo(0, 0);
       setO('')
-      toast("Yeni soru olusturuldu", {
+      toast("Yeni soru oluşturuldu", {
         // description: "Sunday, December 03, 2023 at 9:00 AM",
         action: {
           label: "Tamam",
