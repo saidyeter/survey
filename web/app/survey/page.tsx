@@ -18,7 +18,10 @@ export default async function Survey() {
               {survey.survey.name}
             </h1>
             <p className="max-w-[700px] text-lg text-muted-foreground">
-              {survey.survey.description}
+            Değerli Eczacımız; Eczacının Sesi Ödülleri için oylama sistemine hoş geldiniz. 
+            Oylamaya başlamadan önce verilen kategoriler ile ilgili başvuru yapan firma/ürün ile ilgili başvuru video/belgesini izleyebilirsiniz. Kategori oylamanızı tamamladıktan sonra bir sonraki kategoriye geçebilirsiniz. Oylamayı yarıda kesme ve sistemden çıkış yapmanız durumunda, tekrar sisteme girerek kaldığınız yerden devam edebilirsiniz.&nbsp;
+            <strong>Başvuru tanıtımlarını izlemek için lütfen oylama ekranına giriniz.</strong> 
+            &nbsp;Katkılarınızdan dolayı teşekkür ederiz...
             </p>
           </>
 
@@ -35,7 +38,7 @@ export default async function Survey() {
           <div className="flex flex-col space-y-4">
             <Link
               href='/survey/start'
-              className={buttonVariants()}
+              className={buttonVariants({size:'lg',className:'text-[1.5rem]'})}
             >
               Oylamaya katılmak için tıklayınız.
             </Link>
