@@ -32,7 +32,7 @@ export default async function AnswerReport({
          {id} Id&apos;li cevabı veren katılımcılar
         </h2>
       </div>
-      <PageInfoAndDownloadLink totalRecCount={data?.totalCount ?? -1} url={downloadLink} />
+      <PageInfoAndDownloadLink totalRecCount={data?.totalCount ?? 0} url={downloadLink} />
      
       <DataTable
         columns={columns}

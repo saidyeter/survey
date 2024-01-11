@@ -16,13 +16,15 @@ interface QuestionDetailCardProps {
 export default function QuestionDetailCard(params: QuestionDetailCardProps) {
   const { question, answeredCount, answerDetails } = params.questionDetail
 
-  const data = answerDetails.map(a => {
-    return {
-      id: a.id,
-      name: a.label,
-      total: a.choosenCount
-    }
-  })
+  const data = answerDetails
+    .filter(d => d.choosenCount > 0)
+    .map(a => {
+      return {
+        id: a.id,
+        name: a.label,
+        total: a.choosenCount
+      }
+    })
   const router = useRouter()
 
   return (
@@ -57,7 +59,7 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
             <PieChart >
               <Pie
                 label={(d) => d.name + ': ' + d.value}
-                data={data.filter(d => d.total > 0)}
+                data={data}
                 dataKey="total"
                 nameKey="name"
                 cx="50%"
@@ -84,7 +86,7 @@ export default function QuestionDetailCard(params: QuestionDetailCardProps) {
             return (
               <Link key={i} className="flex items-center hover:bg-muted" href={`/admin/report/answer?id=${ad.id}`}>
                 <p className="text-sm text-muted-foreground">{ad.label}:&nbsp;</p>
-                <p className="text-sm font-medium leading-none"> <AnswerContent noNewLine content={ad.text} /></p>
+                <p className="text-sm font-medium leading-none"> {ad.text}</p>
               </Link>
             )
           })}
