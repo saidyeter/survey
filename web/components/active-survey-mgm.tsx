@@ -77,7 +77,7 @@ export default function RunningSurveyManagement(params: RunningSurveyShowcasePro
           <p>{description}</p>
           {((startedCount || startedCount == 0) && totalParticipants && (finishedCount || finishedCount == 0)) ?
             <>
-              <p>Toplam {totalParticipants} içinden {startedCount} kişi oylamaya başlamış, {finishedCount==startedCount ? 'hepsi':finishedCount+' kişi'} oylamayı tamamlamıştır</p>
+              <p className="mt-4">Toplam {totalParticipants} içinden {startedCount} kişi oylamaya başlamış, {finishedCount==startedCount ? 'hepsi':finishedCount+' kişi'} oylamayı tamamlamıştır.</p>
               <p>
                 <Link
                   className='underline underline-offset-2'
