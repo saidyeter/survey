@@ -1,17 +1,14 @@
 'use client'
 
-import { raiseUp, lowerDown, updateRunning } from "@/actions/question"
-import { TNewSurveyValidationSchema, TQnASchema, TUpdateOnRunningQuestionRequestSchema, newSurveyValidationSchema, updateOnRunningQuestionRequestSchema } from "@/lib/types"
-import { ChevronUp, ChevronDown } from "lucide-react"
-import { Button, buttonVariants } from "./ui/button"
-import { Card, CardHeader, CardDescription, CardTitle, CardContent, CardFooter } from "./ui/card"
-import Link from "next/link"
-import { Separator } from "@radix-ui/react-separator"
+import { updateRunning } from "@/actions/question"
+import { TQnASchema, TUpdateOnRunningQuestionRequestSchema, updateOnRunningQuestionRequestSchema } from "@/lib/types"
+import { Button } from "./ui/button"
 import AnswerContent from "./answer-content"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from "./ui/form";
 import { Input } from "./ui/input"
+import { Checkbox } from "./ui/checkbox"
 
 interface UpdateQuestionOnRunningSurveyProps {
   qna: TQnASchema
@@ -22,6 +19,7 @@ export default function UpdateQuestionOnRunningSurvey(params: UpdateQuestionOnRu
     resolver: zodResolver(updateOnRunningQuestionRequestSchema),
     defaultValues: {
       text: question.text,
+      required: question.required,
       answers: answers.map(a => {
         return {
           id: a.id,
@@ -58,7 +56,30 @@ export default function UpdateQuestionOnRunningSurvey(params: UpdateQuestionOnRu
               </FormItem>
             )}
           />
-
+          <FormField
+            control={form.control}
+            name="required"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 ">
+                <FormControl>
+                  <Checkbox
+                    id={field.name}
+                    name="isrequired"
+                    checked={field.value ?? true}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    Zorunlu mu?
+                  </FormLabel>
+                  <FormDescription>
+                    Bu kutucuk isaretlenirse soruyu cevaplamadan gecilmesine izin verilmeyecektir.
+                  </FormDescription>
+                </div>
+              </FormItem>
+            )}
+          />
           {fields.map((a, i) => (
             <FormField
               key={a.id}

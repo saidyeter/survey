@@ -66,7 +66,7 @@ public class AddQuestionReqSingleAnswer
 public class UpdateOnRunningQuestionReq
 {
     #region Properties
-
+    public bool Required { get; set; }
     public string Text { get; set; }
 
     public UpdateOnRunningQuestionReqSingleAnswer[] Answers { get; set; }

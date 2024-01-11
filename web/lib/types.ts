@@ -278,6 +278,7 @@ const updateOnRunningQuestionAnswerSchema = z.object({
 
 export const updateOnRunningQuestionRequestSchema = z.object({
   text: z.string(),
+  required:z.boolean(),
   answers: updateOnRunningQuestionAnswerSchema.array()
 })
 export type TUpdateOnRunningQuestionRequestSchema = z.infer<typeof updateOnRunningQuestionRequestSchema>;
