@@ -39,9 +39,9 @@ export default async function Survey() {
           <div className="flex flex-col space-y-4">
             <Link
               href='/survey/start'
-              className={`${buttonVariants({ size: 'lg' })} text-[1.5rem] `}
+              className={buttonVariants({ size: 'lg' })}
             >
-              Oylamaya katılmak için tıklayınız
+              <p className="text-2xl">Oylamaya katılmak için tıklayınız</p>
             </Link>
             <label> Sorularınız için <a href="mailto:ceren.erol@serenas.com.tr">ceren.erol@serenas.com.tr</a> </label>
           </div>
