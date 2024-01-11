@@ -249,6 +249,7 @@ public class QuestionController : ControllerBase
         }
 
         question.Text = val.Text;
+        question.Required = val.Required;
         foreach (var item in answers)
         {
             var fromReq = val.Answers.Where(a => a.Id == item.Id).SingleOrDefault();

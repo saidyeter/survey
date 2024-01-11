@@ -126,43 +126,6 @@ public class SurveyController : ControllerBase
         var survey = val.First();
         var totalParticipants = dbContext.Participants.Count();
         var participations = await dbContext.Participations.Where(p => p.SurveyId == survey.Id).ToListAsync();
-        // burasi silinecek
-        {
-            try
-            {
-                var questionIdList = dbContext.Answers.Where(a => a.Text.Contains("Bu kategoride oy kullanmak istemiyorum")).Select(a => a.QuestionId).ToList();
-                if (questionIdList.Count > 0)
-                {
-                    var questions = dbContext.Questions.Where(a => questionIdList.Contains(a.Id)).ToList();
-                    foreach (var _question in questions)
-                    {
-                        _question.Required = true;
-                    }
-                    dbContext.UpdateRange(questions);
-                }
-                var lastQuestion = dbContext.Questions.Where(q => q.SurveyId == survey.Id).OrderByDescending(q => q.OrderNumber).FirstOrDefault();
-
-                foreach (var _participation in participations)
-                {
-                    if (_participation.EndDate is null)
-                    {
-                        var pa = dbContext.ParticipantAnswers.Where(x => x.ParticipationId == _participation.Id && x.QuestionId == lastQuestion.Id).FirstOrDefault();
-                        if (pa != null)
-                        {
-                            _participation.EndDate = DateTime.Now;
-
-                            dbContext.Update(_participation);
-                        }
-                    }
-                }
-                await dbContext.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                //
-            }
-        }
-        // burasi silinecek
         var startedCount = participations.Count;
         var finishedCount = participations.Where(x => x.EndDate != null).Count();
 
