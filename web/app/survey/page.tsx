@@ -39,13 +39,6 @@ export default async function Survey() {
             >
               Oylamaya katılmak için tıklayınız.
             </Link>
-            <Link
-              href={Constants.SurveyInfoUrl}
-              className={buttonVariants({ variant: 'secondary' })}
-              target="_blank"
-            >
-              Başvuruları izlemek için tıklayınız.
-            </Link>
           </div>
         ) : (
           <></>
