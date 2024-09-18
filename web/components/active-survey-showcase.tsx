@@ -27,15 +27,7 @@ export default function ActiveSurveyShowcase(params: ActiveSurveyShowcaseProps) 
       <Alert>
         <Terminal className="h-4 w-4" />
         <AlertTitle>Aktif anket yok!</AlertTitle>
-        <AlertDescription>
-          <Link
-            href={`/admin/survey/new`}
-            className="underline"
-          >
-            Buraya
-          </Link>
-          &nbsp;tıklayarak yeni anket oluşturabilirsiniz
-        </AlertDescription>
+        <AlertDescription/>
       </Alert>
 
     )
